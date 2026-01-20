@@ -3,76 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KPS | CBSE Mandatory Disclosure & Results</title>
-    
+    <title>KPS | Official CBSE Disclosure</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-
     <style>
-        :root { --blue: #003366; --gold: #d4aa00; --white: #ffffff; --bg: #f0f4f8; }
-        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: 0.3s; }
-        body { margin: 0; background: var(--bg); color: #333; overflow-x: hidden; }
+        :root { --blue: #003366; --gold: #d4aa00; --bg: #f4f7f9; }
+        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { margin: 0; background: var(--bg); color: #333; }
 
-        /* Premium Nav */
-        nav {
-            background: var(--blue); padding: 15px 5%;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 4px solid var(--gold); position: sticky; top: 0; z-index: 1000;
-        }
-        .back-link { color: var(--gold); text-decoration: none; font-weight: 600; border: 2px solid var(--gold); padding: 6px 15px; border-radius: 8px; }
-        .back-link:hover { background: var(--gold); color: var(--blue); }
+        nav { background: var(--blue); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--gold); position: sticky; top:0; z-index:1000; }
+        .back-link { color: var(--gold); text-decoration: none; font-weight: 600; border: 1px solid var(--gold); padding: 5px 12px; border-radius: 5px; font-size: 13px; }
 
         .container { width: 95%; max-width: 1100px; margin: 30px auto; }
+        .section-card { background: white; border-radius: 15px; padding: 25px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-left: 6px solid var(--blue); }
+        .section-card h3 { color: var(--blue); margin-top: 0; text-transform: uppercase; font-size: 18px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
 
-        /* Section Styling */
-        .section-card {
-            background: var(--white); border-radius: 20px; padding: 30px;
-            margin-bottom: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            border-top: 5px solid var(--blue);
-        }
-        .section-card h3 { color: var(--blue); margin-bottom: 25px; font-size: 22px; text-transform: uppercase; letter-spacing: 1px; }
+        /* General Info Table */
+        .info-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        .info-table td { padding: 10px; border-bottom: 1px solid #f1f1f1; }
+        .info-table b { color: var(--blue); width: 40%; display: inline-block; }
 
-        /* Result Analysis Styling (New) */
-        .result-tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
-        .tab-btn {
-            padding: 12px 20px; border: none; background: #e0e6ed; color: var(--blue);
-            font-weight: 700; border-radius: 10px; cursor: pointer; flex: 1; min-width: 120px;
-        }
-        .tab-btn.active { background: var(--blue); color: var(--gold); box-shadow: 0 5px 15px rgba(0,51,102,0.3); }
+        /* Result Section */
+        .tab-container { margin-top: 20px; }
+        .tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px; }
+        .tab-btn { flex: 1; padding: 10px; border: none; background: #ddd; cursor: pointer; font-weight: 600; border-radius: 5px; min-width: 100px; }
+        .tab-btn.active { background: var(--blue); color: var(--gold); }
         
-        .result-display { 
-            background: #f9f9f9; padding: 15px; border-radius: 15px; text-align: center;
-            border: 2px dashed #ddd; min-height: 200px;
-        }
-        .result-img { 
-            max-width: 100%; height: auto; border-radius: 10px; display: none;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
-        }
-        .result-img.active { display: block; animation: fadeIn 0.5s ease-in; }
+        .result-gallery { display: none; gap: 15px; grid-template-columns: 1fr 1fr; margin-top: 15px; }
+        .result-gallery.active { display: grid; }
+        .result-gallery img { width: 100%; border-radius: 10px; border: 2px solid #eee; box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
 
-        /* Table Styling */
-        .cbse-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .cbse-table th { background: #f4f7f9; color: var(--blue); padding: 15px; text-align: left; }
-        .cbse-table td { padding: 15px; border-bottom: 1px solid #eee; font-size: 14px; }
-        .btn-pdf { color: var(--blue); text-decoration: underline; font-weight: 700; }
-
-        /* Infrastructure Grid */
-        .infra-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        .infra-item { background: #fff; padding: 20px; border-radius: 15px; border: 1px solid #eee; text-align: center; }
-        .infra-item b { display: block; color: var(--blue); font-size: 22px; }
+        /* Buttons */
+        .btn-action { display: inline-block; background: var(--blue); color: var(--gold); padding: 8px 15px; text-decoration: none; border-radius: 5px; font-weight: 600; font-size: 13px; margin-top: 5px; }
+        .btn-fees { background: var(--gold); color: var(--blue); }
 
         /* Staff Carousel */
-        .staff-box { background: var(--blue); padding: 40px 20px; border-radius: 25px; text-align: center; color: white; }
-        .teacher-card { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; border: 1px solid rgba(212,170,0,0.2); }
-        .t-img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--gold); margin-bottom: 10px; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .staff-section { background: var(--blue); padding: 40px 20px; border-radius: 20px; text-align: center; color: white; margin-top: 40px; }
+        .teacher-card { background: rgba(255,255,255,0.1); padding: 20px; border-radius: 15px; border: 1px solid rgba(212,170,0,0.3); }
+        .t-img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--gold); margin-bottom: 10px; }
 
         @media (max-width: 768px) {
-            .section-card { padding: 20px; }
-            .cbse-table thead { display: none; }
-            .cbse-table td { display: block; text-align: right; padding-left: 50%; position: relative; }
-            .cbse-table td::before { content: attr(data-label); position: absolute; left: 15px; font-weight: bold; color: var(--blue); }
+            .result-gallery { grid-template-columns: 1fr; }
+            .info-table b { width: 100%; display: block; margin-bottom: 5px; }
         }
     </style>
 </head>
@@ -80,70 +52,92 @@
 
 <nav>
     <a href="about.html" class="back-link">← BACK</a>
-    <span style="color: white; font-weight: bold;">KPS DISCLOSURE</span>
+    <span style="color: white; font-weight: bold; font-size: 14px;">KPS DISCLOSURE</span>
 </nav>
 
 <div class="container">
-    
-    <div class="section-card">
-        <h3>A : Public Disclosure Documents</h3>
-        <table class="cbse-table">
-            <thead>
-                <tr><th>Description</th><th>Action</th></tr>
-            </thead>
-            <tbody>
-                <tr><td data-label="Doc">Affiliation/Upgradation Letter</td><td><a href="#" class="btn-pdf">VIEW PDF</a></td></tr>
-                <tr><td data-label="Doc">Fire Safety Certificate</td><td><a href="#" class="btn-pdf">VIEW PDF</a></td></tr>
-                <tr><td data-label="Doc">Building Safety Certificate</td><td><a href="#" class="btn-pdf">VIEW PDF</a></td></tr>
-                <tr><td data-label="Doc">Trust Registration</td><td><a href="#" class="btn-pdf">VIEW PDF</a></td></tr>
-            </tbody>
-        </table>
-    </div>
 
     <div class="section-card">
-        <h3>B : Result Analysis (Last 3 Sessions)</h3>
-        <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Click on a session to view the official result summary.</p>
-        
-        <div class="result-tabs">
-            <button class="tab-btn active" onclick="showResult('res-24')">Session 2024-25</button>
-            <button class="tab-btn" onclick="showResult('res-23')">Session 2023-24</button>
-            <button class="tab-btn" onclick="showResult('res-22')">Session 2022-23</button>
-        </div>
-
-        <div class="result-display">
-            <img src="https://via.placeholder.com/800x400/003366/d4aa00?text=Result+Analysis+2024-25" id="res-24" class="result-img active">
-            <img src="https://via.placeholder.com/800x400/d4aa00/003366?text=Result+Analysis+2023-24" id="res-23" class="result-img">
-            <img src="https://via.placeholder.com/800x400/eeeeee/003366?text=Result+Analysis+2022-23" id="res-22" class="result-img">
-            <p id="placeholder-text" style="display:none; color: #999; margin-top: 80px;">Select a year to see details</p>
+        <h3>A : GENERAL INFORMATION</h3>
+        <div class="info-table">
+            <div><b>NAME OF THE SCHOOL:</b> KENDRIYA PUBLIC SCHOOL</div>
+            <div><b>AFFILIATION NO.:</b> 213XXXX (MANDATORY)</div>
+            <div><b>SCHOOL CODE:</b> 08XXX</div>
+            <div><b>COMPLETE ADDRESS:</b> MAKRAND NAGAR, KANNAUJ, U.P. - 209726</div>
+            <div><b>PRINCIPAL NAME & QUAL.:</b> MRS. ANJALI SHARMA (M.A., B.Ed.)</div>
+            <div><b>SCHOOL EMAIL:</b> kpskannauj@gmail.com</div>
+            <div><b>CONTACT DETAILS:</b> +91 98XXXXXXXX, 05694-2XXXXX</div>
         </div>
     </div>
 
     <div class="section-card">
-        <h3>C : School Infrastructure</h3>
-        <div class="infra-grid">
-            <div class="infra-item"><b>8000</b><span>Sq Mtrs Area</span></div>
-            <div class="infra-item"><b>30</b><span>Classrooms</span></div>
-            <div class="infra-item"><b>5</b><span>Labs</span></div>
-            <div class="infra-item"><b>Yes</b><span>Fire Safety</span></div>
+        <h3>B : DOCUMENTS AND INFORMATION</h3>
+        <div class="info-table">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                <span>1. COPIES OF AFFILIATION/UPGRADATION LETTER</span>
+                <a href="docs/affiliation.pdf" class="btn-action">VIEW PDF</a>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                <span>2. NOC FROM STATE GOVT. / UT</span>
+                <a href="docs/noc.pdf" class="btn-action">VIEW PDF</a>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                <span>3. BUILDING SAFETY CERTIFICATE (NBC)</span>
+                <a href="docs/building.pdf" class="btn-action">VIEW PDF</a>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                <span>4. FIRE SAFETY CERTIFICATE</span>
+                <a href="docs/fire.pdf" class="btn-action">VIEW PDF</a>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee;">
+                <span>5. SCHOOL FEE STRUCTURE</span>
+                <a href="fees.html" class="btn-action btn-fees">VIEW FEES STRUCTURE</a>
+            </div>
         </div>
     </div>
 
-    <div class="staff-box">
-        <h3 style="color: var(--gold);">Our Teaching Faculty</h3>
+    <div class="section-card">
+        <h3>C : RESULT ANALYSIS (LAST 3 YEARS)</h3>
+        <div class="tab-container">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="openRes(event, 'yr24')">2024-25</button>
+                <button class="tab-btn" onclick="openRes(event, 'yr23')">2023-24</button>
+                <button class="tab-btn" onclick="openRes(event, 'yr22')">2022-23</button>
+            </div>
+
+            <div id="yr24" class="result-gallery active">
+                <img src="img/results/2024_class10.jpg" alt="Class 10 Result">
+                <img src="img/results/2024_toppers.jpg" alt="Toppers 2024">
+            </div>
+
+            <div id="yr23" class="result-gallery">
+                <img src="img/results/2023_class10.jpg" alt="Class 10 Result">
+                <img src="img/results/2023_toppers.jpg" alt="Toppers 2023">
+            </div>
+
+            <div id="yr22" class="result-gallery">
+                <img src="img/results/2022_class10.jpg" alt="Class 10 Result">
+                <img src="img/results/2022_toppers.jpg" alt="Toppers 2022">
+            </div>
+        </div>
+    </div>
+
+    <div class="staff-section">
+        <h3 style="color:var(--gold); margin-bottom: 25px;">ACADEMIC STAFF DETAILS</h3>
         <div class="swiper staffSwiper">
             <div class="swiper-wrapper">
                 <div class="swiper-slide">
                     <div class="teacher-card">
                         <img src="https://avatar.iran.liara.run/public/65" class="t-img">
-                        <b style="display:block; color:var(--gold);">Mrs. Anjali Sharma</b>
-                        <small>Principal | 20 Yrs Exp.</small>
+                        <b style="display:block; color:var(--gold);">Anjali Sharma</b>
+                        <small>Principal | M.A, B.Ed</small>
                     </div>
                 </div>
                 <div class="swiper-slide">
                     <div class="teacher-card">
                         <img src="https://avatar.iran.liara.run/public/88" class="t-img">
-                        <b style="display:block; color:var(--gold);">Mr. R.K. Yadav</b>
-                        <small>HOD Maths | M.Sc</small>
+                        <b style="display:block; color:var(--gold);">R.K. Singh</b>
+                        <small>PGT Maths | M.Sc</small>
                     </div>
                 </div>
             </div>
@@ -155,31 +149,21 @@
 
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script>
-    // Result Tab Logic
-    function showResult(resultId) {
-        // Remove active class from all buttons
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        // Add active to clicked button
-        event.currentTarget.classList.add('active');
-        
-        // Hide all images
-        document.querySelectorAll('.result-img').forEach(img => img.classList.remove('active'));
-        // Show selected image
-        document.getElementById(resultId).classList.add('active');
+    function openRes(evt, yearId) {
+        var i, content, tabs;
+        content = document.getElementsByClassName("result-gallery");
+        for (i = 0; i < content.length; i++) { content[i].style.display = "none"; }
+        tabs = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < tabs.length; i++) { tabs[i].className = tabs[i].className.replace(" active", ""); }
+        document.getElementById(yearId).style.display = "grid";
+        evt.currentTarget.className += " active";
     }
 
-    // Carousel Logic
     var swiper = new Swiper(".staffSwiper", {
-        loop: true,
-        autoplay: { delay: 3000 },
+        loop: true, autoplay: { delay: 2500 },
         pagination: { el: ".swiper-pagination", clickable: true },
-        breakpoints: {
-            640: { slidesPerView: 1 },
-            768: { slidesPerView: 2, spaceBetween: 20 },
-            1024: { slidesPerView: 3, spaceBetween: 30 }
-        }
+        breakpoints: { 320: { slidesPerView: 1 }, 768: { slidesPerView: 2, spaceBetween: 20 } }
     });
 </script>
-
 </body>
 </html>
