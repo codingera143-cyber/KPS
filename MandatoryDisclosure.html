@@ -3,163 +3,318 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KPS | Official Disclosure</title>
+    <title>KPS | CBSE Mandatory Public Disclosure</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
     <style>
-        :root { --blue: #003366; --gold: #d4aa00; --white: #ffffff; }
+        :root {
+            --blue: #003366;
+            --gold: #d4aa00;
+            --white: #ffffff;
+            --bg: #f4f7fa;
+        }
+
         * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-        body { margin: 0; background: #f8f9fc; color: #333; }
+        body { margin: 0; background: var(--bg); color: #333; line-height: 1.6; }
 
+        /* Navigation */
         nav {
-            background: var(--blue); padding: 15px 5%;
-            display: flex; justify-content: space-between; align-items: center;
-            position: sticky; top: 0; z-index: 1000; border-bottom: 4px solid var(--gold);
+            background: var(--blue);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--gold);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
-        .back-link { color: var(--gold); text-decoration: none; font-weight: 600; font-size: 14px; }
+        .back-link { color: var(--gold); text-decoration: none; font-weight: 600; font-size: 14px; border: 1px solid var(--gold); padding: 5px 15px; border-radius: 5px; transition: 0.3s; }
+        .back-link:hover { background: var(--gold); color: var(--blue); }
 
-        .container { width: 90%; max-width: 1100px; margin: 40px auto; }
-        
-        .header-box { text-align: center; margin-bottom: 50px; }
-        .header-box h1 { color: var(--blue); font-size: 32px; margin: 0; letter-spacing: 1px; }
-        .line { width: 60px; height: 4px; background: var(--gold); margin: 15px auto; border-radius: 2px; }
-
-        /* Modern Info Grid */
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-            margin-bottom: 60px;
+        /* Header Section */
+        .container { width: 95%; max-width: 1100px; margin: 30px auto; }
+        .header-box {
+            text-align: center;
+            background: var(--blue);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            border-bottom: 6px solid var(--gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
+        .header-box h1 { margin: 0; font-size: 28px; text-transform: uppercase; letter-spacing: 1px; }
+        .header-box p { margin: 10px 0 0; opacity: 0.9; font-size: 14px; }
 
-        .info-card {
+        /* Section Cards */
+        .section-card {
             background: var(--white);
-            padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
-            border-bottom: 4px solid #eee;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .section-card h3 {
+            color: var(--blue);
+            border-left: 6px solid var(--gold);
+            padding-left: 15px;
+            margin-bottom: 25px;
+            font-size: 20px;
+            text-transform: uppercase;
+        }
+
+        /* Responsive Tables */
+        .cbse-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .cbse-table th { background: #f8f9fa; color: var(--blue); padding: 15px; text-align: left; border-bottom: 2px solid #eee; }
+        .cbse-table td { padding: 15px; border-bottom: 1px solid #f1f1f1; vertical-align: middle; }
+
+        /* PDF View Button */
+        .btn-view {
+            background: #eef2f7;
+            color: var(--blue);
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 12px;
+            border: 1.5px solid var(--blue);
+            font-weight: 700;
+            transition: 0.3s;
+            display: inline-block;
+        }
+        .btn-view:hover { background: var(--blue); color: var(--gold); }
+
+        /* Infrastructure Grid */
+        .infra-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .infra-item {
+            background: #fdfdfd;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #eee;
+            text-align: center;
             transition: 0.3s;
         }
-        .info-card:hover { border-bottom-color: var(--gold); transform: translateY(-5px); }
-        .info-card h3 { color: var(--blue); margin: 0 0 20px 0; font-size: 20px; display: flex; align-items: center; gap: 10px; }
-        .info-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f1f1f1; font-size: 14px; }
-        .info-item b { color: #555; }
-        .info-item span { color: var(--blue); font-weight: 600; text-align: right; }
+        .infra-item:hover { border-color: var(--gold); background: #fff; transform: translateY(-3px); }
+        .infra-item b { display: block; color: var(--blue); font-size: 20px; margin-bottom: 5px; }
+        .infra-item span { font-size: 11px; color: #777; font-weight: 600; text-transform: uppercase; }
 
-        /* Carousel Section */
-        .staff-wrap {
+        /* Teacher Carousel Section */
+        .staff-section {
             background: var(--blue);
-            padding: 60px 0;
-            border-radius: 40px 40px 0 0;
+            padding: 50px 0;
+            border-radius: 30px;
+            margin-top: 50px;
+            color: white;
             text-align: center;
-            color: var(--white);
         }
-        .staff-wrap h2 { color: var(--gold); margin-bottom: 40px; font-size: 28px; }
+        .staff-section h2 { color: var(--gold); margin-bottom: 35px; }
 
-        .swiper { width: 85%; padding-bottom: 50px !important; }
-        .teacher-box {
-            background: rgba(255,255,255,0.05);
+        .teacher-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
             padding: 30px;
             border-radius: 20px;
-            border: 1px solid rgba(212,170,0,0.2);
+            border: 1px solid rgba(212, 170, 0, 0.2);
+            margin: 0 10px 40px;
         }
-        .t-img {
-            width: 110px; height: 110px;
-            border-radius: 50%;
-            border: 3px solid var(--gold);
-            margin-bottom: 15px;
-            object-fit: cover;
-        }
-        .t-name { color: var(--gold); font-size: 18px; font-weight: 700; display: block; }
-        .t-desig { font-size: 13px; opacity: 0.8; }
+        .t-img { width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--gold); margin-bottom: 15px; object-fit: cover; }
+        .t-name { display: block; color: var(--gold); font-size: 18px; font-weight: 700; }
+        .t-post { font-size: 13px; opacity: 0.8; display: block; margin-bottom: 10px; }
 
-        @media (max-width: 600px) {
-            .header-box h1 { font-size: 24px; }
-            .info-grid { grid-template-columns: 1fr; }
+        /* Mobile Responsive View */
+        @media (max-width: 768px) {
+            .cbse-table thead { display: none; }
+            .cbse-table td { display: block; text-align: right; padding-left: 50%; position: relative; }
+            .cbse-table td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 15px;
+                font-weight: 700;
+                color: var(--blue);
+                text-align: left;
+            }
+            .header-box h1 { font-size: 20px; }
+            .section-card { padding: 15px; }
         }
     </style>
 </head>
 <body>
 
 <nav>
-    <a href="about.html" class="back-link">⬅ BACK TO ABOUT</a>
-    <span style="color: white; font-weight: bold; font-size: 12px; letter-spacing: 2px;">KPS KANNAUJ</span>
+    <a href="about.html" class="back-link">⬅ BACK</a>
+    <span style="color: white; font-weight: bold; font-size: 14px;">KPS KANNAUJ</span>
 </nav>
 
 <div class="container">
+    
     <div class="header-box">
-        <h1>Mandatory Disclosure</h1>
-        <div class="line"></div>
-        <p style="color: #666;">Compliance as per CBSE Affiliation Bye-Laws</p>
+        <h1>Mandatory Public Disclosure</h1>
+        <p>Verified School Information & CBSE Compliance Documents</p>
     </div>
 
-    <div class="info-grid">
-        <div class="info-card">
-            <h3>🆔 School Identity</h3>
-            <div class="info-item"><b>Affiliation No.</b> <span>213XXXX</span></div>
-            <div class="info-item"><b>School Code</b> <span>08XXX</span></div>
-            <div class="info-item"><b>Affiliation Status</b> <span>Secondary Level</span></div>
-            <div class="info-item"><b>Principal</b> <span>Mrs. Anjali Sharma</span></div>
-        </div>
+    <div class="section-card">
+        <h3>A : Documents and Information</h3>
+        <table class="cbse-table">
+            <thead>
+                <tr>
+                    <th>SL NO.</th>
+                    <th>DOCUMENTS / INFORMATION</th>
+                    <th>UPLOADED DOCUMENTS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-label="SL NO.">1</td>
+                    <td data-label="DESCRIPTION">COPIES OF AFFILIATION/UPGRADATION LETTER</td>
+                    <td data-label="ACTION"><a href="#" class="btn-view">VIEW PDF</a></td>
+                </tr>
+                <tr>
+                    <td data-label="SL NO.">2</td>
+                    <td data-label="DESCRIPTION">SOCIETY/TRUST/COMPANY REGISTRATION</td>
+                    <td data-label="ACTION"><a href="#" class="btn-view">VIEW PDF</a></td>
+                </tr>
+                <tr>
+                    <td data-label="SL NO.">3</td>
+                    <td data-label="DESCRIPTION">NO OBJECTION CERTIFICATE (NOC)</td>
+                    <td data-label="ACTION"><a href="#" class="btn-view">VIEW PDF</a></td>
+                </tr>
+                <tr>
+                    <td data-label="SL NO.">4</td>
+                    <td data-label="DESCRIPTION">BUILDING SAFETY CERTIFICATE</td>
+                    <td data-label="ACTION"><a href="#" class="btn-view">VIEW PDF</a></td>
+                </tr>
+                <tr>
+                    <td data-label="SL NO.">5</td>
+                    <td data-label="DESCRIPTION">FIRE SAFETY CERTIFICATE</td>
+                    <td data-label="ACTION"><a href="#" class="btn-view">VIEW PDF</a></td>
+                </tr>
+                <tr>
+                    <td data-label="SL NO.">6</td>
+                    <td data-label="DESCRIPTION">WATER, HEALTH AND SANITATION CERTIFICATE</td>
+                    <td data-label="ACTION"><a href="#" class="btn-view">VIEW PDF</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-        <div class="info-card">
-            <h3>🏗️ Infrastructure</h3>
-            <div class="info-item"><b>Campus Area</b> <span>8500 Sq. Mtrs</span></div>
-            <div class="info-item"><b>Class Rooms</b> <span>28 (Smart Labs)</span></div>
-            <div class="info-item"><b>Internet Speed</b> <span>100 Mbps (WiFi)</span></div>
-            <div class="info-item"><b>Library Books</b> <span>4500+ Volumes</span></div>
-        </div>
+    <div class="section-card">
+        <h3>B : Results and Academics</h3>
+        <table class="cbse-table">
+            <tbody>
+                <tr>
+                    <td data-label="SL NO.">1</td>
+                    <td data-label="DESCRIPTION">ANNUAL ACADEMIC CALENDER</td>
+                    <td data-label="ACTION"><a href="#" class="btn-view">VIEW PDF</a></td>
+                </tr>
+                <tr>
+                    <td data-label="SL NO.">2</td>
+                    <td data-label="DESCRIPTION">SCHOOL MANAGEMENT COMMITTEE (SMC) LIST</td>
+                    <td data-label="ACTION"><a href="#" class="btn-view">VIEW PDF</a></td>
+                </tr>
+                <tr>
+                    <td data-label="SL NO.">3</td>
+                    <td data-label="DESCRIPTION">PARENTS TEACHERS ASSOCIATION (PTA) MEMBERS</td>
+                    <td data-label="ACTION"><a href="#" class="btn-view">VIEW PDF</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-        <div class="info-card">
-            <h3>📅 Academic Details</h3>
-            <div class="info-item"><b>Session Begins</b> <span>April 2024</span></div>
-            <div class="info-item"><b>Medium</b> <span>English</span></div>
-            <div class="info-item"><b>No. of Teachers</b> <span>35 (Experienced)</span></div>
-            <div class="info-item"><b>Last 3 Years TC</b> <span style="color: #d4aa00; cursor: pointer;">View List</span></div>
+    <div class="section-card">
+        <h3>C : Result Analysis (Last 3 Years)</h3>
+        <p style="color: var(--gold); font-weight: 600; font-size: 14px; margin-bottom: 10px;">CLASS X BOARD RESULTS</p>
+        <table class="cbse-table">
+            <thead>
+                <tr>
+                    <th>YEAR</th>
+                    <th>REGD. STUDENTS</th>
+                    <th>PASSED STUDENTS</th>
+                    <th>PASS %</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td data-label="YEAR">2022-23</td>
+                    <td data-label="REGD.">92</td>
+                    <td data-label="PASSED">89</td>
+                    <td data-label="PASS %">96.7%</td>
+                </tr>
+                <tr>
+                    <td data-label="YEAR">2021-22</td>
+                    <td data-label="REGD.">84</td>
+                    <td data-label="PASSED">81</td>
+                    <td data-label="PASS %">96.4%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section-card">
+        <h3>D : Staff & Infrastructure Details</h3>
+        <div class="infra-grid">
+            <div class="infra-item"><b>8500</b><span>Campus Area (Sq M)</span></div>
+            <div class="infra-item"><b>32 / 4</b><span>Classrooms / Labs</span></div>
+            <div class="infra-item"><b>38</b><span>Total Teachers</span></div>
+            <div class="infra-item"><b>1.5</b><span>Playground (Acres)</span></div>
         </div>
     </div>
-</div>
 
-<div class="staff-wrap">
-    <h2>OUR ACADEMIC LEADERS</h2>
-    <div class="swiper mySwiper">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide">
-                <div class="teacher-box">
-                    <img src="https://avatar.iran.liara.run/public/65" class="t-img">
-                    <span class="t-name">Mr. Vinay Pathak</span>
-                    <span class="t-desig">HOD Mathematics | M.Sc, B.Ed</span>
+    <div class="staff-section">
+        <h2>OUR EXPERT FACULTY</h2>
+        <div class="swiper staffSwiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="teacher-card">
+                        <img src="https://avatar.iran.liara.run/public/65" class="t-img">
+                        <span class="t-name">Mrs. Anjali Sharma</span>
+                        <span class="t-post">Principal | M.A, B.Ed</span>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="teacher-card">
+                        <img src="https://avatar.iran.liara.run/public/85" class="t-img">
+                        <span class="t-name">Mr. S.P. Yadav</span>
+                        <span class="t-post">HOD Maths | M.Sc</span>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="teacher-card">
+                        <img src="https://avatar.iran.liara.run/public/33" class="t-img">
+                        <span class="t-name">Ms. Neha Gupta</span>
+                        <span class="t-post">PGT English | M.A</span>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="teacher-card">
+                        <img src="https://avatar.iran.liara.run/public/44" class="t-img">
+                        <span class="t-name">Mr. Rahul Verma</span>
+                        <span class="t-post">Computer Dept | MCA</span>
+                    </div>
                 </div>
             </div>
-            <div class="swiper-slide">
-                <div class="teacher-box">
-                    <img src="https://avatar.iran.liara.run/public/85" class="t-img">
-                    <span class="t-name">Mrs. Kavita Verma</span>
-                    <span class="t-desig">English Faculty | M.A (Eng)</span>
-                </div>
-            </div>
-            <div class="swiper-slide">
-                <div class="teacher-box">
-                    <img src="https://avatar.iran.liara.run/public/38" class="t-img">
-                    <span class="t-name">Mr. Sameer Khan</span>
-                    <span class="t-desig">Computer Science | MCA</span>
-                </div>
-            </div>
+            <div class="swiper-pagination"></div>
         </div>
-        <div class="swiper-pagination"></div>
     </div>
+
 </div>
 
 <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script>
-    var swiper = new Swiper(".mySwiper", {
+    var swiper = new Swiper(".staffSwiper", {
         loop: true,
         autoplay: { delay: 3000, disableOnInteraction: false },
         pagination: { el: ".swiper-pagination", clickable: true },
         breakpoints: {
-            640: { slidesPerView: 1 },
-            768: { slidesPerView: 2, spaceBetween: 20 },
-            1024: { slidesPerView: 3, spaceBetween: 30 }
+            320: { slidesPerView: 1 },
+            768: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 }
         }
     });
 </script>
