@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPS | CBSE Mandatory Disclosure</title>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <style>
+        :root {
+            --kps-blue: #003366;
+            --kps-gold: #d4aa00;
+            --bg-light: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--bg-light);
+            color: #333;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--kps-blue);
+            color: var(--bg-light);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .back-btn {
+            background-color: var(--kps-gold);
+            color: var(--kps-blue);
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-right: 15px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: #e6c200;
+            transform: scale(1.05);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        h1, h2, h3 {
+            color: var(--kps-blue);
+            border-bottom: 2px solid var(--kps-gold);
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        .section-content {
+            background-color: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .section-content ul {
+            list-style: disc;
+            margin-left: 20px;
+        }
+
+        .section-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .section-content th, .section-content td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .section-content th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        /* Teacher Carousel Specific Styles */
+        .carousel-section {
+            margin-top: 40px;
+            padding: 30px 0;
+            background-color: var(--kps-blue);
+            color: var(--bg-light);
+            text-align: center;
+            border-top: 5px solid var(--kps-gold);
+        }
+
+        .carousel-section h2 {
+            color: var(--kps-gold);
+            margin-bottom: 30px;
+            border-bottom: none;
+        }
+
+        .swiper-container {
+            width: 80%;
+            max-width: 700px;
+            height: 250px; /* Carousel height */
+            margin: 0 auto;
+        }
+
+        .swiper-slide {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .teacher-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--kps-gold);
+            margin-bottom: 10px;
+            box-shadow: 0 0 0 3px rgba(212, 170, 0, 0.4); /* Gold glow */
+        }
+
+        .teacher-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--bg-light);
+            margin-bottom: 5px;
+        }
+
+        .teacher-desig {
+            font-size: 0.9em;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="about.html" class="back-btn">← Back to About</a>
+        <h2>CBSE Mandatory Disclosure</h2>
+    </div>
+
+    <div class="container">
+        <h1>Official School Information</h1>
+
+        <h3>1. School Details</h3>
+        <div class="section-content">
+            <p><strong>Name of the School:</strong> Kendriya Public School, Kannauj</p>
+            <p><strong>Affiliation No.:</strong> 213XXX (Example)</p>
+            <p><strong>School Code:</strong> 08XXX (Example)</p>
+            <p><strong>Affiliation Status:</strong> Provisional/Permanent (as applicable)</p>
+            <p><strong>Trust/Society Name:</strong> KPS Education Trust (Regd.)</p>
+            <p><strong>Address:</strong> XYZ Road, Near ABC Market, Kannauj, Uttar Pradesh - 209725</p>
+            <p><strong>Contact No.:</strong> +91 XXXXXXXXXX</p>
+            <p><strong>Email:</strong> info@kpskannauj.org</p>
+        </div>
+
+        <h3>2. Academic Calendar 2024-25</h3>
+        <div class="section-content">
+            <p>View/Download <a href="#" style="color: var(--kps-blue); font-weight: bold;">Academic Calendar PDF</a></p>
+            <ul>
+                <li>Session Begins: 1st April 2024</li>
+                <li>Summer Vacation: 15th May - 30th June 2024</li>
+                <li>Half-Yearly Exams: September 2024</li>
+                <li>Winter Break: 25th Dec - 5th Jan 2025</li>
+                <li>Annual Exams: March 2025</li>
+            </ul>
+        </div>
+
+        <h3>3. Infrastructure</h3>
+        <div class="section-content">
+            <ul>
+                <li>Total Area of School Campus: 2 Acres (Approx)</li>
+                <li>Built-up Area: 10000 Sq. Mtrs</li>
+                <li>No. of Classrooms: 30</li>
+                <li>No. of Labs (Physics, Chemistry, Bio, Computer): 4</li>
+                <li>Library Size: 1500 Sq. Ft. (with 5000+ books)</li>
+                <li>Playground Area: 1.5 Acres</li>
+            </ul>
+            <p>View <a href="#" style="color: var(--kps-blue); font-weight: bold;">Infrastructure Gallery</a></p>
+        </div>
+
+        <h3>4. Fee Structure (2024-25)</h3>
+        <div class="section-content">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Class</th>
+                        <th>Admission Fee</th>
+                        <th>Tuition Fee (Monthly)</th>
+                        <th>Annual Charges</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Nursery - V</td><td>₹5,000</td><td>₹1,500</td><td>₹3,000</td></tr>
+                    <tr><td>VI - VIII</td><td>₹7,000</td><td>₹2,000</td><td>₹4,000</td></tr>
+                    <tr><td>IX - XII</td><td>₹10,000</td><td>₹2,500</td><td>₹5,000</td></tr>
+                </tbody>
+            </table>
+            <p style="margin-top: 15px; font-size: 12px; color: #777;"><i>*Fees are subject to change. Please contact the school office for exact details.</i></p>
+        </div>
+
+        <div class="carousel-section">
+            <h2>Our Dedicated Faculty</h2>
+            <div class="swiper-container">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <img src="https://i.ibb.co/L51954S/teacher1.png" alt="Teacher 1" class="teacher-img">
+                        <span class="teacher-name">Mrs. Anjali Sharma</span>
+                        <span class="teacher-desig">Principal | M.A., B.Ed.</span>
+                    </div>
+                    <div class="swiper-slide">
+                        <img src="https://i.ibb.co/F8W2D8T/teacher2.png" alt="Teacher 2" class="teacher-img">
+                        <span class="teacher-name">Mr. Rajesh Singh</span>
+                        <span class="teacher-desig">Head of Science | M.Sc., B.Ed.</span>
+                    </div>
+                    <div class="swiper-slide">
+                        <img src="https://i.ibb.co/q1z6B5L/teacher3.png" alt="Teacher 3" class="teacher-img">
+                        <span class="teacher-name">Ms. Priya Verma</span>
+                        <span class="teacher-desig">Primary Coordinator | B.A., D.El.Ed.</span>
+                    </div>
+                     <div class="swiper-slide">
+                        <img src="https://i.ibb.co/hK8bQ2w/teacher4.png" alt="Teacher 4" class="teacher-img">
+                        <span class="teacher-name">Dr. Alok Gupta</span>
+                        <span class="teacher-desig">Mathematics Dept. | Ph.D., M.Ed.</span>
+                    </div>
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+
+    </div> <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script>
+        // Swiper Initialization
+        var swiper = new Swiper('.swiper-container', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            autoplay: {
+                delay: 3000, // 3 seconds
+                disableOnInteraction: false,
+            },
+            loop: true,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                },
+                768: {
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                },
+            }
+        });
+    </script>
+</body>
+</html>
