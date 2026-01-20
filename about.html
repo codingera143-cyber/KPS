@@ -53,22 +53,25 @@
 
         .about-content-text { font-size: 1.1rem; color: var(--text-gray); text-align: justify; }
 
-        /* --- PUBLIC DISCLOSURE TABLE --- */
-        .disclosure-box { overflow-x: auto; margin-top: 20px; }
-        .disclosure-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            min-width: 500px;
-        }
-        .disclosure-table th, .disclosure-table td {
-            padding: 15px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        .disclosure-table th { background: var(--primary-blue); color: white; width: 35%; }
-        .disclosure-table tr:hover { background: #f9f9f9; }
+.view-disclosure-btn {
+    display: inline-block;
+    background-color: var(--kps-gold);
+    color: var(--kps-blue);
+    padding: 12px 25px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 51, 102, 0.2);
+}
+
+.view-disclosure-btn:hover {
+    background-color: #e6c200;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 51, 102, 0.3);
+}
 
         /* --- MANAGEMENT GRID --- */
         .mgmt-grid {
@@ -195,21 +198,11 @@
         </div>
     </section>
 
-    <section id="disclosure" style="background-color: var(--light-bg);">
-        <div class="section-title">
-            <h2>Public Disclosure</h2>
-            <div class="title-line"></div>
-        </div>
-        <div class="disclosure-box">
-            <table class="disclosure-table">
-                <tr><th>Affiliation No.</th><td>2132428</td></tr>
-                <tr><th>School Code</th><td>70723</td></tr>
-                <tr><th>School Email ID</th><td>kpskannauj@gmail.com</td></tr>
-                <tr><th>Contact Details</th><td>7054382728</td></tr>
-                <tr><th>NOC Details</th><td><a href="pdf/noc-compressed.pdf" target="_blank" style="color: var(--primary-blue); font-weight:bold;">Download PDF</a></td></tr>
-            </table>
-        </div>
-    </section>
+   <section class="section-disclosure">
+    <h2 class="section-title">CBSE Mandatory Disclosure</h2>
+    <p>As per CBSE guidelines, all essential school information is transparently available.</p>
+    <a href="MandatoryDisclosure.html" class="view-disclosure-btn">View Mandatory Disclosure →</a>
+   </section>
 
     <section id="management">
         <div class="section-title">
