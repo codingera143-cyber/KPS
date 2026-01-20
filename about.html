@@ -53,25 +53,38 @@
 
         .about-content-text { font-size: 1.1rem; color: var(--text-gray); text-align: justify; }
 
-.view-disclosure-btn {
-    display: inline-block;
-    background-color: var(--kps-gold);
-    color: var(--kps-blue);
-    padding: 12px 25px;
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 16px;
-    margin-top: 20px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0, 51, 102, 0.2);
-}
-
-.view-disclosure-btn:hover {
-    background-color: #e6c200;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0, 51, 102, 0.3);
-}
+        .disclosure-container {
+        padding: 40px 20px;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+        text-align: center;
+        margin: 30px auto;
+        max-width: 700px;
+        border: 1px solid #eee;
+    }
+    .disclosure-container h3 {
+        color: #003366;
+        margin-bottom: 15px;
+        font-size: 22px;
+    }
+        .view-disclosure-btn {
+        display: inline-flex;
+        align-items: center;
+        background: #003366;
+        color: #d4aa00;
+        padding: 16px 40px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        border: 2px solid #003366;
+    }
+    .view-disclosure-btn:hover {
+        background: transparent;
+        color: #003366;
+        transform: translateY(-3px);
+    }
 
         /* --- MANAGEMENT GRID --- */
         .mgmt-grid {
@@ -198,11 +211,13 @@
         </div>
     </section>
 
-   <section class="section-disclosure">
-    <h2 class="section-title">CBSE Mandatory Disclosure</h2>
-    <p>As per CBSE guidelines, all essential school information is transparently available.</p>
-    <a href="MandatoryDisclosure.html" class="view-disclosure-btn">View Mandatory Disclosure →</a>
-   </section>
+   <div class="disclosure-container">
+    <h3>Official Mandatory Disclosure</h3>
+    <p style="color: #666; margin-bottom: 25px;">Publicly available information as per CBSE Affiliation Bye-Laws.</p>
+    <a href="/MandatoryDisclosure" class="view-disclosure-btn">
+        ACCESS OFFICIAL DATA &nbsp; ⮕
+    </a>
+   </div>
 
     <section id="management">
         <div class="section-title">
