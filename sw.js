@@ -1,15 +1,15 @@
 // 1. OneSignal - ISKO HUMESHA TOP PAR RAKHEIN (Varna notification nahi chalega)
 importScripts('https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js');
 
-const CACHE_NAME = 'kps-v9'; // Version v9 (taaki fresh changes apply hon)
+const CACHE_NAME = 'kps-v10';
 
 const ASSETS_TO_CACHE = [
   './',
-  './index.html',
+  './index',
   './index.css',
-  './navbar.html',
-  './noticearchive.html',
-  './footer.html',
+  './navbar',
+  './noticearchive',
+  './footer',
   './site.webmanifest',
   './img/android-chrome-192x192.png',
   './img/android-chrome-512x512.png',
