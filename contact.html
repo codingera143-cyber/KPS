@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N3WP9N6DL2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-N3WP9N6DL2');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Contact Us | K.P.S. Kannauj</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        :root {
+            --primary: #003366;   
+            --accent-red: #d32f2f; 
+            --gold: #d4aa00;
+            --bg: #f8f9fa;
+            --white: #ffffff;
+        }
+
+        /* RESET & STABILITY */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        html, body {
+            height: 100%;
+            width: 100%;
+            background-color: var(--primary); 
+            font-family: 'Inter', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        #nav-placeholder { min-height: 70px; background: #fff; }
+
+        main {
+            flex: 1; 
+            background-color: var(--bg);
+            width: 100%;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            background: linear-gradient(45deg, var(--primary) 30%, var(--accent-red) 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+
+        .wrapper {
+            max-width: 1150px;
+            margin: -30px auto 50px;
+            padding: 0 15px;
+            display: grid;
+            grid-template-columns: 1fr; 
+            gap: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .glass-card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-top: 6px solid var(--accent-red);
+        }
+
+        h2 { color: var(--primary); margin-bottom: 25px; font-size: 1.6rem; }
+
+        /* CONTACT ITEMS */
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            text-decoration: none;
+            color: #333;
+            transition: 0.3s;
+        }
+        .contact-item:hover { transform: translateX(5px); }
+
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-red);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
+        }
+        .text-label b { display: block; color: var(--primary); font-size: 0.85rem; text-transform: uppercase; margin-bottom: 2px; }
+
+        .map-frame {
+            width: 100%;
+            height: 220px;
+            border-radius: 12px;
+            margin-top: 25px;
+            border: 2px solid #edf2f7;
+            overflow: hidden;
+        }
+
+        /* FORM STYLING */
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 700; color: #4a5568; font-size: 0.95rem; }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #edf2f7;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #fdfdfd;
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus, textarea:focus { 
+            border-color: var(--accent-red); 
+            outline: none; 
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(211, 47, 47, 0.1); 
+        }
+
+        .submit-btn {
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .submit-btn:hover:not(:disabled) { background: var(--primary); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .submit-btn:disabled { background: #cbd5e0; cursor: not-allowed; }
+
+        /* Success Message */
+        #successMessage {
+            display: none;
+            text-align: center;
+            padding: 50px 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+        .success-icon { font-size: 60px; color: #25d366; margin-bottom: 20px; }
+
+        @media (min-width: 850px) {
+            .wrapper { grid-template-columns: 1fr 1.6fr; margin-top: -50px; }
+            .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+            .span-full { grid-column: span 2; }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 1.8rem; }
+            .wrapper { margin-top: -20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-container">
+        <div id="nav-placeholder"></div>
+
+        <main>
+            <section class="hero">
+                <h1>Contact Us</h1>
+                <p>We are excited to welcome you to the K.P.S. family</p>
+            </section>
+
+            <div class="wrapper">
+                <aside class="glass-card">
+                    <h2>Contact Info</h2>
+                    
+                    <a href="tel:+919451548858" class="contact-item">
+                        <div class="icon-circle">📞</div>
+                        <div class="text-label"><b>Call Us</b>+91 94515 48858</div>
+                    </a>
+
+                    <a href="https://wa.me/8299390677" class="contact-item" target="_blank">
+                        <div class="icon-circle" style="background:#25d366;">WA</div>
+                        <div class="text-label"><b>WhatsApp</b>Admission Cell Chat</div>
+                    </a>
+
+                    <div class="contact-item">
+                        <div class="icon-circle">📍</div>
+                        <div class="text-label"><b>Location</b>Police Line, Kannauj, UP</div>
+                    </div>
+
+                    <a href="mailto:Kannauj@kpssociety.org" class="contact-item">
+                        <div class="icon-circle">✉️</div>
+                        <div class="text-label"><b>Email</b>Kannauj@kpssociety.org</div>
+                    </a>
+
+                    <div class="map-frame">
+                    <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3559.45663737526!2d79.92343707524278!3d27.045989976570624!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x399e6978a0eb7a71%3A0xa6aca8ac7a1ae3f6!2sKanpur%20Public%20School!5e0!3m2!1sen!2sin!4v1704140000000!5m2!1sen!2sin" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
+                    </iframe>
+                    </div>
+                </aside>
+
+                <section class="glass-card">
+                    <div id="form-container">
+                        <h2>Admission Enquiry</h2>
+                        <form id="enquiryForm" action="https://formspree.io/f/mnjnwlrj" method="POST">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Student's Full Name</label>
+                                    <input type="text" name="name" placeholder="Name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Mobile Number</label>
+                                    <input type="tel" name="phone" placeholder="10-digit number" pattern="[0-9]{10}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Parent's Name</label>
+                                    <input type="text" name="parent_name" placeholder="Father/Mother Name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Class for Admission</label>
+                                    <select name="class_admn" required>
+                                        <option value="">Choose Class</option>
+                                        <option>Nursery / P.G.</option>
+                                        <option>L.K.G. / U.K.G.</option>
+                                        <option>Class 1 to 5</option>
+                                        <option>Class 6 to 10</option>
+                                        <option>Class 11 & 12</option>
+                                    </select>
+                                </div>
+                                <div class="form-group span-full">
+                                    <label>Your Message</label>
+                                    <textarea name="message" rows="4" placeholder="How can we help you?"></textarea>
+                                </div>
+                            </div>
+                            <input type="text" name="_gotcha" style="display:none" />
+                            <button type="submit" id="submitBtn" class="submit-btn">Send Enquiry Now</button>
+                        </form>
+                    </div>
+
+                    <div id="successMessage">
+                        <div class="success-icon">✔</div>
+                        <h3>Enquiry Sent!</h3>
+                        <p>Thank you. Our admission team will contact you shortly.</p>
+                        <button onclick="location.reload()" class="btn-pdf" style="margin-top:20px; cursor:pointer; background: #eee; border:none; padding:10px 20px; border-radius:5px;">Send Another</button>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <div id="footer-placeholder"></div>
+    </div>
+    <button id="scrollTopBtn" class="scroll-btn" title="Go to top">↑</button>
+
+    <script src="features.js"></script>
+    <script>
+        async function initPage() {
+            try {
+                // Parallel fetching
+                const [navRes, footRes] = await Promise.all([
+                    fetch('navbar.html'),
+                    fetch('footer.html')
+                ]);
+                document.getElementById('nav-placeholder').innerHTML = await navRes.text();
+                document.getElementById('footer-placeholder').innerHTML = await footRes.text();
+
+                // Nav Logic
+                const toggle = document.querySelector('.menu-toggle');
+                const menu = document.querySelector('.nav-links');
+                if (toggle) {
+                    toggle.onclick = () => {
+                        menu.classList.toggle('active');
+                        const isVis = menu.classList.contains('active');
+                        document.querySelector('.hamburger').style.display = isVis ? 'none' : 'block';
+                        document.querySelector('.close-icon').style.display = isVis ? 'block' : 'none';
+                    };
+                }
+            } catch (err) { console.warn("Layout error"); }
+        }
+
+        // FORM SUBMISSION (AJAX)
+        const form = document.getElementById('enquiryForm');
+        const btn = document.getElementById('submitBtn');
+        const formBox = document.getElementById('form-container');
+        const successMsg = document.getElementById('successMessage');
+
+        if(form) {
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+                btn.disabled = true;
+                btn.innerText = "Sending...";
+
+                const data = new FormData(form);
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: data,
+                        headers: { 'Accept': 'application/json' }
+                    });
+
+                    if (response.ok) {
+                        formBox.style.display = 'none';
+                        successMsg.style.display = 'block';
+                        window.scrollTo({ top: 200, behavior: 'smooth' });
+                    } else {
+                        alert("Oops! Something went wrong. Please try again.");
+                        btn.disabled = false;
+                        btn.innerText = "Send Enquiry Now";
+                    }
+                } catch (err) {
+                    alert("Connection error. Check your internet.");
+                    btn.disabled = false;
+                    btn.innerText = "Send Enquiry Now";
+                }
+            };
+        }
+
+        window.addEventListener('DOMContentLoaded', initPage);
+        // Disable Right-Click
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// Disable Key Shortcuts
+document.onkeydown = function(e) {
+    if (e.keyCode == 123) return false; // F12
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Inspect
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Console
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // View Source
+};
+    </script>
+</body>
+</html>

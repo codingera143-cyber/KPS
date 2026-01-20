@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://kps-teal.vercel.app/sitemap.xml

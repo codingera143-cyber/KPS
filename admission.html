@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N3WP9N6DL2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-N3WP9N6DL2');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admission Procedure | K.P.S. Kannauj</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        :root {
+            --primary: #003366;
+            --accent-green: #2e7d32; 
+            --bg: #f8f9fa;
+        }
+
+        /* 1. RESET & PERFORMANCE FIXES */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        /* Layout shift prevention */
+        #nav-placeholder { min-height: 70px; background: #fff; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: var(--primary); /* Page bottom color */
+            color: #333;
+        }
+
+        main { background: var(--bg); padding-bottom: 60px; min-height: 80vh; }
+
+        /* 2. HEADER - Optimized for speed */
+        .page-header {
+            background: linear-gradient(rgba(0,51,102,0.85), rgba(0,51,102,0.85)), url('campus.jpg') center/cover no-repeat;
+            color: white;
+            padding: 80px 20px 60px;
+            text-align: center;
+            border-bottom: 6px solid var(--accent-green);
+        }
+        .page-header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+
+        /* 3. CONTENT BOX */
+        .content-card {
+            max-width: 900px;
+            margin: -40px auto 0;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        h2 { 
+            color: var(--primary); 
+            margin: 30px 0 15px; 
+            font-size: 1.5rem; 
+            border-left: 5px solid var(--accent-green); 
+            padding-left: 15px; 
+        }
+        
+        .rule-box { 
+            border: 1px solid #edf2f7; 
+            padding: 25px; 
+            border-radius: 10px; 
+            margin-bottom: 25px; 
+            background: #fff;
+        }
+        
+        .bullet-list { list-style: none; margin-top: 15px; }
+        .bullet-list li { 
+            margin-bottom: 12px; 
+            padding-left: 30px; 
+            position: relative; 
+            font-weight: 500; 
+            color: #4a5568; 
+        }
+        .bullet-list li::before { 
+            content: '■'; 
+            position: absolute; 
+            left: 0; 
+            color: var(--accent-green); 
+            font-size: 0.9rem; 
+            top: 2px; 
+        }
+        .download-section {
+    background: var(--accent-green);
+    color: white;
+    padding: 40px;
+    text-align: center;
+    border-radius: 12px;
+    margin-top: 50px;
+    box-shadow: 0 10px 20px rgba(46, 125, 50, 0.2);
+}
+
+/* Container for buttons */
+.btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap; /* Important for mobile */
+    margin-top: 25px;
+}
+
+.btn-pdf {
+    display: inline-flex; /* Changed from inline-block for SVG alignment */
+    align-items: center;
+    gap: 10px; /* Space between SVG and Text */
+    background: white;
+    color: var(--accent-green);
+    padding: 14px 30px;
+    text-decoration: none;
+    font-weight: 800;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.btn-pdf svg {
+    transition: transform 0.3s ease;
+}
+
+.btn-pdf:hover { 
+    background: #f8f9fa; 
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.btn-pdf:hover svg {
+    transform: scale(1.15); /* Makes icon pop on hover */
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+    .btn-group {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .btn-pdf {
+        width: 100%;
+        justify-content: center;
+    }
+}
+        /* Badge Styling */
+.badge-new {
+    background: #ff4757; /* Eye-catching Red */
+    color: white;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: 8px;
+    text-transform: uppercase;
+    font-weight: 900;
+    vertical-align: middle;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+    animation: pulse-red 2s infinite;
+}
+
+/* Pulsing Effect */
+@keyframes pulse-red {
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7);
+    }
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(255, 71, 87, 0);
+    }
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0);
+    }
+}
+        .admission-timer {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px border rgba(255, 255, 255, 0.3);
+    padding: 10px 20px;
+    border-radius: 50px;
+    display: inline-block;
+    margin-bottom: 20px;
+    backdrop-filter: blur(5px);
+}
+
+.timer-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-right: 10px;
+    opacity: 0.9;
+}
+
+#timer-display {
+    display: inline-block;
+    font-family: 'Courier New', Courier, monospace; /* Digital look */
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: #fff;
+}
+
+#timer-display span {
+    color: #ffd700; /* Gold color for the numbers */
+}
+        @media (max-width: 768px) {
+            .page-header h1 { font-size: 1.8rem; }
+            .content-card { margin: -20px 15px 0; padding: 25px; }
+            .rule-box { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="nav-placeholder"></div>
+
+    <main>
+        <header class="page-header">
+            <h1>Admission 2026-27</h1>
+            <p>Registration & Admission Procedure Details</p>
+        </header>
+
+        <div class="content-card">
+            <div class="rule-box">
+                <h2>Registration & Admission Procedure</h2>
+                <p>Registrations for admission start from the <b>Last Week of February</b>. Candidates must appear for a written test. On satisfactory clearance, the child is admitted to the school.</p>
+            </div>
+
+            <h2>Nursery Section</h2>
+            <div class="rule-box">
+                <p>The age limit for admission as of 1st April is:</p>
+                <ul class="bullet-list">
+                    <li><b>L.K.G. :</b> 4 Years & above</li>
+                    <li><b>U.K.G. :</b> 5 Years & above</li>
+                </ul>
+            </div>
+
+            <h2>Junior Section</h2>
+            <div class="rule-box">
+                <p>For <b>Class 1</b>, the age limit is <b>6 Years+</b>. For every class above, a difference of one year is required. Written tests cover:</p>
+                <ul class="bullet-list" style="display: flex; flex-wrap: wrap; gap: 25px;">
+                    <li>English</li>
+                    <li>Mathematics</li>
+                    <li>Hindi</li>
+                </ul>
+            </div>
+            <div class="download-section">
+                <div id="admission-counter" class="admission-timer">
+        <span class="timer-label">Admission Ends In:</span>
+        <div id="timer-display">
+            <span id="days">00</span>d : <span id="hours">00</span>h : <span id="minutes">00</span>m
+        </div>
+    </div>
+    <h3>Admissions & School Info</h3>
+    <p>Download the latest forms and prospectus for the upcoming session.</p>
+    
+    <div class="btn-group">
+        <a href="admission-form.pdf" class="btn-pdf" download>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <polyline points="9 15 12 12 15 15"></polyline>
+            </svg>
+            Admission Form
+        </a>
+
+       <!------- <a href="prospectus.pdf" class="btn-pdf" download>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+            School Prospectus
+            <span class="badge-new">New</span>
+        </a> ------->
+              </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-placeholder"></div>
+    <button id="scrollTopBtn" class="scroll-btn" title="Go to top">↑</button>
+
+    <script src="features.js"></script>
+    <script>
+        async function loadSiteComponents() {
+            try {
+                // Parallel fetching for performance
+                const [navRes, footRes] = await Promise.all([
+                    fetch('navbar.html'),
+                    fetch('footer.html')
+                ]);
+
+                document.getElementById('nav-placeholder').innerHTML = await navRes.text();
+                document.getElementById('footer-placeholder').innerHTML = await footRes.text();
+
+                // Robust Navbar Toggle logic
+                const menuToggle = document.querySelector('.menu-toggle');
+                const navLinks = document.querySelector('.nav-links');
+                
+                if (menuToggle && navLinks) {
+                    menuToggle.onclick = () => {
+                        navLinks.classList.toggle('active');
+                        const isOpened = navLinks.classList.contains('active');
+                        
+                        const ham = menuToggle.querySelector('.hamburger');
+                        const close = menuToggle.querySelector('.close-icon');
+                        
+                        if(ham) ham.style.display = isOpened ? 'none' : 'block';
+                        if(close) close.style.display = isOpened ? 'block' : 'none';
+                    };
+                }
+            } catch (error) {
+                console.error("Layout component error:", error);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadSiteComponents);
+        function updateAdmissionCounter() {
+    // Set the last date here (YYYY, Month Index 0-11, Day)
+    const lastDate = new Date(2026, 2, 31, 23, 59, 59).getTime(); 
+    const now = new Date().getTime();
+    const diff = lastDate - now;
+
+    if (diff <= 0) {
+        document.getElementById('admission-counter').innerHTML = "Admission Phase 1 Closed";
+        return;
+    }
+
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    document.getElementById('days').innerText = d.toString().padStart(2, '0');
+    document.getElementById('hours').innerText = h.toString().padStart(2, '0');
+    document.getElementById('minutes').innerText = m.toString().padStart(2, '0');
+}
+
+// Update every minute
+setInterval(updateAdmissionCounter, 60000);
+updateAdmissionCounter();
+        // Disable Right-Click
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// Disable Key Shortcuts
+document.onkeydown = function(e) {
+    if (e.keyCode == 123) return false; // F12
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Inspect
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Console
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // View Source
+};
+    </script>
+</body>
+</html>

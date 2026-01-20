@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Examination Portal | K.P.S. Kannauj</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+
+    <style>
+        :root {
+            --primary-blue: #003366;
+            --accent-gold: #ffd700;
+            --bg-light: #f4f7f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .datesheet-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .title-section h1 {
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Group Navigation (PG, 1-8, 9-12) */
+        .group-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .grp-btn {
+            flex: 1;
+            padding: 12px 5px;
+            border: 2px solid var(--primary-blue);
+            background: white;
+            color: var(--primary-blue);
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+
+        .grp-btn.active {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        /* Exam Type Buttons (2 columns on mobile) */
+        .exam-nav {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .exam-type-btn {
+            padding: 15px 10px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: 0.2s;
+        }
+
+        .exam-type-btn:active {
+            transform: scale(0.95);
+            background: #eef2f7;
+        }
+
+        /* Image Display */
+        .image-viewer {
+            background: white;
+            padding: 10px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #datesheet-main-img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            display: none; /* Hidden until loaded */
+        }
+
+        .placeholder-text {
+            color: #888;
+            font-style: italic;
+        }
+
+        .download-btn {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Desktop View Adjustments */
+        @media (min-width: 768px) {
+            .title-section h1 { font-size: 2.2rem; }
+            .exam-nav { grid-template-columns: repeat(4, 1fr); }
+            .grp-btn { flex: 0 1 150px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="datesheet-container">
+        <div class="title-section">
+            <h1>Exam Datesheet Portal</h1>
+        </div>
+
+        <div class="group-nav">
+            <button class="grp-btn active" onclick="changeGroup('PG-UKG', event)">PG - UKG</button>
+            <button class="grp-btn" onclick="changeGroup('1-8', event)">Class 1 - 8</button>
+            <button class="grp-btn" onclick="changeGroup('9-12', event)">Class 9 - 12</button>
+        </div>
+
+        <div id="exam-buttons-container" class="exam-nav">
+            </div>
+
+        <div class="image-viewer">
+            <p id="placeholder" class="placeholder-text">Please select an exam to view datesheet</p>
+            <img id="datesheet-main-img" src="" alt="Datesheet View">
+            <a id="download-link" href="#" target="_blank" class="download-btn">📥 Download Datesheet</a>
+        </div>
+    </div>
+
+    <script>
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/1IM7MoaIBLlwSANkl298-z9dhaktRij_p5eLykelAF1M/export?format=csv';
+        let sheetData = [];
+
+        const groupConfig = {
+            "PG-UKG": ["Periodic_Test_1", "Half_Yearly", "Periodic_Test_2", "Annual_Exam"],
+            "1-8": ["Periodic_Test_1", "Half_Yearly", "Periodic_Test_2", "Annual_Exam"],
+            "9-12": ["Pre_Mid", "Mid_Term", "Post_Mid", "Annual_Exam", "Pre_Boards_1", "Pre_Boards_2"]
+        };
+
+        function loadCSVData() {
+            Papa.parse(csvUrl, {
+                download: true,
+                header: true,
+                complete: function(results) {
+                    sheetData = results.data;
+                    // Initial load for PG-UKG without needing an event object
+                    changeGroup('PG-UKG');
+                }
+            });
+        }
+
+        function changeGroup(groupName, event) {
+            // Update Active Button UI
+            if(event) {
+                document.querySelectorAll('.grp-btn').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+            }
+
+            const container = document.getElementById('exam-buttons-container');
+            container.innerHTML = "";
+            
+            groupConfig[groupName].forEach(col => {
+                const btn = document.createElement('button');
+                btn.className = 'exam-type-btn';
+                btn.innerText = col.replace(/_/g, ' '); 
+                btn.onclick = () => displayImage(groupName, col);
+                container.appendChild(btn);
+            });
+        }
+
+        function displayImage(groupName, columnName) {
+            const row = sheetData.find(r => r.Class_Group && r.Class_Group.trim() === groupName);
+            
+            if (row && row[columnName]) {
+                const imageUrl = row[columnName].trim();
+                const imgTag = document.getElementById('datesheet-main-img');
+                const dwnBtn = document.getElementById('download-link');
+                const placeholder = document.getElementById('placeholder');
+
+                if(imageUrl && imageUrl !== "" && imageUrl !== "-") {
+                    imgTag.src = imageUrl;
+                    imgTag.style.display = "block";
+                    dwnBtn.href = imageUrl;
+                    dwnBtn.style.display = "block";
+                    placeholder.style.display = "none";
+                } else {
+                    alert("Datesheet not available for this exam yet.");
+                }
+            }
+        }
+
+        window.onload = loadCSVData;
+        // Disable Right-Click
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// Disable Key Shortcuts
+document.onkeydown = function(e) {
+    if (e.keyCode == 123) return false; // F12
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Inspect
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Console
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // View Source
+};
+    </script>
+</body>
+</html>

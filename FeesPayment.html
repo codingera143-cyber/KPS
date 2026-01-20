@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XYZ SCHOOL | Advanced Fees Portal</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        :root { --primary: #1a237e; --secondary: #ffd600; --success: #4caf50; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
+        .container { max-width: 550px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); }
+        h2 { color: var(--primary); text-align: center; margin-bottom: 25px; border-bottom: 3px solid var(--secondary); display: inline-block; width: 100%; padding-bottom: 10px; }
+        .input-group { margin-bottom: 18px; }
+        label { font-weight: 600; color: #444; display: block; margin-bottom: 8px; }
+        input, select { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; transition: 0.3s; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; }
+        
+        .stream-box { display: none; background: #e8eaf6; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
+        
+        .inst-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
+        .inst-btn { padding: 15px; border: 2px solid var(--primary); background: #fff; color: var(--primary); border-radius: 12px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .inst-btn:hover { background: var(--primary); color: #fff; }
+        .inst-btn.paid { background: #dcdcdc; border-color: #bbb; color: #888; cursor: not-allowed; }
+
+        #payment-summary { display: none; border-top: 2px solid #eee; padding-top: 20px; animation: fadeIn 0.5s; }
+        .pay-btn { width: 100%; background: var(--success); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>XYZ SCHOOL'S Fees Gateway 2026</h2>
+    
+    <div class="input-group">
+        <label>Student Full Name</label>
+        <input type="text" id="studentName" placeholder="Enter Name">
+    </div>
+    <div class="input-group">
+    <label>Student Serial No.</label>
+    <input type="number" id="serialNoInput" placeholder="Enter Serial No." onchange="calculateFees()">
+    </div>
+
+    <div class="input-group">
+        <label>Class</label>
+        <select id="classSelect" onchange="checkStreamNeeded()">
+            <option value="">-- Select Class --</option>
+            <option value="PG">Play Group (PG)</option>
+            <option value="LKG">LKG</option>
+            <option value="UKG">UKG</option>
+            <option value="1">Class 1</option>
+            <option value="2">Class 2</option>
+            <option value="3">Class 3</option>
+            <option value="4">Class 4</option>
+            <option value="5">Class 5</option>
+            <option value="6">Class 6</option>
+            <option value="7">Class 7</option>
+            <option value="8">Class 8</option>
+            <option value="9">Class 9</option>
+            <option value="10">Class 10</option>
+            <option value="11">Class 11</option>
+            <option value="12">Class 12</option>
+        </select>
+    </div>
+
+    <div id="streamSection" class="stream-box">
+        <label>Select Stream</label>
+        <select id="streamSelect" onchange="calculateFees()">
+            <option value="">-- Select Subject --</option>
+            <option value="PCM">Science (PCM)</option>
+            <option value="PCB">Biology (PCB)</option>
+            <option value="Comm">Commerce</option>
+        </select>
+    </div>
+
+    <label>Select Installment</label>
+    <div class="inst-grid">
+        <button class="inst-btn" id="btn1" onclick="initiatePayment(1)">Installment I</button>
+        <button class="inst-btn" id="btn2" onclick="initiatePayment(2)">Installment II</button>
+        <button class="inst-btn" id="btn3" onclick="initiatePayment(3)">Installment III</button>
+        <button class="inst-btn" id="btn4" onclick="initiatePayment(4)">Installment IV</button>
+    </div>
+
+    <div id="payment-summary">
+        <h4 id="displayInstallment" style="margin:0; color:var(--primary)">Payment for Installment I</h4>
+        <div class="input-group" style="margin-top:10px;">
+            <label>Fees Amount (Auto-filled)</label>
+            <input type="text" id="finalAmount" readonly style="background:#f9f9f9; font-weight:bold; color:#d32f2f;">
+        </div>
+        <div class="input-group">
+            <label>Payment Method</label>
+            <select id="method">
+                <option value="upi">UPI / GPay / PhonePe</option>
+                <option value="card">Debit / Credit Card</option>
+                <option value="nb">Net Banking</option>
+            </select>
+        </div>
+        <button class="pay-btn" onclick="finalPay()">Confirm Payment</button>
+    </div>
+</div>
+    <script>
+        // 1. Fees Database
+const feesTable = {
+    "PG": 3500, "LKG": 4000, "UKG": 4000,
+    "1": 4500, "2": 4500, "3": 4500, "4": 4800, "5": 4800,
+    "6": 5200, "7": 5200, "8": 5500, "9": 6000, "10": 6500,
+    "11-PCM": 8500, "11-PCB": 8700, "11-Comm": 7500,
+    "12-PCM": 9000, "12-PCB": 9200, "12-Comm": 8000
+};
+
+let activeInstallment = 0;
+let finalAmountValue = 0;
+
+// 2. Check Memory on Load
+window.onload = function() {
+    checkPaymentStatus();
+}
+
+function checkPaymentStatus() {
+    for(let i=1; i<=4; i++) {
+        if(localStorage.getItem('kps_paid_' + i)) {
+            let btn = document.getElementById('btn' + i);
+            btn.classList.add('paid');
+            btn.innerText = "Paid ✔";
+            btn.disabled = true;
+        }
+    }
+}
+
+// 3. Logic to show/hide Stream
+function checkStreamNeeded() {
+    const cls = document.getElementById('classSelect').value;
+    const streamDiv = document.getElementById('streamSection');
+    if(cls === "11" || cls === "12") {
+        streamDiv.style.display = "block";
+    } else {
+        streamDiv.style.display = "none";
+        calculateFees();
+    }
+}
+
+// 4. Calculate Fees
+function calculateFees() {
+    const cls = document.getElementById('classSelect').value;
+    const stream = document.getElementById('streamSelect').value;
+    let amount = 0;
+
+    if((cls === "11" || cls === "12") && stream) {
+        amount = feesTable[cls + "-" + stream];
+    } else {
+        amount = feesTable[cls];
+    }
+    
+    finalAmountValue = amount;
+    document.getElementById('finalAmount').value = amount ? "₹" + amount : "";
+}
+
+// 5. Open Payment Section
+function initiatePayment(n) {
+    const name = document.getElementById('studentName').value;
+    const cls = document.getElementById('classSelect').value;
+    const serial = document.getElementById('serialNoInput').value;
+
+    if(!name || !cls || !serial) {
+        alert("Fill Student Name, Serial No. and Class First !");
+        return;
+    }
+    
+    activeInstallment = n;
+    document.getElementById('displayInstallment').innerText = "Paying for: Installment " + n;
+    document.getElementById('payment-summary').style.display = "block";
+    calculateFees();
+    window.scrollTo(0, document.body.scrollHeight);
+}
+
+// 6. REAL RAZORPAY PAYMENT LOGIC
+function finalPay() {
+    const studentName = document.getElementById('studentName').value;
+    const serialNo = document.getElementById('serialNoInput').value; // Ab ye Dynamic hai!
+
+    if(!finalAmountValue) {
+        alert("Amount missing!");
+        return;
+    }
+
+    var options = {
+        "key": "rzp_test_YOUR_KEY_HERE", 
+        "amount": finalAmountValue * 100, 
+        "currency": "INR",
+        "name": "KPS Kannauj",
+        "description": "Fees Payment - Inst " + activeInstallment,
+        "handler": function (response){
+            alert("Payment Success! ID: " + response.razorpay_payment_id);
+            // Dynamic Serial No yahan pass ho raha hai
+            updateGoogleSheet(serialNo, activeInstallment);
+        },
+        "prefill": { "name": studentName },
+        "theme": { "color": "#1a237e" }
+    };
+
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+}
+
+// 7. SHEETDB AUTOMATION (Dynamic Update)
+function updateGoogleSheet(serial, instNum) {
+    let colName = "";
+    if(instNum == 1) colName = "Ist installment";
+    if(instNum == 2) colName = "IInd installment";
+    if(instNum == 3) colName = "IIIrd installment";
+    if(instNum == 4) colName = "IVth installment";
+
+    // SheetDB API call with DYNAMIC Serial_No
+    fetch("https://sheetdb.io/api/v1/4o9ppr0b9xf2y/Serial_No/" + serial, {
+        method: 'PATCH',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            data: {
+                [colName]: "Paid"
+            }
+        })
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        console.log("Sheet Updated for Serial:", serial, data);
+        localStorage.setItem('kps_paid_' + instNum, 'true'); 
+        alert("Fee record updated for Serial No: " + serial);
+        location.reload(); 
+    })
+    .catch(err => {
+        alert("Sheet update failed!");
+        console.error(err);
+    });
+        }
+    </script>
+</body>
+  </html>
