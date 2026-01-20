@@ -1,0 +1,26 @@
+{
+  "name": "Kanpur Public School",
+  "short_name": "KPS",
+  "description": "Official App for Kanpur Public School - Stay Updated with Notices and Vacancies.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#1e293b",
+  "icons": [
+    {
+      "src": "img/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "img/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "id": "/index.html",
+  "scope": "/"
+}
