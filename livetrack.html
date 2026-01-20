@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPS | Live Bus Tracking</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        :root {
+            --primary-blue: #1a237e; /* Deep Blue */
+            --accent-gold: #ffd600;  /* Bright Gold */
+            --white: #ffffff;
+            --gray: #f4f4f4;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--gray);
+        }
+
+        /* Header & Navigation */
+        .header {
+            background-color: var(--primary-blue);
+            color: var(--white);
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .back-btn {
+            background-color: var(--accent-gold);
+            color: var(--primary-blue);
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: #e6c200;
+            transform: scale(1.05);
+        }
+
+        /* Map Container */
+        #map {
+            height: 60vh;
+            width: 100%;
+            border-bottom: 4px solid var(--accent-gold);
+        }
+
+        /* Info Card */
+        .info-section {
+            padding: 20px;
+            max-width: 600px;
+            margin: -30px auto 20px;
+            background: var(--white);
+            border-radius: 15px;
+            position: relative;
+            z-index: 999;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-top: 5px solid var(--accent-gold);
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .bus-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bus-id {
+            color: var(--primary-blue);
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .refresh-text {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Floating Tracking Pulse */
+        .pulse {
+            width: 12px;
+            height: 12px;
+            background: #2196f3;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            box-shadow: 0 0 0 rgba(33, 150, 243, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(33, 150, 243, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(33, 150, 243, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html" class="back-btn">← Back to Home</a>
+        <div style="text-align: right;">
+            <span style="font-size: 18px; font-weight: bold; color: var(--accent-gold);">KPS LIVE TRACK</span>
+        </div>
+    </div>
+
+    <div id="map"></div>
+
+    <div class="info-section">
+        <div class="status-badge"><span class="pulse"></span> Live Syncing with Cloud</div>
+        <div class="bus-details">
+            <div>
+                <h2 class="bus-id">School Bus - Route 04</h2>
+                <p style="margin: 5px 0; color: #555;">Current Location: Near Kannauj Chauraha</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="margin:0; font-weight:bold; color: var(--primary-blue);">Est. Arrival</p>
+                <p style="margin:0; font-size: 20px; color: var(--accent-gold); font-weight: bold;">12 Mins</p>
+            </div>
+        </div>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
+        <p class="refresh-text">Data is being fetched from School GPS Gateway via API...</p>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // 1. Initialize Map
+        // [27.05, 79.91] is approx coordinates for Kannauj
+        var map = L.map('map').setView([27.0556, 79.9135], 15);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© KPS Kannauj Digital'
+        }).addTo(map);
+
+        // 2. Custom Bus Icon (Gold/Blue Theme)
+        var busIcon = L.icon({
+            iconUrl: 'https://cdn-icons-png.flaticon.com/512/3448/3448339.png', // Bus icon
+            iconSize: [40, 40],
+            iconAnchor: [20, 40],
+            popupAnchor: [0, -40]
+        });
+
+        // 3. Marker for Bus
+        var busMarker = L.marker([27.0556, 79.9135], {icon: busIcon}).addTo(map)
+            .bindPopup('<b>KPS Bus Route 04</b><br>Speed: 35 km/h').openPopup();
+
+        // 4. API Simulation (Manager Sir ko demo dene ke liye)
+        function updateBusLocation() {
+            // Asli API hoti toh yahan fetch() lagta
+            // Filhal demo ke liye marker thoda move karega
+            let newLat = busMarker.getLatLng().lat + 0.0002;
+            let newLng = busMarker.getLatLng().lng + 0.0002;
+            
+            busMarker.setLatLng([newLat, newLng]);
+            map.panTo([newLat, newLng]);
+            
+            console.log("Bus coordinates updated from Cloud...");
+        }
+
+        // Har 5 second mein simulate karo
+        setInterval(updateBusLocation, 5000);
+
+    </script>
+</body>
+  </html>
