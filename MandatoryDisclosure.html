@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KPS | Official Mandatory Disclosure</title>
+    <title>KPS | Mandatory Public Disclosure</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
     <style>
-        :root { --blue: #003366; --gold: #d4aa00; --bg: #f8f9fc; --white: #ffffff; }
+        :root { --blue: #003366; --gold: #d4aa00; --white: #ffffff; --bg: #f4f7fa; }
         * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         body { margin: 0; background: var(--bg); color: #333; line-height: 1.6; }
 
@@ -19,136 +21,139 @@
         .section-card { background: var(--white); border-radius: 15px; padding: 25px; margin-bottom: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); border-top: 5px solid var(--blue); }
         .section-card h3 { color: var(--blue); margin-top: 0; font-size: 19px; border-bottom: 2px solid #f1f1f1; padding-bottom: 10px; margin-bottom: 20px; }
 
-        /* General Info Table */
+        /* General Info */
         .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 14px; flex-wrap: wrap; }
-        .info-row b { color: var(--blue); flex: 1; min-width: 250px; }
-        .info-row span { flex: 1; text-align: right; min-width: 250px; }
+        .info-row b { color: var(--blue); flex: 1; min-width: 200px; }
+        .info-row span { flex: 1.5; text-align: right; min-width: 250px; }
 
-        /* Document List */
-        .doc-list { list-style: none; padding: 0; }
+        /* Docs */
         .doc-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f1f1; }
         .btn-pdf { background: var(--blue); color: var(--gold); text-decoration: none; padding: 6px 15px; border-radius: 5px; font-size: 12px; font-weight: 700; transition: 0.3s; }
-        .btn-pdf:hover { background: #002244; transform: scale(1.05); }
 
-        /* Result Tabs & 4-Image Grid */
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+        /* Result Tabs */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; }
         .tab-btn { padding: 10px 20px; border: none; background: #e0e0e0; border-radius: 8px; cursor: pointer; font-weight: 600; white-space: nowrap; }
         .tab-btn.active { background: var(--blue); color: var(--gold); }
         
         .result-content { display: none; }
-        .result-content.active { display: block; animation: fadeIn 0.5s; }
+        .result-content.active { display: block; animation: fadeIn 0.4s; }
         
         .class-title { background: #f1f1f1; padding: 8px 15px; border-left: 4px solid var(--gold); font-weight: 700; margin: 20px 0 10px; font-size: 15px; color: var(--blue); }
         .image-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .image-grid img { width: 100%; border-radius: 10px; border: 2px solid #ddd; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .image-grid img { width: 100%; border-radius: 10px; border: 1px solid #ddd; }
 
-        /* Infrastructure Grid */
-        .infra-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .infra-card { background: #f9f9f9; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #eee; }
-        .infra-card b { display: block; font-size: 20px; color: var(--blue); }
+        /* Carousel */
+        .staff-section { background: var(--blue); padding: 40px 20px; border-radius: 20px; text-align: center; color: white; margin-top: 40px; }
+        .teacher-card { background: rgba(255,255,255,0.05); padding: 25px; border-radius: 15px; border: 1px solid rgba(212,170,0,0.2); }
+        .t-img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--gold); margin-bottom: 10px; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        @media (max-width: 768px) {
-            .image-grid { grid-template-columns: 1fr; }
-            .info-row span { text-align: left; margin-top: 5px; }
-            .doc-item { flex-direction: column; align-items: flex-start; gap: 10px; }
-        }
+        @media (max-width: 768px) { .image-grid { grid-template-columns: 1fr; } .info-row span { text-align: left; } }
     </style>
 </head>
 <body>
 
 <nav>
-    <a href="about.html" class="back-link">← BACK TO ABOUT</a>
-    <span style="color: white; font-weight: bold;">KPS KANNAUJ</span>
+    <a href="about.html" class="back-link">⬅ BACK</a>
+    <span style="color: white; font-weight: 700;">KANPUR PUBLIC SCHOOL</span>
 </nav>
 
 <div class="container">
 
     <div class="section-card">
         <h3>A : GENERAL INFORMATION</h3>
-        <div class="info-row"><b>SCHOOL NAME</b> <span>KENDRIYA PUBLIC SCHOOL</span></div>
+        <div class="info-row"><b>SCHOOL NAME</b> <span>KANPUR PUBLIC SCHOOL</span></div>
         <div class="info-row"><b>AFFILIATION NO.</b> <span>213XXXX</span></div>
         <div class="info-row"><b>SCHOOL CODE</b> <span>08XXX</span></div>
-        <div class="info-row"><b>ADDRESS</b> <span>MAKRAND NAGAR, KANNAUJ, U.P. 209726</span></div>
-        <div class="info-row"><b>PRINCIPAL NAME & QUAL.</b> <span>MRS. ANJALI SHARMA (M.A., B.Ed.)</span></div>
-        <div class="info-row"><b>EMAIL / CONTACT</b> <span>kps@gmail.com / 98XXXXXXXX</span></div>
+        <div class="info-row"><b>ADDRESS</b> <span>POLICE LINE ROAD, KANNAUJ, U.P. 209725</span></div>
+        <div class="info-row"><b>PRINCIPAL</b> <span>MRS. MOBINA KAMRAN</span></div>
+        <div class="info-row"><b>CONTACT</b> <span>+91 98XXXXXXXX / 05694-2XXXX</span></div>
     </div>
 
     <div class="section-card">
         <h3>B : DOCUMENTS AND INFORMATION</h3>
-        <ul class="doc-list">
-            <li class="doc-item"><span>1. Affiliation / Upgradation Letter</span> <a href="docs/aff.pdf" class="btn-pdf">VIEW PDF</a></li>
-            <li class="doc-item"><span>2. Trust / Society Registration</span> <a href="docs/trust.pdf" class="btn-pdf">VIEW PDF</a></li>
-            <li class="doc-item"><span>3. No Objection Certificate (NOC)</span> <a href="docs/noc.pdf" class="btn-pdf">VIEW PDF</a></li>
-            <li class="doc-item"><span>4. Recognition Certificate (RTE Act)</span> <a href="docs/recognition.pdf" class="btn-pdf">VIEW PDF</a></li>
-            <li class="doc-item"><span>5. Building Safety Certificate (NBC)</span> <a href="docs/building.pdf" class="btn-pdf">VIEW PDF</a></li>
-            <li class="doc-item"><span>6. Fire Safety Certificate</span> <a href="docs/fire.pdf" class="btn-pdf">VIEW PDF</a></li>
-            <li class="doc-item"><span>7. DEO Self-Certification for Affiliation</span> <a href="docs/self.pdf" class="btn-pdf">VIEW PDF</a></li>
-            <li class="doc-item"><span>8. Water, Health & Sanitation Certificate</span> <a href="docs/health.pdf" class="btn-pdf">VIEW PDF</a></li>
-            <li class="doc-item"><span>9. School Fee Structure</span> <a href="fees.html" class="btn-pdf" style="background:var(--gold); color:var(--blue);">VIEW FEES.HTML</a></li>
-        </ul>
+        <div class="doc-item"><span>1. Affiliation Letter</span> <a href="docs/aff.pdf" class="btn-pdf">VIEW PDF</a></div>
+        <div class="doc-item"><span>2. NOC from State Govt.</span> <a href="docs/noc.pdf" class="btn-pdf">VIEW PDF</a></div>
+        <div class="doc-item"><span>3. Fire Safety Certificate</span> <a href="docs/fire.pdf" class="btn-pdf">VIEW PDF</a></div>
+        <div class="doc-item"><span>4. Building Safety (NBC)</span> <a href="docs/build.pdf" class="btn-pdf">VIEW PDF</a></div>
+        <div class="doc-item"><span>5. Health & Sanitation</span> <a href="docs/health.pdf" class="btn-pdf">VIEW PDF</a></div>
+        <div class="doc-item"><span>6. Trust/Society Registration</span> <a href="docs/trust.pdf" class="btn-pdf">VIEW PDF</a></div>
+        <div class="doc-item"><span>7. School Fee Structure</span> <a href="fees.html" class="btn-pdf" style="background:var(--gold); color:var(--blue);">VIEW FEES.HTML</a></div>
     </div>
 
     <div class="section-card">
-        <h3>C : RESULT ANALYSIS (LAST 3 SESSIONS)</h3>
+        <h3>C : RESULT ANALYSIS</h3>
         <div class="tabs">
-            <button class="tab-btn active" onclick="openTab(event, 's24')">Session 2024-25</button>
-            <button class="tab-btn" onclick="openTab(event, 's23')">Session 2023-24</button>
-            <button class="tab-btn" onclick="openTab(event, 's22')">Session 2022-23</button>
+            <button class="tab-btn active" onclick="openTab(event, 's24')">2024-25</button>
+            <button class="tab-btn" onclick="openTab(event, 's23')">2023-24</button>
+            <button class="tab-btn" onclick="openTab(event, 's22')">2022-23</button>
         </div>
 
         <div id="s24" class="result-content active">
-            <div class="class-title">CLASS X (TOPPERS & MARKING SHEET)</div>
-            <div class="image-grid">
-                <img src="img/res/10_24_a.jpg" alt="10th Result 1">
-                <img src="img/res/10_24_b.jpg" alt="10th Result 2">
-            </div>
-            <div class="class-title">CLASS XII (TOPPERS & MARKING SHEET)</div>
-            <div class="image-grid">
-                <img src="img/res/12_24_a.jpg" alt="12th Result 1">
-                <img src="img/res/12_24_b.jpg" alt="12th Result 2">
-            </div>
+            <div class="class-title">CLASS X (TOPPERS & MARK SHEET)</div>
+            <div class="image-grid"><img src="img/10_24_1.jpg"><img src="img/10_24_2.jpg"></div>
+            <div class="class-title">CLASS XII (TOPPERS & MARK SHEET)</div>
+            <div class="image-grid"><img src="img/12_24_1.jpg"><img src="img/12_24_2.jpg"></div>
         </div>
 
         <div id="s23" class="result-content">
             <div class="class-title">CLASS X (TOPPERS)</div>
-            <div class="image-grid">
-                <img src="img/res/10_23_a.jpg" alt="10th Result 1">
-                <img src="img/res/10_23_b.jpg" alt="10th Result 2">
-            </div>
+            <div class="image-grid"><img src="img/10_23_1.jpg"><img src="img/10_23_2.jpg"></div>
             <div class="class-title">CLASS XII (TOPPERS)</div>
-            <div class="image-grid">
-                <img src="img/res/12_23_a.jpg" alt="12th Result 1">
-                <img src="img/res/12_23_b.jpg" alt="12th Result 2">
-            </div>
-        </div>
-        
+            <div class="image-grid"><img src="img/12_23_1.jpg"><img src="img/12_23_2.jpg"></div>
         </div>
 
-    <div class="section-card">
-        <h3>D : STAFF & INFRASTRUCTURE</h3>
-        <div class="infra-grid">
-            <div class="infra-card"><b>8200</b><span>CAMPUS AREA (SQ M)</span></div>
-            <div class="infra-card"><b>32</b><span>TOTAL CLASSROOMS</span></div>
-            <div class="infra-card"><b>40</b><span>TOTAL TEACHERS</span></div>
-            <div class="infra-card"><b>12 / 10</b><span>BOYS / GIRLS TOILETS</span></div>
+        <div id="s22" class="result-content">
+            <div class="class-title">CLASS X (TOPPERS)</div>
+            <div class="image-grid"><img src="img/10_22_1.jpg"><img src="img/10_22_2.jpg"></div>
+            <div class="class-title">CLASS XII (TOPPERS)</div>
+            <div class="image-grid"><img src="img/12_22_1.jpg"><img src="img/12_22_2.jpg"></div>
         </div>
-        <p style="margin-top:15px; font-size:13px; color:#666;">View Staff List PDF: <a href="docs/staff.pdf" class="btn-pdf">VIEW LIST</a></p>
+    </div>
+
+    <div class="staff-section">
+        <h3 style="color:var(--gold); margin-bottom: 25px;">OUR ACADEMIC STAFF</h3>
+        <div class="swiper staffSwiper">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="teacher-card">
+                        <img src="https://avatar.iran.liara.run/public/65" class="t-img">
+                        <b style="display:block; color:var(--gold);">Mrs. Mobina Kamran</b>
+                        <small>Principal | M.A, B.Ed</small>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="teacher-card">
+                        <img src="https://avatar.iran.liara.run/public/88" class="t-img">
+                        <b style="display:block; color:var(--gold);">Staff Member 1</b>
+                        <small>PGT Mathematics</small>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
     </div>
 
 </div>
 
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
 <script>
     function openTab(evt, tabName) {
         var i, content, buttons;
         content = document.getElementsByClassName("result-content");
-        for (i = 0; i < content.length; i++) { content[i].style.display = "none"; }
+        for (i = 0; i < content.length; i++) { content[i].style.display = "none"; content[i].classList.remove("active"); }
         buttons = document.getElementsByClassName("tab-btn");
         for (i = 0; i < buttons.length; i++) { buttons[i].className = buttons[i].className.replace(" active", ""); }
         document.getElementById(tabName).style.display = "block";
+        document.getElementById(tabName).classList.add("active");
         evt.currentTarget.className += " active";
     }
+
+    var swiper = new Swiper(".staffSwiper", {
+        loop: true, autoplay: { delay: 3000 },
+        pagination: { el: ".swiper-pagination", clickable: true },
+        breakpoints: { 320: { slidesPerView: 1 }, 768: { slidesPerView: 2, spaceBetween: 20 } }
+    });
 </script>
 </body>
 </html>
