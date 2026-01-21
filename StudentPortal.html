@@ -3,268 +3,271 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title id="site-title">STUDENT PORTAL | XYZ SCHOOL</title>
+    <title>STUDENT PORTAL | KPS SCHOOL</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <style>
         :root { 
-            --p: #003366; --accent: #d4aa00; --bg: #f1f5f9; --card: #ffffff; 
+            --p: #003366; --accent: #d4aa00; --bg: #f8faff; --card: #ffffff; 
             --t: #0f172a; --s: #64748b; --success: #10b981; --danger: #ef4444;
         }
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
-        body { background: var(--bg); color: var(--t); margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh; }
-        .ticker-wrap { background: var(--p); color: var(--accent); padding: 10px 0; font-size: 11px; font-weight: 800; position: sticky; top: 0; z-index: 100; text-align: center; border-bottom: 2px solid var(--accent); }
-        .container { width: 95%; max-width: 500px; margin: 0 auto; padding: 15px; flex: 1; }
+        body { background: var(--bg); color: var(--t); margin: 0; padding: 0; }
+
+        /* Premium Header */
+        .ticker-wrap { background: var(--p); color: var(--accent); padding: 12px 0; font-size: 11px; font-weight: 800; position: sticky; top: 0; z-index: 100; text-align: center; border-bottom: 2px solid var(--accent); letter-spacing: 1px; }
         
-        /* Auth Card & Buttons */
-        .auth-card { background: var(--card); padding: 30px; border-radius: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid rgba(212, 170, 0, 0.1); }
+        .container { width: 95%; max-width: 500px; margin: 0 auto; padding: 15px; }
+
+        /* Login Upgrade */
+        .auth-card { background: var(--card); padding: 40px 30px; border-radius: 30px; box-shadow: 0 25px 50px rgba(0,51,102,0.1); border: 1px solid rgba(212, 170, 0, 0.1); }
         .input-group { position: relative; margin-top: 15px; }
-        input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #e2e8f0; outline: none; font-size: 16px; }
-        input:focus { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212, 170, 0, 0.1); }
+        input { width: 100%; padding: 18px; border-radius: 15px; border: 2px solid #e2e8f0; outline: none; font-size: 16px; background: #fcfdfe; }
+        input:focus { border-color: var(--p); box-shadow: 0 0 0 4px rgba(0,51,102,0.05); }
         
         .btn { width: 100%; padding: 18px; border-radius: 18px; border: none; font-weight: 800; cursor: pointer; margin-top: 15px; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-p { background: var(--accent); color: var(--p); box-shadow: 0 10px 20px rgba(212, 170, 0, 0.2); text-transform: uppercase; }
-        .btn-outline { background: transparent; border: 2px solid var(--p); color: var(--p); margin-top: 10px; }
-        .btn-outline:hover { background: var(--p); color: white; }
+        .btn-p { background: var(--p); color: var(--accent); box-shadow: 0 10px 20px rgba(0,51,102,0.2); text-transform: uppercase; }
         
-        #dashboard { display: none; }
-        .report-paper { background: white !important; color: #000 !important; padding: 25px; border-radius: 24px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.08); }
-        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-35deg); font-size: 60px; opacity: 0.04; font-weight: 900; pointer-events: none; z-index: 0; color: var(--p); }
-        .status-badge { position: absolute; top: 18px; right: -40px; transform: rotate(45deg); padding: 6px 45px; font-size: 10px; font-weight: 900; z-index: 10; text-align: center; }
+        /* Dashboard Styling */
+        #dashboard { display: none; animation: slideUp 0.5s ease; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .report-paper { background: white; padding: 30px; border-radius: 30px; position: relative; overflow: hidden; box-shadow: 0 15px 45px rgba(0,0,0,0.05); border: 1px solid #eee; }
         
-        .stu-img-container { width: 80px; height: 80px; border-radius: 20px; background: var(--p); display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 32px; font-weight: 800; border: 3px solid var(--accent); overflow: hidden; }
+        .status-badge { position: absolute; top: 25px; right: -45px; transform: rotate(45deg); padding: 8px 50px; font-size: 12px; font-weight: 900; z-index: 10; letter-spacing: 1px; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
+        
+        .stu-img-container { width: 90px; height: 90px; border-radius: 25px; background: #f0f4f8; border: 3px solid var(--accent); overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 35px; color: var(--p); font-weight: 800; }
         .stu-img-container img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
-        .stat-item { background: #f8fafc; padding: 12px 5px; border-radius: 15px; text-align: center; border: 1px solid #f1f5f9; cursor: pointer; }
 
-        .sub-row { margin-bottom: 12px; }
-        .sub-info { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; margin-bottom: 4px; align-items: center; }
-        .bar-bg { background: #f1f5f9; height: 8px; border-radius: 10px; overflow: hidden; }
-        .bar-fill { height: 100%; border-radius: 10px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 25px 0; }
+        .stat-item { background: #f8faff; padding: 15px 5px; border-radius: 20px; text-align: center; border: 1px solid #eef2f7; }
+        .stat-item small { color: var(--s); font-size: 10px; font-weight: 700; text-transform: uppercase; }
+        .stat-item b { color: var(--p); font-size: 18px; }
 
-        .sig-container { display: flex; justify-content: space-between; margin-top: 30px; gap: 15px; align-items: flex-end; }
-        .sig-box { text-align: center; font-size: 9px; font-weight: 800; flex: 1; }
-        .sig-img { width: 90px; height: 40px; object-fit: contain; }
-        .sig-box span { display: block; border-top: 1px solid #000; padding-top: 5px; }
+        .sub-row { margin-bottom: 18px; }
+        .sub-info { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 6px; }
+        .bar-bg { background: #edf2f7; height: 10px; border-radius: 10px; }
+        .bar-fill { height: 100%; border-radius: 10px; transition: width 1s ease-in-out; }
 
-        .qr-section { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 15px; border-top: 1px dashed #e2e8f0; }
-        #qrcode { width: 60px; height: 60px; }
-        .meta-text { font-size: 8px; color: #94a3b8; text-align: right; line-height: 1.4; }
-        
-        .site-footer { background: var(--p); color: #fff; padding: 20px; text-align: center; font-size: 10px; border-top: 3px solid var(--accent); margin-top: 40px; }
-        
+        .chart-container { background: #fff; padding: 15px; border-radius: 20px; border: 1px solid #f1f5f9; margin: 25px 0; height: 200px; }
+
         @media print {
-            .ticker-wrap, .btn, .site-footer { display: none !important; }
-            .report-paper { box-shadow: none; border-radius: 0; padding: 25px; }
-            .fees-payment-card, .pay-button, .no-print {
-        display: none !important;
-            }
+            .no-print, .ticker-wrap, .btn { display: none !important; }
+            body { background: white; }
+            .report-paper { box-shadow: none; border: none; padding: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div class="ticker-wrap"><marquee>🏅 STUDENT PORTAL | SESSION 2025-26 | XYZ SCHOOL |</marquee></div>
+    <div class="ticker-wrap"><marquee>🏅 OFFICIAL STUDENT PORTAL | SESSION 2025-26 | KPS SCHOOL | DASHBOARD ACCESS 🔒</marquee></div>
 
     <div class="container">
         <div id="login-section">
-            <h1 style="text-align:center; font-size: 40px; font-weight: 900; color: var(--p); margin-bottom: 25px;">Edu<span style="color:var(--accent)">Track</span></h1>
+            <h1 style="text-align:center; font-size: 42px; font-weight: 900; color: var(--p); margin: 30px 0;">KPS<span style="color:var(--accent)">Portal</span></h1>
             <div class="auth-card">
-                <div class="input-group"><input type="text" id="stu_user" placeholder="Serial No / Name"></div>
-                <div class="input-group">
-                    <input type="password" id="stu_pass" placeholder="Security PIN">
-                    <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--p);" onclick="togglePass()">
-                        <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                    </div>
-                </div>
-                <button class="btn btn-p" onclick="loginCheck()">Verify Credentials</button>
-                
-                <button class="btn btn-outline" onclick="window.location.href='/index'">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-                    Exit to Main Site
-                </button>
+                <div class="input-group"><input type="text" id="stu_user" placeholder="Enter Serial Number"></div>
+                <div class="input-group"><input type="password" id="stu_pass" placeholder="Security PIN"></div>
+                <button class="btn btn-p" id="loginBtn" onclick="loginCheck()">Verify & Access</button>
             </div>
-            <p style="text-align:center; font-size: 11px; color: var(--s); margin-top: 20px;">Use your school-provided Serial No & PIN to access reports.</p>
-        </div>
-        <div class="portal-card no-print" onclick="location.href='FeesPayment.html'" style="cursor: pointer; background: linear-gradient(135deg, #ffd600 0%, #ffab00 100%); border-radius: 15px; padding: 20px; margin: 15px 0; display: flex; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-    <div class="icon" style="font-size: 30px; margin-right: 15px;">💰</div>
-    <div>
-        <h3 style="margin: 0; color: #1a237e;">Pay Fees Online</h3>
-        <p style="margin: 5px 0 0; color: #333; font-size: 14px;">Instant Receipt | Secure UPI Payment</p>
-    </div>
-    <div style="margin-left: auto; font-size: 20px; color: #1a237e;">➜</div>
+            <p style="text-align:center; font-size: 12px; color: var(--s); margin-top: 25px;">Data is encrypted via <b>Google Cloud Security</b></p>
         </div>
 
         <div id="dashboard">
-            <div id="pdf-export-zone" class="report-paper">
-                <div class="watermark">ARADHYA SHUKLA</div>
-                <div id="res-badge" class="status-badge">...</div>
+            <div class="report-paper">
+                <div id="res-badge" class="status-badge">PASSED</div>
                 
-                <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
+                <div style="display:flex; align-items:center; gap:20px; margin-bottom:25px;">
                     <div id="img-container" class="stu-img-container">?</div>
                     <div>
-                        <h2 id="name-display" style="margin:0; font-size:24px; font-weight:800; color:var(--p);"></h2>
-                        <span id="meta-display" style="font-size:11px; font-weight:700; color:var(--accent);"></span>
+                        <h2 id="name-display" style="margin:0; font-size:26px; font-weight:800; color:var(--p);"></h2>
+                        <span id="meta-display" style="font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase;"></span>
                     </div>
                 </div>
 
                 <div class="stat-grid">
                     <div class="stat-item"><small>Attendance</small><br><b id="att-val">0%</b></div>
                     <div class="stat-item"><small>Grade</small><br><b id="grade-val">-</b></div>
-                    <div class="stat-item"><small>Overall %</small><br><b id="rank-val">0%</b></div>
+                    <div class="stat-item"><small>Result</small><br><b id="rank-val">0%</b></div>
                 </div>
 
+                <h4 style="font-size:14px; color:var(--p); border-left:4px solid var(--accent); padding-left:10px;">ACADEMIC PERFORMANCE</h4>
                 <div id="marks-grid"></div>
 
-                <div style="height:170px; margin: 25px 0;"><canvas id="growthChart"></canvas></div>
-
-                <div style="background:#f8fafc; padding:12px; border-radius:12px; border-left:4px solid var(--accent); font-size:10px;">
-                    <strong>TEACHER REMARKS:</strong> <span id="remark-text"></span>
+                <div class="chart-container">
+                    <canvas id="growthChart"></canvas>
                 </div>
 
-                <div class="sig-container">
-                    <div class="sig-box"><img id="ct-sign" class="sig-img" src=""><span>Class Teacher</span></div>
-                    <div class="sig-box"><img id="pr-sign" class="sig-img" src="Signs/Principal.png"><span>Principal</span></div>
+                <div style="background:#f8faff; padding:15px; border-radius:15px; border:1px solid #eef2f7; font-size:11px; line-height:1.6;">
+                    <b style="color:var(--p)">TEACHER'S ADVICE:</b> <span id="remark-text"></span><br>
+                    <b style="color:var(--p)">BEHAVIOR:</b> <span id="behavior-text"></span>
                 </div>
 
-                <div class="qr-section">
+                <div style="display:flex; justify-content:space-between; margin-top:30px; align-items:flex-end;">
+                    <div style="text-align:center; flex:1;">
+                        <img src="Signs/Principal.png" style="width:80px; height:40px; object-fit:contain;"><br>
+                        <span style="font-size:10px; font-weight:800; border-top:1px solid #ddd; display:block; padding-top:5px;">Principal</span>
+                    </div>
                     <div id="qrcode"></div>
-                    <div class="meta-text">ID: <span id="report-id"></span><br>DATE: <span id="gen-date"></span></div>
                 </div>
             </div>
 
-            <button class="btn btn-p" style="background:var(--p); color:white;" onclick="exportPDF()">Download PDF 📄</button>
-            <button class="btn" style="background:transparent; color:var(--s);" onclick="window.location.reload()">Sign Out</button>
+            <button class="btn btn-p" onclick="window.print()">Download Marksheet 📄</button>
+            <button class="btn" style="background:#f1f5f9; color:var(--p);" onclick="location.href='FeesPayment.html'">Pay Fees Online 💰</button>
+            <button class="btn" style="background:transparent; color:var(--s);" onclick="location.reload()">Secure Sign Out</button>
         </div>
     </div>
 
-    <footer class="site-footer">
-        <div>&copy; 2026 <b>XYZ SCHOOL'S STUDENT PORTAL (ARADHYA SHUKLA)</b></div>
-    </footer>
+    <script type="module">
+        // FIREBASE INTEGRATION
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
-    <script>
-        const CSV_URL = 'https://docs.google.com/spreadsheets/d/1ykfR3DTZqifvOzE0SEBHhdS7RVWobkjRXFfYLPM7sdk/export?format=csv';
-        let db = [], currentStudent = null;
-        Papa.parse(CSV_URL, { download: true, header: true, complete: (r) => { db = r.data; } });
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            projectId: "YOUR_PROJECT_ID",
+            appId: "YOUR_APP_ID"
+        };
 
-        function togglePass() { const p = document.getElementById('stu_pass'); p.type = p.type === 'password' ? 'text' : 'password'; }
-        function exportPDF() { window.print(); }
-        function getIcon(name) {
-            const icons = { 'English':'📖','Maths':'📐','Science':'🧪','Physics':'⚡','Chemistry':'⚗️','Biology':'🧬','Hindi':'🏮','Yoga':'🧘','Banking':'🏦','IT':'💻','AI':'🤖','CA':'📁','Arts':'🎨','Music':'🎵','HPE':'🏃' };
-            return icons[name] || '📚';
-        }
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-        function loginCheck() {
-            const u = document.getElementById('stu_user').value.trim().toLowerCase();
+        window.loginCheck = async function() {
+            const u = document.getElementById('stu_user').value.trim();
             const p = document.getElementById('stu_pass').value.trim();
-            const s = db.find(x => x.Serial_No && (x.Serial_No.toLowerCase() === u || x.Name.toLowerCase().includes(u)));
-            if (!s || (s.Password && s.Password.toString() !== p)) return alert("Wrong PIN.");
-            currentStudent = s; loadUI(s);
+            const btn = document.getElementById('loginBtn');
+
+            if(!u || !p) return alert("Please fill all fields");
+            
+            btn.innerText = "Authenticating...";
+            btn.disabled = true;
+
+            try {
+                const docRef = doc(db, "student_data", u);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const s = docSnap.data();
+                    // Firebase mein info.password check kar rahe hain
+                    if (s.info.password.toString() === p) {
+                        loadPortal(s);
+                    } else {
+                        alert("Invalid Security PIN!");
+                        resetBtn();
+                    }
+                } else {
+                    alert("Student Record Not Found!");
+                    resetBtn();
+                }
+            } catch (e) {
+                alert("Connection Error!");
+                resetBtn();
+            }
         }
 
-        function loadUI(s) {
+        function resetBtn() {
+            const btn = document.getElementById('loginBtn');
+            btn.innerText = "Verify & Access";
+            btn.disabled = false;
+        }
+
+        function loadPortal(s) {
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('dashboard').style.display = 'block';
-            document.getElementById('name-display').innerText = s.Name;
             
-            const clNum = parseInt(s.Class);
-            let metaInfo = `CLASS: ${s.Class}`;
-            if(clNum >= 11) metaInfo += ` | STREAM: ${s.Stream || 'N/A'}`;
-            else metaInfo += ` | SECTION: ${s.Section || 'A'}`;
-            document.getElementById('meta-display').innerText = metaInfo;
-            
-            document.getElementById('report-id').innerText = s.Serial_No;
-            document.getElementById('gen-date').innerText = new Date().toLocaleDateString('en-GB');
-            document.getElementById('remark-text').innerText = s.Advice || "Keep performing well.";
+            // Basic Info
+            document.getElementById('name-display').innerText = s.info.name;
+            document.getElementById('meta-display').innerText = `Class: ${s.info.class} | Section: ${s.info.section}`;
+            document.getElementById('remark-text').innerText = s.info.advice || "Excellent Progress!";
+            document.getElementById('behavior-text').innerText = s.info.behavior || "Good";
 
-            document.getElementById('qrcode').innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), { text: window.location.href, width: 60, height: 60 });
-
+            // Profile Image
             const imgBox = document.getElementById('img-container');
-            imgBox.innerHTML = (s.Student_Image && s.Student_Image.startsWith('http')) ? `<img src="${s.Student_Image}">` : s.Name[0];
-            document.getElementById('ct-sign').src = `Signs/Class Teacher - ${s.Class}.png`;
+            if(s.info.image) imgBox.innerHTML = `<img src="${s.info.image}">`;
+            else imgBox.innerText = s.info.name[0];
 
-            // Subject Logic
-            const cl = parseInt(s.Class);
-            const allPossible = ['English','Maths','Science','Physics','Chemistry','Biology','Hindi','Yoga','Banking','IT','AI','CA','Arts','Music','HPE','Sanskrit','History','Civics','Geography','EVS','GK'];
-            let core = [], opts = [];
-            
-            allPossible.forEach(sub => {
-                if(!s[sub] || s[sub] === 'N/A') return;
-                let val = parseInt(s[sub]);
-                let isOpt = false;
-                if(cl <= 8 && sub === 'Arts') isOpt = true;
-                else if((cl === 9 || cl === 10) && ['Banking','IT','AI','CA'].includes(sub)) isOpt = true;
-                else if((cl === 11 || cl === 12) && ['Hindi','Music','HPE'].includes(sub)) isOpt = true;
+            // QR Code
+            new QRCode(document.getElementById("qrcode"), { text: "ID:"+s.info.serial_no, width: 60, height: 60 });
 
-                if(isOpt) opts.push({name: sub, val: val});
-                else core.push({name: sub, val: val});
-            });
+            // Marks Logic (Filtering only subjects with marks)
+            const grid = document.getElementById('marks-grid');
+            grid.innerHTML = '';
+            let total = 0, count = 0;
 
-            let replacedName = "";
-            if(opts.length > 0) {
-                let bestOpt = opts.sort((a,b) => b.val - a.val)[0];
-                let replaceable = core.filter(c => c.name !== 'English').sort((a,b) => a.val - b.val);
-                if(replaceable.length > 0 && bestOpt.val > replaceable[0].val) {
-                    replacedName = replaceable[0].name;
-                    core.find(c => c.name === replacedName).calcVal = bestOpt.val;
+            for (const [sub, val] of Object.entries(s.academic)) {
+                if (val && val !== "" && val !== "N/A" && !isNaN(val)) {
+                    const score = parseInt(val);
+                    total += score;
+                    count++;
+                    grid.innerHTML += `
+                        <div class="sub-row">
+                            <div class="sub-info">
+                                <span>${sub.toUpperCase()}</span>
+                                <span>${score}%</span>
+                            </div>
+                            <div class="bar-bg">
+                                <div class="bar-fill" style="width:${score}%; background:${score < 33 ? 'var(--danger)' : 'var(--p)'}"></div>
+                            </div>
+                        </div>`;
                 }
             }
 
-            const grid = document.getElementById('marks-grid'); grid.innerHTML = '';
-            let total = 0;
-            core.forEach(item => {
-                let fVal = item.calcVal || item.val; total += fVal;
-                grid.innerHTML += `<div class="sub-row"><div class="sub-info"><span>${getIcon(item.name)} ${item.name} ${item.name===replacedName?'<small>(Best-of-1)</small>':''}</span><span>${item.val}%</span></div><div class="bar-bg"><div class="bar-fill" style="width:${item.val}%; background:${item.val<40?'var(--danger)':'var(--p)'}"></div></div></div>`;
-            });
-
-            opts.forEach(opt => {
-                grid.innerHTML += `<div class="sub-row" style="opacity:0.6"><div class="sub-info"><span>${getIcon(opt.name)} ${opt.name} <small>(Opt)</small></span><span>${opt.val}%</span></div><div class="bar-bg"><div class="bar-fill" style="width:${opt.val}%; background:#cbd5e1"></div></div></div>`;
-            });
-
-            const avg = Math.round(total / core.length);
+            const avg = count > 0 ? Math.round(total / count) : 0;
             document.getElementById('rank-val').innerText = avg + "%";
-            document.getElementById('grade-val').innerText = avg >= 90 ? 'A1' : (avg >= 75 ? 'A2' : 'B');
-            const b = document.getElementById('res-badge');
-            b.innerText = avg >= 40 ? 'PASSED' : 'DETAINED';
-            b.style.background = avg >= 40 ? 'var(--p)' : 'var(--danger)'; b.style.color = 'white';
+            document.getElementById('grade-val').innerText = getGrade(avg);
+            
+            const badge = document.getElementById('res-badge');
+            badge.innerText = avg >= 33 ? "PASSED" : "DETAINED";
+            badge.style.background = avg >= 33 ? "var(--p)" : "var(--danger)";
+            badge.style.color = "#fff";
 
-            initGraph(s);
+            initAttendanceChart(s.attendance);
         }
 
-        function initGraph(s) {
+        function getGrade(avg) {
+            if(avg >= 90) return "A1";
+            if(avg >= 80) return "A2";
+            if(avg >= 70) return "B1";
+            if(avg >= 60) return "B2";
+            return "C";
+        }
+
+        function initAttendanceChart(att) {
             const ctx = document.getElementById('growthChart').getContext('2d');
-            const months = ['Apr','May','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'];
-            const keys = ['Apr_Att','May_Att','Jul_Att','Aug_Att','Sep_Att','Oct_Att','Nov_Att','Dec_Att','Jan_Att','Feb_Att','Mar_Att'];
-            const attData = keys.map(k => parseInt(s[k]) || 0);
-            document.getElementById('att-val').innerText = Math.round(attData.reduce((a,b)=>a+b,0)/attData.length) + "%";
+            const data = [att.apr, att.may, att.jul, att.aug, att.sep, att.oct, att.nov, att.dec, att.jan, att.feb, att.mar].map(v => parseInt(v) || 0);
             
-            new Chart(ctx, { 
-                type: 'line', 
-                data: { 
-                    labels: months, 
-                    datasets: [{ 
-                        label: 'Attendance', data: attData, borderColor: '#d4aa00', tension: 0.3, fill: true, backgroundColor: 'rgba(212,170,0,0.08)', pointRadius: 6, pointBackgroundColor: '#003366', pointHoverRadius: 9, borderWidth: 3 
-                    }] 
-                }, 
-                options: { 
-                    responsive: true, maintainAspectRatio: false, 
-                    plugins: { 
-                        legend: { display: false },
-                        tooltip: { 
-                            enabled: true, backgroundColor: '#003366',
-                            callbacks: { label: function(context) { return ` Attendance: ${context.parsed.y}%`; } }
-                        }
-                    }, 
-                    scales: { y: { display: false, min: 0, max: 100 }, x: { grid: { display: false }, ticks: { font: { weight: 'bold' } } } } 
-                } 
+            const totalAtt = Math.round(data.reduce((a,b) => a+b, 0) / 11);
+            document.getElementById('att-val').innerText = totalAtt + "%";
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Apr','May','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],
+                    datasets: [{
+                        label: 'Attendance %',
+                        data: data,
+                        borderColor: '#d4aa00',
+                        backgroundColor: 'rgba(212,170,0,0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { 
+                        y: { min: 0, max: 100, ticks: { display: false }, grid: { display: false } },
+                        x: { grid: { display: false } }
+                    }
+                }
             });
         }
     </script>
 </body>
-  </html>
+</html>
