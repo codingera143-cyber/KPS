@@ -238,28 +238,71 @@
             else if(percentage >= 61) { g="B2"; r="Good job, but there is room for improvement."; }
             document.getElementById('v-grad').innerText = g;
             document.getElementById('v-rem').innerText = r;
+        // --- ATTENDANCE CHART WITH CLICK/HOVER TOOLTIP FIX ---
+        const months = ['April','May','July','August','September','October','November','December','January','February','March'];
+        const keys = ['apr','may','jul','aug','sep','oct','nov','dec','jan','feb','mar'];
+        const attVals = keys.map(k => parseInt(attendance[k]) || 0);
+        
+        document.getElementById('v-att').innerText = Math.round(attVals.reduce((a,b)=>a+b,0)/11) + "%";
 
-            // Attendance Chart with Months
-            const months = ['April','May','July','August','September','October','November','December','January','February','March'];
-            const keys = ['apr','may','jul','aug','sep','oct','nov','dec','jan','feb','mar'];
-            const attVals = keys.map(k => parseInt(attendance[k]) || 0);
-            
-            document.getElementById('v-att').innerText = Math.round(attVals.reduce((a,b)=>a+b,0)/11) + "%";
-
-            new Chart(document.getElementById('attChart'), {
-                type: 'bar',
-                data: { labels: months, datasets: [{ data: attVals, backgroundColor: '#004a99', borderRadius: 6 }] },
-                options: { 
-                    responsive: true, 
-                    maintainAspectRatio: false, 
-                    plugins: { legend: { display: false }, tooltip: { enabled: true } },
-                    scales: { y: { display: false }, x: { grid: { display: false } } }
+        const ctx = document.getElementById('attChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: { 
+                labels: months, 
+                datasets: [{ 
+                    label: 'Attendance',
+                    data: attVals, 
+                    backgroundColor: '#004a99', 
+                    borderRadius: 6,
+                    hoverBackgroundColor: '#ffd700' // Hover karne pe color change hoga
+                }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: { 
+                    legend: { display: false }, 
+                    tooltip: { 
+                        enabled: true,
+                        backgroundColor: 'rgba(0, 45, 91, 0.9)', // Deep Blue Background
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        padding: 12,
+                        displayColors: false,
+                        callbacks: {
+                            // Ye function tooltip ko "Month: 85%" ke format mein dikhayega
+                            title: function(context) {
+                                return 'Month: ' + context[0].label;
+                            },
+                            label: function(context) {
+                                return 'Attendance: ' + context.raw + '%';
+                            }
+                        }
+                    } 
+                },
+                scales: { 
+                    y: { 
+                        display: false, 
+                        beginAtZero: true, 
+                        max: 100 
+                    }, 
+                    x: { 
+                        grid: { display: false },
+                        ticks: { font: { size: 9, weight: '700' } }
+                    } 
                 }
-            });
+            }
+        });
 
-            document.getElementById('qr-code').innerHTML = "";
-            new QRCode(document.getElementById("qr-code"), { text: "KPS-VERIFIED-"+info.serial_no, width: 60, height: 60 });
-        }
+        // QR Code Logic
+        document.getElementById('qr-code').innerHTML = "";
+        new QRCode(document.getElementById("qr-code"), { text: "KPS-VERIFIED-"+info.serial_no, width: 60, height: 60 });
+    }
     </script>
 </body>
 </html>
