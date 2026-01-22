@@ -170,81 +170,140 @@
                 } else { Swal.fire('Error', 'Incorrect PIN/Serial', 'error'); }
             } catch (e) { console.error(e); }
         };
-
         function buildMarksheet(data) {
-            const { info, academic, attendance } = data;
-            
-            document.getElementById('disp-id').innerText = "KPS-2026-" + info.serial_no;
-            document.getElementById('disp-name').innerText = info.name;
-            document.getElementById('disp-class').innerText = `Class: ${info.class} | Section: ${info.section || 'A'}`;
-            document.getElementById('disp-date').innerText = "DATE: " + new Date().toLocaleDateString('en-GB');
+    const { info, academic, attendance } = data;
+    
+    // 1. Basic Info Display
+    document.getElementById('disp-id').innerText = "KPS-2026-" + info.serial_no;
+    document.getElementById('disp-name').innerText = info.name;
+    const currentClass = info.class.replace(/\D/g, ''); // Extract numeric class (e.g. "10")
+    const section = info.section || 'A';
+    document.getElementById('disp-class').innerText = `Class: ${info.class} | Section: ${section}`;
+    document.getElementById('disp-date').innerText = "DATE: " + new Date().toLocaleDateString('en-GB');
 
-            if(info.image) {
-                document.getElementById('disp-photo').innerHTML = `<img src="${info.image}">`;
-            } else {
-                document.getElementById('disp-photo').innerText = info.name.charAt(0);
-            }
+    if(info.image) {
+        document.getElementById('disp-photo').innerHTML = `<img src="${info.image}" style="width:100%; height:100%; object-fit:cover;">`;
+    } else {
+        document.getElementById('disp-photo').innerText = info.name.charAt(0);
+    }
 
-            // 🎯 SMART SUBJECT LOGIC (English Mandatory + Best of 4)
-            let subjects = [];
-            let engMarks = 0;
-            let engLabel = "ENGLISH";
+    // 2. Additional Subjects Mapping (Board Rules)
+    const addonMap = {
+        "1": ["ARTS", "MSC"], "2": ["ARTS", "MSC"], "3": ["ARTS", "MSC"], "4": ["ARTS", "MSC"],
+        "5": ["ARTS", "SANSKRIT"], "6": ["ARTS", "SANSKRIT"], "7": ["ARTS", "SANSKRIT"], "8": ["ARTS", "SANSKRIT"],
+        "9": ["IT", "BANKING"], "10": ["IT", "BANKING"],
+        "11": ["MUSIC", "HINDI", "HEALTH & PHYSICAL EDUCATION"],
+        "12": ["MUSIC", "HINDI", "HEALTH & PHYSICAL EDUCATION"]
+    };
 
-            Object.entries(academic || {}).forEach(([key, val]) => {
-                if(key.toLowerCase() === 'password') return;
-                
-                let score = parseInt(val);
-                if(!isNaN(score)) {
-                    // Yahan fix hai: Agar key "eng" se shuru hoti hai ya "eng" hai
-                    if(key.toLowerCase().trim().startsWith('eng')) {
-                        engMarks = score;
-                        engLabel = key.toUpperCase(); 
-                    } else {
-                        subjects.push({ name: key.toUpperCase(), score: score });
-                    }
-                }
-            });
+    let classAddons = addonMap[currentClass] || [];
+    // Banking only for Class 9-10 Section D
+    if ((currentClass == "9" || currentClass == "10") && section !== "D") {
+        classAddons = classAddons.filter(s => s !== "BANKING");
+    }
 
-            // Best of 4 from others
-            subjects.sort((a,b) => b.score - a.score);
-            let top4 = subjects.slice(0, 4);
-            let top4Names = top4.map(s => s.name);
-            
-            let totalMarks = engMarks + top4.reduce((a,b) => a + b.score, 0);
-            let percentage = (totalMarks / 5).toFixed(1);
+    // 3. Subject Categorization
+    let engMarks = 0;
+    let engLabel = "ENGLISH";
+    let coreSubjects = [];
+    let additionalSubjects = [];
 
-            // UI Render
-            const list = document.getElementById('sub-display-list');
-            list.innerHTML = '';
-            
-            const createRow = (n, s, inc) => {
-                let color = s >= 75 ? '#22c55e' : (s >= 33 ? '#3182ce' : '#ef4444');
-                list.innerHTML += `
-                    <div class="sub-box">
-                        <div class="sub-data">
-                            <span>${n} ${inc ? '<span class="inc-tag">Included</span>' : ''}</span> 
-                            <span>${s}/100</span>
-                        </div>
-                        <div class="rail"><div class="fill" style="width:${s}%; background:${color}"></div></div>
-                    </div>`;
-            };
+    Object.entries(academic || {}).forEach(([key, val]) => {
+        if(key.toLowerCase() === 'password') return;
+        let score = parseInt(val) || 0;
+        let name = key.toUpperCase().trim();
 
-            // English always first
-            createRow(engLabel, engMarks, true);
-            subjects.forEach(s => createRow(s.name, s.score, top4Names.includes(s.name)));
+        if(name.startsWith('ENG')) {
+            engMarks = score;
+            engLabel = name;
+        } else if(classAddons.includes(name)) {
+            additionalSubjects.push({ name: name, score: score });
+        } else {
+            coreSubjects.push({ name: name, score: score });
+        }
+    });
 
-            // Update Stats
-            document.getElementById('v-perc').innerText = percentage + "%";
-            document.getElementById('v-res').innerText = percentage >= 33 ? "PASS" : "FAIL";
-            document.getElementById('v-res').style.color = percentage >= 33 ? "#22c55e" : "#ef4444";
+    // 4. 🔥 REPLACEMENT LOGIC (The Core Logic)
+    // Sort additional by highest marks, Core by lowest
+    additionalSubjects.sort((a, b) => b.score - a.score);
+    coreSubjects.sort((a, b) => a.score - b.score);
 
-            let g = "D", r = "Consistent effort needed.";
-            if(percentage >= 91) { g="A1"; r="Outstanding! You have set a high benchmark."; }
-            else if(percentage >= 81) { g="A2"; r="Excellent performance, keep maintaining this level."; }
-            else if(percentage >= 71) { g="B1"; r="Very good! A little more focus can lead to A1."; }
-            else if(percentage >= 61) { g="B2"; r="Good job, but there is room for improvement."; }
-            document.getElementById('v-grad').innerText = g;
-            document.getElementById('v-rem').innerText = r;
+    let replacedSubName = "";
+    let mainSubjects = [...coreSubjects];
+
+    if (additionalSubjects.length > 0 && coreSubjects.length > 0) {
+        let bestAddon = additionalSubjects[0]; // Sirf ek best additional
+        let weakestCore = coreSubjects[0];
+
+        if (bestAddon.score > weakestCore.score) {
+            replacedSubName = weakestCore.name;
+            // Replace weakest core with best additional in the calculation list
+            mainSubjects = mainSubjects.filter(s => s.name !== weakestCore.name);
+            mainSubjects.push(bestAddon);
+        }
+    }
+
+    // 5. Final Calculation (English + Main Subjects)
+    let totalScore = engMarks + mainSubjects.reduce((sum, s) => sum + s.score, 0);
+    let totalSubjects = 1 + mainSubjects.length; // English + Core/Replaced
+    let percentage = (totalScore / totalSubjects).toFixed(1);
+
+    // 6. UI Rendering
+    const list = document.getElementById('sub-display-list');
+    list.innerHTML = '';
+    
+    const createRow = (n, s, type) => {
+        // types: 'main' (counted), 'replaced' (not counted), 'extra' (other addons)
+        let color = s >= 75 ? '#22c55e' : (s >= 33 ? '#3182ce' : '#ef4444');
+        let tag = "";
+        let opacity = "1";
+
+        if(type === 'main') tag = '<span class="inc-tag">Included</span>';
+        if(type === 'replaced') {
+            tag = '<span class="inc-tag" style="background:#fee2e2; color:#ef4444;">Replaced</span>';
+            opacity = "0.6";
+        }
+
+        list.innerHTML += `
+            <div class="sub-box" style="opacity:${opacity}">
+                <div class="sub-data">
+                    <span>${n} ${tag}</span> 
+                    <span>${s}/100</span>
+                </div>
+                <div class="rail"><div class="fill" style="width:${s}%; background:${color}"></div></div>
+            </div>`;
+    };
+
+    // Render Order: English -> Main Subjects -> Replaced Subject -> Other Additionals
+    createRow(engLabel, engMarks, 'main');
+    
+    // Unchanged Core Subjects
+    mainSubjects.forEach(s => createRow(s.name, s.score, 'main'));
+
+    // Replaced Weak Subject (if any)
+    if(replacedSubName) {
+        let rSub = coreSubjects.find(s => s.name === replacedSubName);
+        createRow(rSub.name, rSub.score, 'replaced');
+    }
+
+    // Other extra additional subjects that were not used for replacement
+    additionalSubjects.forEach(s => {
+        if (!mainSubjects.find(ms => ms.name === s.name)) {
+            createRow(s.name, s.score, 'extra');
+        }
+    });
+
+    // 7. Update Stats & Chart (Same as before)
+    document.getElementById('v-perc').innerText = percentage + "%";
+    document.getElementById('v-res').innerText = percentage >= 33 ? "PASS" : "FAIL";
+    document.getElementById('v-res').style.color = percentage >= 33 ? "#22c55e" : "#ef4444";
+
+    let g = "D", r = "Consistent effort needed.";
+    if(percentage >= 91) { g="A1"; r="Outstanding Performance!"; }
+    else if(percentage >= 81) { g="A2"; r="Excellent work!"; }
+    else if(percentage >= 71) { g="B1"; r="Good job!"; }
+    document.getElementById('v-grad').innerText = g;
+    document.getElementById('v-rem').innerText = r;
         // --- ATTENDANCE CHART WITH CLICK/HOVER TOOLTIP FIX ---
         const months = ['April','May','July','August','September','October','November','December','January','February','March'];
         const keys = ['apr','may','jul','aug','sep','oct','nov','dec','jan','feb','mar'];
