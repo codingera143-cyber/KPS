@@ -3,137 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KPS | OFFICIAL DIGITAL PORTAL</title>
-    
+    <title>KPS | OFFICIAL PORTAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        :root { 
-            --primary: #002d5b; --secondary: #004a99; --accent: #ffd700; 
-            --bg: #f3f6f9; --text: #2d3748; --success: #22c55e;
-        }
+        :root { --primary: #002d5b; --accent: #ffd700; --bg: #f3f6f9; }
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
-        body { background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        body { background: var(--bg); margin: 0; padding: 0; }
         
-        /* Professional School Header Logo */
-        .school-header { text-align: center; padding: 20px; }
-        .logo-circle { width: 80px; height: 80px; background: white; border-radius: 50%; padding: 10px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 3px solid var(--primary); display: inline-block; }
-        .logo-circle img { width: 100%; height: 100%; object-fit: contain; }
+        .school-header { text-align: center; padding: 25px 10px; background: white; border-bottom: 4px solid var(--primary); }
+        .logo-img { width: 70px; height: 70px; margin-bottom: 10px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
 
-        .ticker-wrap { background: var(--primary); color: var(--accent); padding: 10px; font-weight: 800; font-size: 11px; text-align: center; border-bottom: 3px solid var(--accent); }
-        .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 15px; flex-grow: 1; }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+        
+        /* Login UI */
+        .auth-card { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-top: 20px; }
+        .input-wrapper { position: relative; margin-bottom: 15px; }
+        input { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 16px; outline: none; }
+        .eye { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; color: var(--primary); }
 
-        /* Login UI with Eye Icon */
-        .auth-card { background: white; padding: 35px 25px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); margin-top: 10px; }
-        .input-box { position: relative; margin-bottom: 15px; }
-        input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #e2e8f0; font-size: 16px; outline: none; }
-        .pass-toggle { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--primary); font-size: 20px; z-index: 100; }
-
-        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; font-size: 16px; background: var(--primary); color: white; box-shadow: 0 5px 15px rgba(0,45,91,0.2); }
-        .btn:hover { transform: translateY(-2px); background: var(--secondary); }
+        .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; background: var(--primary); color: white; font-size: 16px; box-shadow: 0 4px 12px rgba(0,45,91,0.2); }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,45,91,0.3); }
 
         /* Report Card */
         #dashboard { display: none; }
-        .report-card { background: white; border-radius: 35px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; position: relative; }
+        .report-card { background: white; border-radius: 30px; padding: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); border: 1px solid #eee; }
         
-        .profile-area { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px; }
-        .stu-img { width: 85px; height: 85px; border-radius: 20px; background: var(--primary); border: 4px solid var(--accent); overflow: hidden; display: flex; align-items: center; justify-content: center; color: white; font-size: 35px; }
+        .profile { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; }
+        .stu-img-circ { width: 80px; height: 80px; border-radius: 18px; background: var(--primary); border: 3px solid var(--accent); overflow: hidden; display: flex; align-items: center; justify-content: center; color: white; font-size: 30px; font-weight: 800; }
+        .stu-img-circ img { width: 100%; height: 100%; object-fit: cover; }
 
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
-        .stat-box { background: #f8fafc; padding: 10px 2px; border-radius: 15px; text-align: center; border: 1px solid #edf2f7; }
-        .stat-box small { font-size: 8px; color: #a0aec0; font-weight: 800; display: block; text-transform: uppercase; }
-        .stat-box b { font-size: 14px; color: var(--primary); }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 20px; }
+        .stat-box { background: #f8fafc; padding: 10px 2px; border-radius: 12px; text-align: center; border: 1px solid #edf2f7; }
+        .stat-box small { font-size: 7px; color: #a0aec0; font-weight: 800; display: block; text-transform: uppercase; }
+        .stat-box b { font-size: 13px; color: var(--primary); }
 
-        .subject-row { margin-bottom: 15px; }
-        .sub-info { display: flex; justify-content: space-between; font-weight: 800; font-size: 12px; margin-bottom: 5px; }
-        .tag-best { font-size: 8px; color: var(--success); background: #e8f5e9; padding: 2px 5px; border-radius: 4px; margin-left: 5px; }
-        .bar-bg { background: #edf2f7; height: 10px; border-radius: 10px; overflow: hidden; }
-        .bar-fill { height: 100%; border-radius: 10px; }
+        .sub-row { margin-bottom: 12px; }
+        .sub-label { display: flex; justify-content: space-between; font-weight: 800; font-size: 12px; margin-bottom: 4px; }
+        .tag { font-size: 7px; color: #22c55e; background: #e8f5e9; padding: 2px 4px; border-radius: 4px; margin-left: 5px; }
+        .rail { background: #edf2f7; height: 8px; border-radius: 10px; overflow: hidden; }
+        .fill { height: 100%; border-radius: 10px; }
 
-        .remarks-box { background: #fffdf0; border-left: 5px solid var(--accent); padding: 15px; border-radius: 15px; margin: 20px 0; font-size: 12px; font-weight: 700; color: #744210; }
+        .remarks { background: #fffdf0; border-left: 4px solid var(--accent); padding: 12px; border-radius: 12px; font-size: 11px; font-weight: 700; margin: 15px 0; }
 
-        .signs-row { display: grid; grid-template-columns: 1fr 1fr 80px; align-items: flex-end; gap: 10px; margin-top: 30px; }
-        .sign-placeholder { border-top: 1px solid #cbd5e0; font-size: 9px; font-weight: 800; text-align: center; color: var(--primary); padding-top: 5px; }
+        .footer-sec { display: grid; grid-template-columns: 1fr 1fr 60px; align-items: flex-end; gap: 10px; margin-top: 25px; }
+        .sign { border-top: 1px solid #ccc; font-size: 9px; font-weight: 800; text-align: center; color: var(--primary); padding-top: 4px; }
 
-        footer { text-align: center; padding: 30px; font-size: 10px; color: #a0aec0; font-weight: 700; }
-
-        @media print { .btn, .ticker-wrap, .pass-toggle, footer { display: none !important; } .container { padding: 0; } }
+        @media print { .btn, .eye, .school-header { display: none !important; } }
     </style>
 </head>
 <body>
 
-    <div class="ticker-wrap"><marquee>🏫 KANPUR PUBLIC SCHOOL • DIGITAL ACADEMIC RECORD • SESSION 2025–26 🏫</marquee></div>
-
-    <div class="container">
-        <div id="login-section">
-            <div class="school-header">
-                <div class="logo-circle">
-                    <img src="https://img.icons8.com/color/96/university.png" alt="School Logo">
-                </div>
-                <h1 style="color:var(--primary); margin:10px 0 0 0; font-size: 32px; font-weight: 900;">KPS PORTAL</h1>
-                <p style="color:#718096; font-size:12px; font-weight:700;">Student Information System</p>
-            </div>
-            
-            <div class="auth-card">
-                <div class="input-box">
-                    <input type="text" id="stu_user" placeholder="Serial Number">
-                </div>
-                <div class="input-box">
-                    <input type="password" id="stu_pass" placeholder="Security PIN">
-                    <span class="pass-toggle" id="toggleEye">👁️</span>
-                </div>
-                <button class="btn" id="loginBtn">Secure Login 🔓</button>
-            </div>
+    <div id="login-section">
+        <div class="school-header">
+            <img src="https://img.icons8.com/color/96/university.png" class="logo-img">
+            <h1 style="color:var(--primary); margin:0; font-size: 28px; font-weight: 900;">KPS DIGITAL</h1>
+            <p style="margin:0; font-size:12px; color:#666; font-weight:700;">OFFICIAL RESULT PORTAL 2026</p>
         </div>
-
-        <div id="dashboard">
-            <div class="report-card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                    <img src="https://img.icons8.com/color/96/university.png" style="width:40px;" alt="Logo">
-                    <div style="text-align:right; font-size:10px; font-weight:800; color:#a0aec0;" id="report-id">ID: -</div>
-                </div>
-
-                <div class="profile-area">
-                    <div id="photo-box" class="stu-img">?</div>
-                    <div>
-                        <h2 id="name-txt" style="margin:0; font-size:24px; color:var(--primary);">Name</h2>
-                        <p id="class-txt" style="margin:0; font-size:12px; font-weight:700; color:#718096;">Class: -</p>
-                    </div>
-                </div>
-
-                <div class="stats-grid">
-                    <div class="stat-box"><small>Percent</small><b id="v-perc">0%</b></div>
-                    <div class="stat-box"><small>Grade</small><b id="v-grade">-</b></div>
-                    <div class="stat-box"><small>Attnd.</small><b id="v-att">0%</b></div>
-                    <div class="stat-box"><small>Result</small><b id="v-res">-</b></div>
-                </div>
-
-                <div id="subjects-list"></div>
-
-                <div class="remarks-box">
-                    📝 REMARKS: <span id="v-remarks">Calculating...</span>
-                </div>
-
-                <div style="height: 160px; margin: 30px 0;">
-                    <canvas id="attChart"></canvas>
-                </div>
-
-                <div class="signs-row">
-                    <div class="sign-placeholder">TEACHER</div>
-                    <div class="sign-placeholder">PRINCIPAL</div>
-                    <div id="qr-box"></div>
-                </div>
+        <div class="container">
+            <div class="auth-card">
+                <div class="input-wrapper"><input type="text" id="stu_user" placeholder="Serial No."></div>
+                <div class="input-wrapper"><input type="password" id="stu_pass" placeholder="Security PIN"><span class="eye" id="toggleEye">👁️</span></div>
+                <button class="btn" id="loginBtn">Access Marksheet 🔒</button>
             </div>
-
-            <button class="btn" style="margin-top:20px;" onclick="window.print()">Print Marksheet 🖨️</button>
-            <button class="btn" style="margin-top:10px; background:#e2e8f0; color:#4a5568;" onclick="location.reload()">Logout</button>
         </div>
     </div>
 
-    <footer>© 2026 Kanpur Public School • Digitally Verified</footer>
+    <div id="dashboard" class="container">
+        <div class="report-card">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:9px; font-weight:800; color:#999;">
+                <span id="r-id">ID: -</span> <span id="r-date">DATE: -</span>
+            </div>
+
+            <div class="profile">
+                <div id="photo-div" class="stu-img-circ">?</div>
+                <div>
+                    <h2 id="n-txt" style="margin:0; font-size:22px; color:var(--primary);">Name</h2>
+                    <p id="c-txt" style="margin:0; font-size:12px; color:#666; font-weight:700;">Class: -</p>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-box"><small>Percent</small><b id="s-perc">0%</b></div>
+                <div class="stat-box"><small>Grade</small><b id="s-grad">-</b></div>
+                <div class="stat-box"><small>Attend</small><b id="s-att">0%</b></div>
+                <div class="stat-box"><small>Result</small><b id="s-res">-</b></div>
+            </div>
+
+            <div id="sub-list"></div>
+
+            <div class="remarks">📝 REMARKS: <span id="s-rem">...</span></div>
+
+            <div style="height: 150px; margin: 20px 0;"><canvas id="myChart"></canvas></div>
+
+            <div class="footer-sec">
+                <div class="sign">CLASS TEACHER</div>
+                <div class="sign">PRINCIPAL</div>
+                <div id="qr"></div>
+            </div>
+        </div>
+        <button class="btn" style="margin-top:15px;" onclick="window.print()">Print Report Card 🖨️</button>
+        <button class="btn" style="margin-top:8px; background:#e2e8f0; color:#4a5568;" onclick="location.reload()">Logout</button>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
@@ -151,123 +125,100 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Password Toggle
-        document.getElementById('toggleEye').addEventListener('click', () => {
+        document.getElementById('toggleEye').onclick = () => {
             const p = document.getElementById('stu_pass');
             p.type = p.type === 'password' ? 'text' : 'password';
-        });
+        };
 
-        document.getElementById('loginBtn').addEventListener('click', async () => {
+        document.getElementById('loginBtn').onclick = async () => {
             const u = document.getElementById('stu_user').value.trim();
             const p = document.getElementById('stu_pass').value.trim();
             if(!u || !p) return;
 
-            try {
-                const snap = await getDoc(doc(db, "student_data", u));
-                if(snap.exists() && snap.data().info.password == p) {
-                    document.getElementById('login-section').style.display = 'none';
-                    document.getElementById('dashboard').style.display = 'block';
-                    renderMarksheet(snap.data());
-                } else { Swal.fire('Error', 'Wrong PIN or Serial Number', 'error'); }
-            } catch (e) { console.error(e); }
-        });
+            const snap = await getDoc(doc(db, "student_data", u));
+            if(snap.exists() && snap.data().info.password == p) {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadMarks(snap.data());
+            } else { Swal.fire('Error', 'Invalid PIN/ID', 'error'); }
+        };
 
-        function renderMarksheet(data) {
+        function loadMarks(data) {
             const { info, academic, attendance } = data;
-            
-            document.getElementById('report-id').innerText = "REPORT: KPS-2026-" + info.serial_no;
-            document.getElementById('name-txt').innerText = info.name;
-            document.getElementById('class-txt').innerText = `Class: ${info.class} | Section: ${info.section || 'A'}`;
-            
-            if(info.image) document.getElementById('photo-box').innerHTML = `<img src="${info.image}" style="width:100%; height:100%; object-fit:cover;">`;
+            document.getElementById('r-id').innerText = "KPS-2026-" + info.serial_no;
+            document.getElementById('n-txt').innerText = info.name;
+            document.getElementById('c-txt').innerText = `Class: ${info.class} (${info.section || 'A'})`;
+            document.getElementById('r-date').innerText = new Date().toLocaleDateString();
 
-            // DEEP SUBJECT SCANNER (Fix for subjects not showing)
-            const subjectData = [];
-            let engMark = 0;
-
-            function extractSubjects(obj) {
-                Object.entries(obj).forEach(([key, val]) => {
-                    if (typeof val === 'object' && val !== null) {
-                        extractSubjects(val); // Deep scan if it's a map
-                    } else if (key.toLowerCase() !== 'password' && !isNaN(val) && val !== "") {
-                        let score = parseInt(val);
-                        if (key.toLowerCase().includes('english')) {
-                            engMark = score;
-                        } else {
-                            subjectData.push({ name: key, score: score });
-                        }
-                    }
-                });
+            // Image Handler: Agar info.image mein URL hai toh dikhayega
+            if(info.image) {
+                document.getElementById('photo-div').innerHTML = `<img src="${info.image}">`;
+            } else {
+                document.getElementById('photo-div').innerText = info.name.charAt(0);
             }
 
-            extractSubjects(academic || {});
+            // Universal Subject Scanner
+            let subjects = [];
+            let engVal = 0;
 
-            // BEST OF 5 LOGIC (English Mandatory + Top 4)
-            subjectData.sort((a,b) => b.score - a.score);
-            const topFour = subjectData.slice(0, 4);
-            const topFourNames = topFour.map(s => s.name);
-            const total = engMark + topFour.reduce((a,b) => a + b.score, 0);
-            const perc = (total / 5).toFixed(1);
-
-            // Display Subjects
-            const listDiv = document.getElementById('subjects-list');
-            listDiv.innerHTML = '';
-            
-            const renderRow = (n, s, inc) => {
-                const color = s >= 75 ? '#22c55e' : (s >= 33 ? '#3182ce' : '#ef4444');
-                listDiv.innerHTML += `
-                    <div class="subject-row">
-                        <div class="sub-info">
-                            <span>${n.toUpperCase()} ${inc ? '<span class="tag-best">Included</span>' : ''}</span>
-                            <span>${s}/100</span>
-                        </div>
-                        <div class="bar-bg"><div class="bar-fill" style="width:${s}%; background:${color}"></div></div>
-                    </div>`;
-            };
-
-            renderRow('English', engMark, true);
-            subjectData.forEach(s => renderRow(s.name, s.score, topFourNames.includes(s.name)));
-
-            // Update Header Stats
-            document.getElementById('v-perc').innerText = perc + "%";
-            document.getElementById('v-res').innerText = perc >= 33 ? "PASS" : "FAIL";
-            document.getElementById('v-res').style.color = perc >= 33 ? "#22c55e" : "#ef4444";
-
-            let grade = "D", remark = "Keep practicing.";
-            if(perc >= 91) { grade="A1"; remark="Excellent performance! Proud of you."; }
-            else if(perc >= 81) { grade="A2"; remark="Very good! Maintain this consistency."; }
-            else if(perc >= 71) { grade="B1"; remark="Good result! You can do even better."; }
-            document.getElementById('v-grade').innerText = grade;
-            document.getElementById('v-remarks').innerText = remark;
-
-            // Attendance Chart with Tooltips
-            const monthsFull = ['April','May','July','August','September','October','November','December','January','February','March'];
-            const monthKeys = ['apr','may','jul','aug','sep','oct','nov','dec','jan','feb','mar'];
-            const attScores = monthKeys.map(m => parseInt(attendance[m]) || 0);
-            
-            document.getElementById('v-att').innerText = Math.round(attScores.reduce((a,b)=>a+b,0)/11) + "%";
-
-            new Chart(document.getElementById('attChart'), {
-                type: 'bar',
-                data: {
-                    labels: monthsFull,
-                    datasets: [{ data: attScores, backgroundColor: '#004a99', borderRadius: 5 }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { display: false },
-                        tooltip: { 
-                            enabled: true,
-                            callbacks: { label: (ctx) => `Attendance: ${ctx.raw}%` }
-                        }
-                    }
+            // Is loop ko dhyan se dekho, ye kisi bhi "key" ko subject maan lega agar wo number hai
+            Object.entries(academic || {}).forEach(([key, val]) => {
+                if(key.toLowerCase().includes('password')) return;
+                
+                let num = parseInt(val);
+                if(!isNaN(num)) {
+                    if(key.toLowerCase().includes('english')) engVal = num;
+                    else subjects.push({ name: key, score: num });
                 }
             });
 
-            document.getElementById('qr-box').innerHTML = "";
-            new QRCode(document.getElementById("qr-box"), { text: "KPS-VERIFIED-"+info.serial_no, width: 60, height: 60 });
+            // Best of 5 (Eng + Top 4)
+            subjects.sort((a,b) => b.score - a.score);
+            let top4 = subjects.slice(0, 4);
+            let top4Names = top4.map(s => s.name);
+            let finalTotal = engVal + top4.reduce((a,b) => a + b.score, 0);
+            let finalPerc = (finalTotal / 5).toFixed(1);
+
+            // Render UI
+            const list = document.getElementById('sub-list');
+            list.innerHTML = '';
+            
+            const draw = (n, s, inc) => {
+                let color = s >= 75 ? '#22c55e' : (s >= 33 ? '#3182ce' : '#ef4444');
+                list.innerHTML += `<div class="sub-row">
+                    <div class="sub-label"><span>${n.toUpperCase()} ${inc ? '<span class="tag">Included</span>' : ''}</span> <span>${s}/100</span></div>
+                    <div class="rail"><div class="fill" style="width:${s}%; background:${color}"></div></div>
+                </div>`;
+            };
+
+            draw('English', engVal, true);
+            subjects.forEach(s => draw(s.name, s.score, top4Names.includes(s.name)));
+
+            document.getElementById('s-perc').innerText = finalPerc + "%";
+            document.getElementById('s-res').innerText = finalPerc >= 33 ? "PASS" : "FAIL";
+            document.getElementById('s-res').style.color = finalPerc >= 33 ? "#22c55e" : "#ef4444";
+
+            let g = "D", rem = "Work harder!";
+            if(finalPerc >= 91) { g="A1"; rem="Outstanding! Proud of your success."; }
+            else if(finalPerc >= 81) { g="A2"; rem="Excellent work, keep it up!"; }
+            else if(finalPerc >= 71) { g="B1"; rem="Good Job! Aim for A1 next time."; }
+            document.getElementById('s-grad').innerText = g;
+            document.getElementById('s-rem').innerText = rem;
+
+            // Chart with Month Tooltip
+            const mFull = ['April','May','July','August','September','October','November','December','January','February','March'];
+            const mKeys = ['apr','may','jul','aug','sep','oct','nov','dec','jan','feb','mar'];
+            const attData = mKeys.map(k => parseInt(attendance[k]) || 0);
+            document.getElementById('s-att').innerText = Math.round(attData.reduce((a,b)=>a+b,0)/11) + "%";
+
+            new Chart(document.getElementById('myChart'), {
+                type: 'bar',
+                data: { labels: mFull, datasets: [{ data: attData, backgroundColor: '#004a99', borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: true } } }
+            });
+
+            document.getElementById('qr').innerHTML = "";
+            new QRCode(document.getElementById("qr"), { text: "KPS-STU-"+info.serial_no, width: 60, height: 60 });
         }
     </script>
 </body>
