@@ -3,111 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KPS | OFFICIAL PORTAL</title>
+    <title>KPS | OFFICIAL PORTAL 2026</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        :root { --primary: #002d5b; --accent: #ffd700; --bg: #f3f6f9; }
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; }
-        body { background: var(--bg); margin: 0; padding: 0; }
+        :root { --primary: #002d5b; --accent: #ffd700; --bg: #f3f6f9; --white: #ffffff; }
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s ease; }
+        body { background: var(--bg); margin: 0; color: #2d3748; }
         
-        .school-header { text-align: center; padding: 25px 10px; background: white; border-bottom: 4px solid var(--primary); }
-        .logo-img { width: 70px; height: 70px; margin-bottom: 10px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        /* Header & Logo */
+        .header-brand { text-align: center; padding: 30px 10px; background: var(--white); border-bottom: 5px solid var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .logo-box { width: 75px; height: 75px; background: #fff; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; border: 2px solid #eee; margin-bottom: 10px; overflow: hidden; }
 
         .container { max-width: 500px; margin: 0 auto; padding: 20px; }
         
-        /* Login UI */
-        .auth-card { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-top: 20px; }
-        .input-wrapper { position: relative; margin-bottom: 15px; }
-        input { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 16px; outline: none; }
-        .eye { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; color: var(--primary); }
+        /* Login Card */
+        .auth-card { background: var(--white); padding: 35px 25px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.08); margin-top: 15px; border: 1px solid #f1f5f9; }
+        .auth-card:hover { transform: translateY(-5px); }
+        .input-group { position: relative; margin-bottom: 18px; }
+        input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #e2e8f0; font-size: 16px; outline: none; background: #f8fafc; }
+        input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(0,45,91,0.05); }
+        .eye-btn { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 20px; z-index: 10; opacity: 0.6; }
+        .eye-btn:hover { opacity: 1; }
 
-        .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; background: var(--primary); color: white; font-size: 16px; box-shadow: 0 4px 12px rgba(0,45,91,0.2); }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,45,91,0.3); }
+        .btn-main { width: 100%; padding: 16px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; background: var(--primary); color: white; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-main:active { transform: scale(0.98); }
 
-        /* Report Card */
-        #dashboard { display: none; }
-        .report-card { background: white; border-radius: 30px; padding: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); border: 1px solid #eee; }
+        /* Report Card UI */
+        #dashboard { display: none; animation: slideUp 0.6s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .report-card { background: var(--white); border-radius: 35px; padding: 25px; box-shadow: 0 25px 50px rgba(0,0,0,0.1); position: relative; border: 1px solid #eee; }
         
-        .profile { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 15px; }
-        .stu-img-circ { width: 80px; height: 80px; border-radius: 18px; background: var(--primary); border: 3px solid var(--accent); overflow: hidden; display: flex; align-items: center; justify-content: center; color: white; font-size: 30px; font-weight: 800; }
-        .stu-img-circ img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-row { display: flex; align-items: center; gap: 20px; margin-bottom: 25px; }
+        .avatar { width: 90px; height: 90px; border-radius: 22px; background: var(--primary); border: 4px solid var(--accent); display: flex; align-items: center; justify-content: center; color: white; font-size: 35px; font-weight: 800; overflow: hidden; box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 20px; }
-        .stat-box { background: #f8fafc; padding: 10px 2px; border-radius: 12px; text-align: center; border: 1px solid #edf2f7; }
-        .stat-box small { font-size: 7px; color: #a0aec0; font-weight: 800; display: block; text-transform: uppercase; }
-        .stat-box b { font-size: 13px; color: var(--primary); }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
+        .stat-card { background: #f8fafc; padding: 12px 5px; border-radius: 18px; text-align: center; border: 1px solid #edf2f7; }
+        .stat-card small { font-size: 8px; font-weight: 800; color: #a0aec0; text-transform: uppercase; display: block; margin-bottom: 4px; }
+        .stat-card b { font-size: 15px; color: var(--primary); }
 
-        .sub-row { margin-bottom: 12px; }
-        .sub-label { display: flex; justify-content: space-between; font-weight: 800; font-size: 12px; margin-bottom: 4px; }
-        .tag { font-size: 7px; color: #22c55e; background: #e8f5e9; padding: 2px 4px; border-radius: 4px; margin-left: 5px; }
-        .rail { background: #edf2f7; height: 8px; border-radius: 10px; overflow: hidden; }
-        .fill { height: 100%; border-radius: 10px; }
+        .sub-box { margin-bottom: 15px; }
+        .sub-data { display: flex; justify-content: space-between; font-weight: 800; font-size: 13px; margin-bottom: 6px; }
+        .inc-tag { font-size: 8px; color: #22c55e; background: #e8f5e9; padding: 2px 6px; border-radius: 6px; margin-left: 6px; text-transform: uppercase; }
+        .rail { background: #edf2f7; height: 10px; border-radius: 20px; overflow: hidden; }
+        .fill { height: 100%; border-radius: 20px; width: 0; transition: width 1.5s cubic-bezier(0.1, 0, 0, 1); }
 
-        .remarks { background: #fffdf0; border-left: 4px solid var(--accent); padding: 12px; border-radius: 12px; font-size: 11px; font-weight: 700; margin: 15px 0; }
+        .remarks-strip { background: #fffdf0; border-left: 5px solid var(--accent); padding: 15px; border-radius: 15px; font-size: 12px; font-weight: 700; margin: 20px 0; color: #744210; line-height: 1.4; }
 
-        .footer-sec { display: grid; grid-template-columns: 1fr 1fr 60px; align-items: flex-end; gap: 10px; margin-top: 25px; }
-        .sign { border-top: 1px solid #ccc; font-size: 9px; font-weight: 800; text-align: center; color: var(--primary); padding-top: 4px; }
+        .footer-layout { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 30px; padding-top: 20px; border-top: 2px dashed #f1f5f9; }
+        .sign-area { text-align: center; width: 100px; }
+        .sign-line { border-top: 2px solid #cbd5e0; margin-top: 10px; font-size: 9px; font-weight: 800; color: var(--primary); padding-top: 5px; }
 
-        @media print { .btn, .eye, .school-header { display: none !important; } }
+        footer { text-align: center; padding: 30px; font-size: 11px; color: #a0aec0; font-weight: 700; }
+
+        @media print { .btn-main, .eye-btn, .header-brand, footer { display: none !important; } .container { padding: 0; } .report-card { box-shadow: none; border: 1px solid #eee; } }
     </style>
 </head>
 <body>
 
     <div id="login-section">
-        <div class="school-header">
-            <img src="https://img.icons8.com/color/96/university.png" class="logo-img">
-            <h1 style="color:var(--primary); margin:0; font-size: 28px; font-weight: 900;">KPS DIGITAL</h1>
-            <p style="margin:0; font-size:12px; color:#666; font-weight:700;">OFFICIAL RESULT PORTAL 2026</p>
+        <div class="header-brand">
+            <div class="logo-box"><img src="https://img.icons8.com/color/96/university.png" style="width:50px;"></div>
+            <h1 style="color:var(--primary); margin:0; font-size: 30px; font-weight: 900;">KPS<span style="color:var(--accent)">.</span>PORTAL</h1>
+            <p style="margin:5px 0 0 0; font-size:12px; color:#a0aec0; font-weight:800; letter-spacing: 1px;">DIGITAL ACADEMIC SYSTEM 2026</p>
         </div>
         <div class="container">
             <div class="auth-card">
-                <div class="input-wrapper"><input type="text" id="stu_user" placeholder="Serial No."></div>
-                <div class="input-wrapper"><input type="password" id="stu_pass" placeholder="Security PIN"><span class="eye" id="toggleEye">👁️</span></div>
-                <button class="btn" id="loginBtn">Access Marksheet 🔒</button>
+                <div class="input-group"><input type="text" id="stu_user" placeholder="Serial Number"></div>
+                <div class="input-group">
+                    <input type="password" id="stu_pass" placeholder="Security PIN">
+                    <span class="eye-btn" id="togglePass">👁️</span>
+                </div>
+                <button class="btn-main" id="loginBtn">Unlock Results 🔒</button>
             </div>
         </div>
     </div>
 
     <div id="dashboard" class="container">
         <div class="report-card">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px; font-size:9px; font-weight:800; color:#999;">
-                <span id="r-id">ID: -</span> <span id="r-date">DATE: -</span>
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px; font-size:10px; font-weight:800; color:#cbd5e0;">
+                <span id="disp-id">ID: -</span> <span id="disp-date">DATE: -</span>
             </div>
 
-            <div class="profile">
-                <div id="photo-div" class="stu-img-circ">?</div>
+            <div class="profile-row">
+                <div id="disp-photo" class="avatar">?</div>
                 <div>
-                    <h2 id="n-txt" style="margin:0; font-size:22px; color:var(--primary);">Name</h2>
-                    <p id="c-txt" style="margin:0; font-size:12px; color:#666; font-weight:700;">Class: -</p>
+                    <h2 id="disp-name" style="margin:0; font-size:24px; color:var(--primary); letter-spacing: -0.5px;">Student Name</h2>
+                    <p id="disp-class" style="margin:2px 0; font-size:13px; color:#718096; font-weight:700;">Class: -</p>
                 </div>
             </div>
 
-            <div class="stats">
-                <div class="stat-box"><small>Percent</small><b id="s-perc">0%</b></div>
-                <div class="stat-box"><small>Grade</small><b id="s-grad">-</b></div>
-                <div class="stat-box"><small>Attend</small><b id="s-att">0%</b></div>
-                <div class="stat-box"><small>Result</small><b id="s-res">-</b></div>
+            <div class="stats-grid">
+                <div class="stat-card"><small>Percent</small><b id="v-perc">0%</b></div>
+                <div class="stat-card"><small>Grade</small><b id="v-grad">-</b></div>
+                <div class="stat-card"><small>Attend</small><b id="v-att">0%</b></div>
+                <div class="stat-card"><small>Result</small><b id="v-res">-</b></div>
             </div>
 
-            <div id="sub-list"></div>
+            <div id="sub-display-list"></div>
 
-            <div class="remarks">📝 REMARKS: <span id="s-rem">...</span></div>
+            <div class="remarks-strip">📝 <b>REMARKS:</b> <span id="v-rem">Performance data loading...</span></div>
 
-            <div style="height: 150px; margin: 20px 0;"><canvas id="myChart"></canvas></div>
+            <div style="height: 160px; margin: 25px 0;"><canvas id="attChart"></canvas></div>
 
-            <div class="footer-sec">
-                <div class="sign">CLASS TEACHER</div>
-                <div class="sign">PRINCIPAL</div>
-                <div id="qr"></div>
+            <div class="footer-layout">
+                <div class="sign-area"><div class="sign-line">TEACHER</div></div>
+                <div id="qr-code"></div>
+                <div class="sign-area"><div class="sign-line">PRINCIPAL</div></div>
             </div>
         </div>
-        <button class="btn" style="margin-top:15px;" onclick="window.print()">Print Report Card 🖨️</button>
-        <button class="btn" style="margin-top:8px; background:#e2e8f0; color:#4a5568;" onclick="location.reload()">Logout</button>
+        
+        <div style="margin-top:20px; display: grid; gap: 10px;">
+            <button class="btn-main" onclick="window.print()">Print Official Marksheet 🖨️</button>
+            <button class="btn-main" style="background:#e2e8f0; color:#4a5568;" onclick="location.reload()">Secure Sign Out</button>
+        </div>
     </div>
+
+    <footer>© 2026 Kanpur Public School • Digitally Verified Report</footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
@@ -125,100 +142,123 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        document.getElementById('toggleEye').onclick = () => {
+        // Eye Toggle
+        document.getElementById('togglePass').onclick = () => {
             const p = document.getElementById('stu_pass');
             p.type = p.type === 'password' ? 'text' : 'password';
         };
 
+        // Login Logic
         document.getElementById('loginBtn').onclick = async () => {
             const u = document.getElementById('stu_user').value.trim();
             const p = document.getElementById('stu_pass').value.trim();
             if(!u || !p) return;
 
-            const snap = await getDoc(doc(db, "student_data", u));
-            if(snap.exists() && snap.data().info.password == p) {
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                loadMarks(snap.data());
-            } else { Swal.fire('Error', 'Invalid PIN/ID', 'error'); }
+            try {
+                const snap = await getDoc(doc(db, "student_data", u));
+                if(snap.exists() && snap.data().info.password == p) {
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    buildMarksheet(snap.data());
+                } else { Swal.fire('Error', 'Incorrect PIN/Serial', 'error'); }
+            } catch (e) { console.error(e); }
         };
 
-        function loadMarks(data) {
+        function buildMarksheet(data) {
             const { info, academic, attendance } = data;
-            document.getElementById('r-id').innerText = "KPS-2026-" + info.serial_no;
-            document.getElementById('n-txt').innerText = info.name;
-            document.getElementById('c-txt').innerText = `Class: ${info.class} (${info.section || 'A'})`;
-            document.getElementById('r-date').innerText = new Date().toLocaleDateString();
+            
+            document.getElementById('disp-id').innerText = "KPS-2026-" + info.serial_no;
+            document.getElementById('disp-name').innerText = info.name;
+            document.getElementById('disp-class').innerText = `Class: ${info.class} | Section: ${info.section || 'A'}`;
+            document.getElementById('disp-date').innerText = "DATE: " + new Date().toLocaleDateString('en-GB');
 
-            // Image Handler: Agar info.image mein URL hai toh dikhayega
             if(info.image) {
-                document.getElementById('photo-div').innerHTML = `<img src="${info.image}">`;
+                document.getElementById('disp-photo').innerHTML = `<img src="${info.image}">`;
             } else {
-                document.getElementById('photo-div').innerText = info.name.charAt(0);
+                document.getElementById('disp-photo').innerText = info.name.charAt(0);
             }
 
-            // Universal Subject Scanner
+            // 🎯 SMART SUBJECT LOGIC (English Mandatory + Best of 4)
             let subjects = [];
-            let engVal = 0;
+            let engMarks = 0;
+            let engLabel = "ENGLISH";
 
-            // Is loop ko dhyan se dekho, ye kisi bhi "key" ko subject maan lega agar wo number hai
             Object.entries(academic || {}).forEach(([key, val]) => {
-                if(key.toLowerCase().includes('password')) return;
+                if(key.toLowerCase() === 'password') return;
                 
-                let num = parseInt(val);
-                if(!isNaN(num)) {
-                    if(key.toLowerCase().includes('english')) engVal = num;
-                    else subjects.push({ name: key, score: num });
+                let score = parseInt(val);
+                if(!isNaN(score)) {
+                    // Yahan fix hai: Agar key "eng" se shuru hoti hai ya "eng" hai
+                    if(key.toLowerCase().trim().startsWith('eng')) {
+                        engMarks = score;
+                        engLabel = key.toUpperCase(); 
+                    } else {
+                        subjects.push({ name: key.toUpperCase(), score: score });
+                    }
                 }
             });
 
-            // Best of 5 (Eng + Top 4)
+            // Best of 4 from others
             subjects.sort((a,b) => b.score - a.score);
             let top4 = subjects.slice(0, 4);
             let top4Names = top4.map(s => s.name);
-            let finalTotal = engVal + top4.reduce((a,b) => a + b.score, 0);
-            let finalPerc = (finalTotal / 5).toFixed(1);
+            
+            let totalMarks = engMarks + top4.reduce((a,b) => a + b.score, 0);
+            let percentage = (totalMarks / 5).toFixed(1);
 
-            // Render UI
-            const list = document.getElementById('sub-list');
+            // UI Render
+            const list = document.getElementById('sub-display-list');
             list.innerHTML = '';
             
-            const draw = (n, s, inc) => {
+            const createRow = (n, s, inc) => {
                 let color = s >= 75 ? '#22c55e' : (s >= 33 ? '#3182ce' : '#ef4444');
-                list.innerHTML += `<div class="sub-row">
-                    <div class="sub-label"><span>${n.toUpperCase()} ${inc ? '<span class="tag">Included</span>' : ''}</span> <span>${s}/100</span></div>
-                    <div class="rail"><div class="fill" style="width:${s}%; background:${color}"></div></div>
-                </div>`;
+                list.innerHTML += `
+                    <div class="sub-box">
+                        <div class="sub-data">
+                            <span>${n} ${inc ? '<span class="inc-tag">Included</span>' : ''}</span> 
+                            <span>${s}/100</span>
+                        </div>
+                        <div class="rail"><div class="fill" style="width:${s}%; background:${color}"></div></div>
+                    </div>`;
             };
 
-            draw('English', engVal, true);
-            subjects.forEach(s => draw(s.name, s.score, top4Names.includes(s.name)));
+            // English always first
+            createRow(engLabel, engMarks, true);
+            subjects.forEach(s => createRow(s.name, s.score, top4Names.includes(s.name)));
 
-            document.getElementById('s-perc').innerText = finalPerc + "%";
-            document.getElementById('s-res').innerText = finalPerc >= 33 ? "PASS" : "FAIL";
-            document.getElementById('s-res').style.color = finalPerc >= 33 ? "#22c55e" : "#ef4444";
+            // Update Stats
+            document.getElementById('v-perc').innerText = percentage + "%";
+            document.getElementById('v-res').innerText = percentage >= 33 ? "PASS" : "FAIL";
+            document.getElementById('v-res').style.color = percentage >= 33 ? "#22c55e" : "#ef4444";
 
-            let g = "D", rem = "Work harder!";
-            if(finalPerc >= 91) { g="A1"; rem="Outstanding! Proud of your success."; }
-            else if(finalPerc >= 81) { g="A2"; rem="Excellent work, keep it up!"; }
-            else if(finalPerc >= 71) { g="B1"; rem="Good Job! Aim for A1 next time."; }
-            document.getElementById('s-grad').innerText = g;
-            document.getElementById('s-rem').innerText = rem;
+            let g = "D", r = "Consistent effort needed.";
+            if(percentage >= 91) { g="A1"; r="Outstanding! You have set a high benchmark."; }
+            else if(percentage >= 81) { g="A2"; r="Excellent performance, keep maintaining this level."; }
+            else if(percentage >= 71) { g="B1"; r="Very good! A little more focus can lead to A1."; }
+            else if(percentage >= 61) { g="B2"; r="Good job, but there is room for improvement."; }
+            document.getElementById('v-grad').innerText = g;
+            document.getElementById('v-rem').innerText = r;
 
-            // Chart with Month Tooltip
-            const mFull = ['April','May','July','August','September','October','November','December','January','February','March'];
-            const mKeys = ['apr','may','jul','aug','sep','oct','nov','dec','jan','feb','mar'];
-            const attData = mKeys.map(k => parseInt(attendance[k]) || 0);
-            document.getElementById('s-att').innerText = Math.round(attData.reduce((a,b)=>a+b,0)/11) + "%";
+            // Attendance Chart with Months
+            const months = ['April','May','July','August','September','October','November','December','January','February','March'];
+            const keys = ['apr','may','jul','aug','sep','oct','nov','dec','jan','feb','mar'];
+            const attVals = keys.map(k => parseInt(attendance[k]) || 0);
+            
+            document.getElementById('v-att').innerText = Math.round(attVals.reduce((a,b)=>a+b,0)/11) + "%";
 
-            new Chart(document.getElementById('myChart'), {
+            new Chart(document.getElementById('attChart'), {
                 type: 'bar',
-                data: { labels: mFull, datasets: [{ data: attData, backgroundColor: '#004a99', borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: true } } }
+                data: { labels: months, datasets: [{ data: attVals, backgroundColor: '#004a99', borderRadius: 6 }] },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    plugins: { legend: { display: false }, tooltip: { enabled: true } },
+                    scales: { y: { display: false }, x: { grid: { display: false } } }
+                }
             });
 
-            document.getElementById('qr').innerHTML = "";
-            new QRCode(document.getElementById("qr"), { text: "KPS-STU-"+info.serial_no, width: 60, height: 60 });
+            document.getElementById('qr-code').innerHTML = "";
+            new QRCode(document.getElementById("qr-code"), { text: "KPS-VERIFIED-"+info.serial_no, width: 60, height: 60 });
         }
     </script>
 </body>
