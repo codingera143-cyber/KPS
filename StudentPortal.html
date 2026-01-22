@@ -13,7 +13,7 @@
     <style>
         :root { 
             --primary: #002d5b; --secondary: #004a99; --accent: #ffd700; 
-            --bg: #f3f6f9; --text: #2d3748; --card-bg: #ffffff;
+            --bg: #f3f6f9; --text: #2d3748; --success: #22c55e;
         }
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
@@ -24,54 +24,53 @@
         /* Login UI */
         .auth-card { background: white; padding: 35px 25px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-top: 40px; }
         .input-wrapper { position: relative; margin-bottom: 18px; }
-        input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #e2e8f0; font-size: 16px; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--primary); }
+        input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #e2e8f0; font-size: 16px; outline: none; }
         .toggle-pass { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--primary); font-size: 20px; }
-        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; font-size: 16px; }
+        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; font-size: 16px; transition: 0.3s; }
         .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:active { transform: scale(0.98); }
 
-        /* Report Card Layout */
+        /* Report Card */
         #dashboard { display: none; }
         .report-card { background: white; border-radius: 35px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; position: relative; }
         
         .report-header { display: flex; justify-content: space-between; font-size: 10px; color: #a0aec0; margin-bottom: 20px; font-weight: 800; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
 
         .profile-area { display: flex; align-items: center; gap: 20px; margin-bottom: 25px; }
-        .stu-img { width: 90px; height: 90px; border-radius: 20px; background: var(--primary); border: 4px solid var(--accent); display: flex; align-items: center; justify-content: center; color: white; font-size: 38px; font-weight: 800; overflow: hidden; }
+        .stu-img { width: 85px; height: 85px; border-radius: 20px; background: var(--primary); border: 4px solid var(--accent); display: flex; align-items: center; justify-content: center; color: white; font-size: 35px; font-weight: 800; overflow: hidden; }
         .stu-img img { width: 100%; height: 100%; object-fit: cover; }
         .stu-info h2 { margin: 0; font-size: 22px; color: var(--primary); letter-spacing: -0.5px; }
-        .stu-info p { margin: 4px 0; font-size: 13px; font-weight: 700; color: #718096; }
 
-        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px; }
-        .stat-item { background: #f8fafc; padding: 15px 10px; border-radius: 20px; text-align: center; border: 1px solid #edf2f7; }
-        .stat-item small { font-size: 9px; color: #a0aec0; font-weight: 800; text-transform: uppercase; }
-        .stat-item b { display: block; font-size: 18px; color: var(--primary); margin-top: 4px; }
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
+        .stat-item { background: #f8fafc; padding: 12px 5px; border-radius: 18px; text-align: center; border: 1px solid #edf2f7; }
+        .stat-item small { font-size: 8px; color: #a0aec0; font-weight: 800; text-transform: uppercase; display: block; }
+        .stat-item b { font-size: 15px; color: var(--primary); margin-top: 3px; display: block; }
 
-        /* Subjects Progress Section */
-        .subject-list { margin-bottom: 30px; }
-        .subject-box { margin-bottom: 18px; }
-        .subject-info { display: flex; justify-content: space-between; font-weight: 800; font-size: 13px; margin-bottom: 6px; }
+        .subject-box { margin-bottom: 15px; }
+        .subject-info { display: flex; justify-content: space-between; font-weight: 800; font-size: 13px; margin-bottom: 5px; align-items: center; }
+        .best-tag { font-size: 9px; color: var(--success); margin-left: 5px; background: #e8f5e9; padding: 2px 6px; border-radius: 6px; text-transform: uppercase; }
         .progress-rail { background: #edf2f7; height: 10px; border-radius: 20px; overflow: hidden; }
         .progress-bar { height: 100%; border-radius: 20px; transition: width 1.5s cubic-bezier(0.1, 0, 0, 1); }
 
-        /* Footer: Signs and QR */
-        .bottom-layout { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; padding-top: 20px; border-top: 2px dashed #f1f5f9; }
-        .sign-box { text-align: center; width: 120px; }
-        .sign-line { border-top: 2px solid #cbd5e0; margin-top: 10px; font-size: 10px; font-weight: 800; color: var(--primary); padding-top: 5px; }
-        #qrcode-container { text-align: right; }
+        /* Footer Layout */
+        .bottom-layout { display: grid; grid-template-columns: 1fr 1fr 80px; align-items: flex-end; gap: 10px; margin-top: 30px; padding-top: 20px; border-top: 2px dashed #f1f5f9; }
+        .sign-box { text-align: center; }
+        .sign-line { border-top: 2px solid #cbd5e0; margin-top: 10px; font-size: 9px; font-weight: 800; color: var(--primary); padding-top: 5px; }
+        #qrcode { display: flex; justify-content: flex-end; }
 
-        .footer-credit { text-align: center; padding: 25px; font-size: 11px; color: #a0aec0; font-weight: 700; }
+        .footer-credit { text-align: center; padding: 20px; font-size: 10px; color: #a0aec0; font-weight: 700; }
 
         @media print {
             .ticker-wrap, .btn, .auth-card, .footer-credit, #logout-btn { display: none !important; }
             .container { padding: 0; max-width: 100%; }
             .report-card { box-shadow: none; border: 1px solid #ddd; border-radius: 0; }
+            body { background: white; }
         }
     </style>
 </head>
 <body>
 
-    <div class="ticker-wrap"><marquee>SESSION 2025–26 | ACCREDITED BY KPS BOARD ✨ | DIGITAL PROGRESS REPORT</marquee></div>
+    <div class="ticker-wrap"><marquee>SESSION 2025–26 | KPS BOARD ACCREDITED | OFFICIAL DIGITAL PROGRESS REPORT</marquee></div>
 
     <div class="container">
         <div id="login-section">
@@ -99,45 +98,42 @@
                     <div id="stu-photo" class="stu-img">?</div>
                     <div class="stu-info">
                         <h2 id="name-display">Name</h2>
-                        <p id="class-display">Class: -</p>
-                        <p id="roll-display">Roll ID: -</p>
+                        <p id="class-display" style="font-size:12px; font-weight:700; color:#718096; margin:0;">Class: -</p>
                     </div>
                 </div>
 
                 <div class="stats-row">
                     <div class="stat-item"><small>Attendance</small><b id="att-val">0%</b></div>
                     <div class="stat-item"><small>Percentage</small><b id="avg-val">0%</b></div>
-                    <div class="stat-item"><small>Result</small><b id="grade-val">-</b></div>
+                    <div class="stat-item"><small>Grade</small><b id="grade-badge">-</b></div>
+                    <div class="stat-item"><small>Result</small><b id="res-val">-</b></div>
                 </div>
 
-                <div class="subject-list" id="marks-list">
-                    </div>
+                <div id="marks-list"></div>
 
-                <div style="height: 180px; margin-bottom: 30px;"><canvas id="attChart"></canvas></div>
+                <div style="height: 160px; margin: 25px 0;"><canvas id="attChart"></canvas></div>
 
                 <div class="bottom-layout">
                     <div class="sign-box">
-                        <div style="height: 40px;"></div>
+                        <div style="height: 35px;"></div>
                         <div class="sign-line">CLASS TEACHER</div>
                     </div>
                     <div class="sign-box">
-                        <div style="height: 40px;"></div>
+                        <div style="height: 35px;"></div>
                         <div class="sign-line">PRINCIPAL</div>
                     </div>
-                    <div id="qrcode-container">
-                        <div id="qrcode"></div>
-                    </div>
+                    <div id="qrcode"></div>
                 </div>
             </div>
 
-            <div style="margin-top: 25px; display: grid; gap: 12px;">
+            <div style="margin-top: 20px; display: grid; gap: 10px;">
                 <button class="btn btn-primary" onclick="window.print()">Print Official Marksheet 🖨️</button>
-                <button class="btn" id="logout-btn" style="background:#e2e8f0; color:#4a5568;" onclick="location.reload()">Secure Sign Out</button>
+                <button class="btn" style="background:#e2e8f0; color:#4a5568;" onclick="location.reload()">Sign Out</button>
             </div>
         </div>
     </div>
 
-    <footer class="footer-credit">© 2026 Kanpur Public School • Digital Excellence</footer>
+    <footer class="footer-credit">© 2026 Kanpur Public School • Digitally Verified Marksheet</footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
@@ -155,116 +151,119 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- EYE TOGGLE ---
+        // Password Toggle
         document.getElementById('eyeBtn').addEventListener('click', () => {
             const p = document.getElementById('stu_pass');
             p.type = p.type === "password" ? "text" : "password";
         });
 
-        // --- LOGIN ---
+        // Login Logic
         document.getElementById('loginBtn').addEventListener('click', async () => {
             const u = document.getElementById('stu_user').value.trim();
             const p = document.getElementById('stu_pass').value.trim();
             const btn = document.getElementById('loginBtn');
 
             if(!u || !p) return Swal.fire('Error', 'Fields cannot be empty', 'warning');
-            btn.innerHTML = "Verifying Identity..."; 
+            btn.innerHTML = "Verifying..."; 
 
             try {
                 const snap = await getDoc(doc(db, "student_data", u));
                 if(snap.exists() && snap.data().info.password == p) {
                     document.getElementById('login-section').style.display = 'none';
                     document.getElementById('dashboard').style.display = 'block';
-                    startDashboard(snap.data());
+                    loadData(snap.data());
                 } else {
                     Swal.fire('Failed', 'Incorrect Credentials', 'error');
                     btn.innerHTML = "Access Marksheet 🔒";
                 }
-            } catch (e) {
-                Swal.fire('Error', 'Database Error: Check connection', 'error');
-            }
+            } catch (e) { Swal.fire('Error', 'Connection Failed', 'error'); }
         });
 
-        function startDashboard(data) {
+        function loadData(data) {
             const info = data.info || {};
             const aca = data.academic || {};
             const att = data.attendance || {};
 
-            // Meta
             document.getElementById('meta-id').innerText = `ID: KPS-2026-${info.serial_no}`;
             document.getElementById('meta-date').innerText = "DATE: " + new Date().toLocaleDateString('en-GB');
             document.getElementById('name-display').innerText = info.name;
-            document.getElementById('class-display').innerText = "Class: " + info.class + " | Section: " + (info.section || 'A');
-            document.getElementById('roll-display').innerText = "Roll No: " + info.serial_no;
+            document.getElementById('class-display').innerText = `Class: ${info.class} | Section: ${info.section || 'A'}`;
 
-            // Photo
             const imgBox = document.getElementById('stu-photo');
-            if(info.image && info.image.length > 50) {
-                imgBox.innerHTML = `<img src="${info.image}">`;
-            } else {
-                imgBox.innerText = info.name.charAt(0);
-            }
+            if(info.image && info.image.length > 50) imgBox.innerHTML = `<img src="${info.image}">`;
+            else imgBox.innerText = info.name.charAt(0);
 
-            // QR Code (Moved to right)
             document.getElementById('qrcode').innerHTML = "";
             new QRCode(document.getElementById("qrcode"), { text: `KPS-VERIFIED-${info.serial_no}`, width: 65, height: 65 });
 
-            // Subject Progress Bars logic
             const list = document.getElementById('marks-list');
             list.innerHTML = '';
             
-            const subIcons = { 
-                english: '📖', hindi: '📙', maths: '🔢', science: '🔬', physics: '⚡', 
-                chemistry: '🧪', biology: '🧬', computer: '💻', gk: '🌍', drawing: '🎨',
-                it: '📡', ai: '🤖', history: '🏛️'
-            };
+            const icons = { english:'📖', hindi:'📙', maths:'🔢', physics:'⚡', chem:'🧪', music:'🎸', yoga:'🧘', it:'💻', science:'🔬', social:'🌍' };
+            
+            let englishScore = 0;
+            let otherSubjects = [];
 
-            let totalMarks = 0, subCount = 0;
+            // Separate Logic
+            Object.entries(aca).forEach(([sub, val]) => {
+                if(sub === 'password' || val === "" || isNaN(val)) return;
+                let s = parseInt(val);
+                if(sub.toLowerCase() === 'english') englishScore = s;
+                else otherSubjects.push({ name: sub, score: s });
+            });
 
-            Object.entries(aca).forEach(([subject, value]) => {
-                // Skip non-subject fields
-                if(subject === 'password' || value === "" || value === undefined) return;
-                
-                let score = parseInt(value);
-                if(isNaN(score)) return;
+            // Best of 4 from others
+            otherSubjects.sort((a, b) => b.score - a.score);
+            let topFour = otherSubjects.slice(0, 4);
+            let topFourNames = topFour.map(item => item.name);
 
-                totalMarks += score;
-                subCount++;
+            let totalBestFive = englishScore + topFour.reduce((a, b) => a + b.score, 0);
 
-                let icon = subIcons[subject.toLowerCase()] || '📝';
+            // Render English first
+            renderRow('English', englishScore, true);
+
+            // Render others
+            otherSubjects.forEach(subObj => {
+                let isIncluded = topFourNames.includes(subObj.name);
+                renderRow(subObj.name, subObj.score, isIncluded);
+            });
+
+            function renderRow(name, score, included) {
+                let icon = icons[name.toLowerCase()] || '📝';
                 let color = score >= 75 ? '#22c55e' : (score >= 33 ? '#3182ce' : '#e53e3e');
-
                 list.innerHTML += `
                     <div class="subject-box">
                         <div class="subject-info">
-                            <span>${icon} ${subject.toUpperCase()}</span>
+                            <span>${icon} ${name.toUpperCase()} ${included ? '<span class="best-tag">Included</span>' : ''}</span>
                             <span>${score}/100</span>
                         </div>
-                        <div class="progress-rail">
-                            <div class="progress-bar" style="width: ${score}%; background: ${color}"></div>
-                        </div>
+                        <div class="progress-rail"><div class="progress-bar" style="width:${score}%; background:${color}"></div></div>
                     </div>`;
-            });
+            }
 
-            // Summary Stats
-            let perc = subCount > 0 ? Math.round(totalMarks / subCount) : 0;
-            document.getElementById('avg-val').innerText = perc + "%";
-            document.getElementById('grade-val').innerText = perc >= 33 ? "PASSED" : "FAILED";
-            document.getElementById('grade-val').style.color = perc >= 33 ? "#22c55e" : "#ef4444";
+            // Calculation
+            let p = (totalBestFive / 5).toFixed(1);
+            document.getElementById('avg-val').innerText = p + "%";
+            document.getElementById('res-val').innerText = p >= 33 ? "PASSED" : "FAILED";
+            document.getElementById('res-val').style.color = p >= 33 ? "#22c55e" : "#ef4444";
+
+            let grade = "E";
+            if(p >= 91) grade = "A1"; else if(p >= 81) grade = "A2";
+            else if(p >= 71) grade = "B1"; else if(p >= 61) grade = "B2";
+            else if(p >= 51) grade = "C1"; else if(p >= 41) grade = "C2";
+            else if(p >= 33) grade = "D";
+            document.getElementById('grade-badge').innerText = grade;
 
             // Attendance Chart
-            const ctx = document.getElementById('attChart').getContext('2d');
-            const attMonths = ['apr','may','jul','aug','sep','oct','nov','dec','jan','feb','mar'];
-            const attScores = attMonths.map(m => parseInt(att[m]) || 0);
-            
-            let attAvg = Math.round(attScores.reduce((a,b)=>a+b,0) / 11);
-            document.getElementById('att-val').innerText = attAvg + "%";
+            const months = ['apr','may','jul','aug','sep','oct','nov','dec','jan','feb','mar'];
+            const scores = months.map(m => parseInt(att[m]) || 0);
+            document.getElementById('att-val').innerText = Math.round(scores.reduce((a,b)=>a+b,0)/11) + "%";
 
-            new Chart(ctx, {
+            new Chart(document.getElementById('attChart').getContext('2d'), {
                 type: 'bar',
                 data: {
                     labels: ['Apr','May','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],
-                    datasets: [{ label: 'Att %', data: attScores, backgroundColor: '#004a99', borderRadius: 8 }]
+                    datasets: [{ label: 'Att %', data: scores, backgroundColor: '#004a99', borderRadius: 5 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
