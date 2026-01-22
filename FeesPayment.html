@@ -137,101 +137,152 @@
     </div>
 </div>
     <script type="module">
-    // 1. Firebase SDKs Import
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-    import { getFirestore, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+     // 1. Firebase SDKs Import
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+import { getFirestore, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
-    // 2. YOUR Firebase Config (Paste from Firebase Console)
-    const firebaseConfig = {
-        apiKey: "AIzaSyCQ6S-YfO61gEfB2Ad7neDU-nG4WNn1z8E",
-        authDomain: "kanpur-public-school-d8f4a.firebaseapp.com",
-        projectId: "kanpur-public-school-d8f4a",
-        storageBucket: "kanpur-public-school-d8f4a.firebasestorage.app",
-        messagingSenderId: "421329321742",
-        appId: "1:421329321742:web:0cf01ae45063566bc9215f"
-    };
+const firebaseConfig = {
+    apiKey: "AIzaSyCQ6S-YfO61gEfB2Ad7neDU-nG4WNn1z8E",
+    authDomain: "kanpur-public-school-d8f4a.firebaseapp.com",
+    projectId: "kanpur-public-school-d8f4a",
+    storageBucket: "kanpur-public-school-d8f4a.firebasestorage.app",
+    messagingSenderId: "421329321742",
+    appId: "1:421329321742:web:0cf01ae45063566bc9215f"
+};
 
-    // Initialize Firebase & Firestore
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    // --- FEE DATABASE ---
-    const feesData = {
-        "1": 1200, "2": 1200, "3": 1400, "4": 1400, "5": 1600,
-        "6": 1800, "7": 1800, "8": 2000, "9": 2500, "10": 2800,
-        "11": { "PCM": 4000, "PCB": 4000, "COMMERCE": 3200 },
-        "12": { "PCM": 4500, "PCB": 4500, "COMMERCE": 3500 }
-    };
+const feesData = {
+    "1": 1200, "2": 1200, "3": 1400, "4": 1400, "5": 1600,
+    "6": 1800, "7": 1800, "8": 2000, "9": 2500, "10": 2800,
+    "11": { "PCM": 4000, "PCB": 4000, "COMMERCE": 3200 },
+    "12": { "PCM": 4500, "PCB": 4500, "COMMERCE": 3500 }
+};
 
-    // Handle Class Change UI
-    window.handleClassChange = function() {
-        const classVal = document.getElementById('classSelect').value;
-        const streamSec = document.getElementById('streamSection');
-        streamSec.style.display = (classVal === "11" || classVal === "12") ? "block" : "none";
-        updateAmount();
-    };
+// --- NEW: FETCH STATUS FROM FIREBASE ---
+window.checkFeeStatus = async function() {
+    const sn = document.getElementById('sNo').value;
+    const instDropdown = document.getElementById('instSelect');
+    const payBtn = document.querySelector('.pay-now-btn');
 
-    window.updateAmount = function() {
-        const classVal = document.getElementById('classSelect').value;
-        const streamVal = document.getElementById('streamSelect').value;
-        let amount = 0;
-        if (classVal) {
-            if (classVal === "11" || classVal === "12") {
-                if (streamVal) amount = feesData[classVal][streamVal];
-            } else {
-                amount = feesData[classVal];
+    if (!sn) return;
+
+    try {
+        const studentRef = doc(db, "fee_records", sn);
+        const snap = await getDoc(studentRef);
+
+        if (snap.exists()) {
+            const data = snap.data();
+            // Dropdown options check karo
+            for (let i = 0; i < instDropdown.options.length; i++) {
+                let opt = instDropdown.options[i];
+                let statusField = `installment_${opt.value}_status`;
+
+                if (data[statusField] === "PAID") {
+                    opt.text = `Installment ${opt.value} - PAID ✅`;
+                    opt.style.color = "green";
+                    // Agar current selected option hi paid hai toh button disable kar do
+                    updatePayButton();
+                } else {
+                    opt.text = `${opt.value}${opt.value == 1 ? 'st' : (opt.value == 2 ? 'nd' : (opt.value == 3 ? 'rd' : 'th'))} Installment`;
+                    opt.style.color = "black";
+                }
             }
         }
-        document.getElementById('displayAmount').innerText = "₹ " + amount.toLocaleString('en-IN') + ".00";
-        return amount;
-    };
+    } catch (err) { console.error(err); }
+};
 
-    // --- THE REAL FIREBASE & RAZORPAY LOGIC ---
-    window.startPayment = async function() {
-        const name = document.getElementById('studentName').value;
-        const sn = document.getElementById('sNo').value;
-        const inst = document.getElementById('instSelect').value; // 1, 2, 3, 4
-        const finalAmt = updateAmount();
+// Button status update function
+window.updatePayButton = async function() {
+    const sn = document.getElementById('sNo').value;
+    const inst = document.getElementById('instSelect').value;
+    const payBtn = document.querySelector('.pay-now-btn');
 
-        if (!name || !sn || finalAmt === 0) {
-            alert("⚠️ Please enter all details!");
-            return;
+    if(!sn) return;
+    
+    const studentRef = doc(db, "fee_records", sn);
+    const snap = await getDoc(studentRef);
+    
+    if (snap.exists() && snap.data()[`installment_${inst}_status`] === "PAID") {
+        payBtn.innerText = "ALREADY PAID ✅";
+        payBtn.style.background = "#94a3b8"; // Gray color
+        payBtn.disabled = true;
+    } else {
+        payBtn.innerText = "PROCEED TO PAYMENT";
+        payBtn.style.background = "#003366";
+        payBtn.disabled = false;
+    }
+};
+
+// Existing UI Logic
+window.handleClassChange = function() {
+    const classVal = document.getElementById('classSelect').value;
+    const streamSec = document.getElementById('streamSection');
+    streamSec.style.display = (classVal === "11" || classVal === "12") ? "block" : "none";
+    updateAmount();
+};
+
+window.updateAmount = function() {
+    const classVal = document.getElementById('classSelect').value;
+    const streamVal = document.getElementById('streamSelect').value;
+    let amount = 0;
+    if (classVal) {
+        if (classVal === "11" || classVal === "12") {
+            if (streamVal) amount = feesData[classVal][streamVal];
+        } else {
+            amount = feesData[classVal];
         }
+    }
+    document.getElementById('displayAmount').innerText = "₹ " + amount.toLocaleString('en-IN') + ".00";
+    return amount;
+};
 
-        // Razorpay Options
-        var options = {
-            "key": "rzp_test_8y6P9L3K2V9xZ8", // TEST KEY
-            "amount": finalAmt * 100, 
-            "currency": "INR",
-            "name": "Kanpur Public School",
-            "description": `Fee Installment ${inst} - ${name}`,
-            "handler": async function (response) {
-                // YE HAI FIREBASE LOGIC (EXECUTES ON SUCCESS)
-                try {
-                    const studentRef = doc(db, "fee_records", sn); 
-                    
-                    // Transaction Data save karna
-                    await setDoc(studentRef, {
-                        name: name,
-                        rollNo: sn,
-                        [`installment_${inst}_status`]: "PAID",
-                        [`installment_${inst}_id`]: response.razorpay_payment_id,
-                        last_updated: new Date()
-                    }, { merge: true });
+// Events Attach
+document.getElementById('sNo').addEventListener('blur', checkFeeStatus);
+document.getElementById('instSelect').addEventListener('change', updatePayButton);
 
-                    alert("✅ Payment Successful! Record Updated in Google Cloud Database.");
-                    window.location.href = "success.html"; 
-                } catch (error) {
-                    console.error("Firebase Error: ", error);
-                    alert("Payment Success, but Database update failed. Contact Admin.");
-                }
-            },
-            "prefill": { "name": name },
-            "theme": { "color": "#003366" }
-        };
-        var rzp1 = new Razorpay(options);
-        rzp1.open();
+// Payment Start
+window.startPayment = async function() {
+    const name = document.getElementById('studentName').value;
+    const sn = document.getElementById('sNo').value;
+    const inst = document.getElementById('instSelect').value;
+    const finalAmt = updateAmount();
+
+    if (!name || !sn || finalAmt === 0) {
+        alert("⚠️ Please enter all details!");
+        return;
+    }
+
+    var options = {
+        "key": "rzp_test_8y6P9L3K2V9xZ8",
+        "amount": finalAmt * 100,
+        "currency": "INR",
+        "name": "Kanpur Public School",
+        "description": `Fee Installment ${inst} - ${name}`,
+        "handler": async function (response) {
+            try {
+                const studentRef = doc(db, "fee_records", sn); 
+                await setDoc(studentRef, {
+                    name: name,
+                    rollNo: sn,
+                    [`installment_${inst}_status`]: "PAID",
+                    [`installment_${inst}_id`]: response.razorpay_payment_id,
+                    last_updated: new Date()
+                }, { merge: true });
+
+                alert("✅ Payment Successful! Student Record Updated.");
+                location.reload(); 
+            } catch (error) {
+                alert("Database Update Failed!");
+            }
+        },
+        "prefill": { "name": name },
+        "theme": { "color": "#003366" }
     };
-                </script>
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+};
+            </script>
 </body>
 </html>
