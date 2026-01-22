@@ -11,129 +11,83 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        :root { 
-            --primary: #002d5b; --secondary: #004a99; --accent: #ffd700; 
-            --bg: #f3f6f9; --text: #2d3748; --success: #22c55e;
-        }
+        :root { --primary: #002d5b; --secondary: #004a99; --accent: #ffd700; --bg: #f3f6f9; --text: #2d3748; --success: #22c55e; }
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
-        
         .ticker-wrap { background: var(--primary); color: var(--accent); padding: 10px; font-weight: 800; font-size: 11px; text-align: center; border-bottom: 3px solid var(--accent); }
         .container { width: 100%; max-width: 550px; margin: 0 auto; padding: 15px; flex-grow: 1; }
 
-        /* Login UI */
+        /* Login */
         .auth-card { background: white; padding: 35px 25px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-top: 40px; }
         .input-wrapper { position: relative; margin-bottom: 18px; }
         input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #e2e8f0; font-size: 16px; outline: none; }
         .toggle-pass { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--primary); font-size: 20px; }
-        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; font-size: 16px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:active { transform: scale(0.98); }
 
-        /* Report Card */
+        /* Dashboard */
         #dashboard { display: none; }
         .report-card { background: white; border-radius: 35px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; position: relative; }
-        
         .report-header { display: flex; justify-content: space-between; font-size: 10px; color: #a0aec0; margin-bottom: 20px; font-weight: 800; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
-
         .profile-area { display: flex; align-items: center; gap: 20px; margin-bottom: 25px; }
         .stu-img { width: 85px; height: 85px; border-radius: 20px; background: var(--primary); border: 4px solid var(--accent); display: flex; align-items: center; justify-content: center; color: white; font-size: 35px; font-weight: 800; overflow: hidden; }
         .stu-img img { width: 100%; height: 100%; object-fit: cover; }
-        .stu-info h2 { margin: 0; font-size: 22px; color: var(--primary); letter-spacing: -0.5px; }
-
         .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
         .stat-item { background: #f8fafc; padding: 12px 5px; border-radius: 18px; text-align: center; border: 1px solid #edf2f7; }
-        .stat-item small { font-size: 8px; color: #a0aec0; font-weight: 800; text-transform: uppercase; display: block; }
+        .stat-item small { font-size: 8px; color: #a0aec0; font-weight: 800; display: block; }
         .stat-item b { font-size: 15px; color: var(--primary); margin-top: 3px; display: block; }
 
         .subject-box { margin-bottom: 15px; }
         .subject-info { display: flex; justify-content: space-between; font-weight: 800; font-size: 13px; margin-bottom: 5px; align-items: center; }
-        .best-tag { font-size: 9px; color: var(--success); margin-left: 5px; background: #e8f5e9; padding: 2px 6px; border-radius: 6px; text-transform: uppercase; }
+        .best-tag { font-size: 9px; color: var(--success); margin-left: 5px; background: #e8f5e9; padding: 2px 6px; border-radius: 6px; }
         .progress-rail { background: #edf2f7; height: 10px; border-radius: 20px; overflow: hidden; }
-        .progress-bar { height: 100%; border-radius: 20px; transition: width 1.5s cubic-bezier(0.1, 0, 0, 1); }
+        .progress-bar { height: 100%; border-radius: 20px; transition: width 1.5s ease; }
 
-        /* Footer Layout */
         .bottom-layout { display: grid; grid-template-columns: 1fr 1fr 80px; align-items: flex-end; gap: 10px; margin-top: 30px; padding-top: 20px; border-top: 2px dashed #f1f5f9; }
-        .sign-box { text-align: center; }
-        .sign-line { border-top: 2px solid #cbd5e0; margin-top: 10px; font-size: 9px; font-weight: 800; color: var(--primary); padding-top: 5px; }
-        #qrcode { display: flex; justify-content: flex-end; }
-
-        .footer-credit { text-align: center; padding: 20px; font-size: 10px; color: #a0aec0; font-weight: 700; }
-
-        @media print {
-            .ticker-wrap, .btn, .auth-card, .footer-credit, #logout-btn { display: none !important; }
-            .container { padding: 0; max-width: 100%; }
-            .report-card { box-shadow: none; border: 1px solid #ddd; border-radius: 0; }
-            body { background: white; }
-        }
+        .sign-line { border-top: 2px solid #cbd5e0; margin-top: 10px; font-size: 9px; font-weight: 800; color: var(--primary); padding-top: 5px; text-align: center; }
+        
+        @media print { .ticker-wrap, .btn, .auth-card, #logout-btn { display: none !important; } }
     </style>
 </head>
 <body>
 
-    <div class="ticker-wrap"><marquee>SESSION 2025–26 | KPS BOARD ACCREDITED | OFFICIAL DIGITAL PROGRESS REPORT</marquee></div>
+    <div class="ticker-wrap"><marquee>SESSION 2025–26 | OFFICIAL DIGITAL PROGRESS REPORT | KPS BOARD</marquee></div>
 
     <div class="container">
         <div id="login-section">
-            <h1 style="text-align:center; color:var(--primary); font-size: 40px; margin-bottom: 10px;">KPS<span style="color:var(--accent)">.</span></h1>
+            <h1 style="text-align:center; color:var(--primary); font-size: 40px;">KPS<span style="color:var(--accent)">.</span></h1>
             <div class="auth-card">
-                <div class="input-wrapper">
-                    <input type="text" id="stu_user" placeholder="Enter Serial No.">
-                </div>
-                <div class="input-wrapper">
-                    <input type="password" id="stu_pass" placeholder="Enter Security PIN">
-                    <span class="toggle-pass" id="eyeBtn">👁️</span>
-                </div>
+                <div class="input-wrapper"><input type="text" id="stu_user" placeholder="Serial No."></div>
+                <div class="input-wrapper"><input type="password" id="stu_pass" placeholder="Security PIN"><span class="toggle-pass" id="eyeBtn">👁️</span></div>
                 <button class="btn btn-primary" id="loginBtn">Access Marksheet 🔒</button>
             </div>
         </div>
 
         <div id="dashboard">
             <div class="report-card">
-                <div class="report-header">
-                    <span id="meta-id">ID: KPS-2026-000</span>
-                    <span id="meta-date">DATE: 00/00/0000</span>
-                </div>
-
+                <div class="report-header"><span id="meta-id">-</span><span id="meta-date">-</span></div>
                 <div class="profile-area">
                     <div id="stu-photo" class="stu-img">?</div>
-                    <div class="stu-info">
-                        <h2 id="name-display">Name</h2>
-                        <p id="class-display" style="font-size:12px; font-weight:700; color:#718096; margin:0;">Class: -</p>
-                    </div>
+                    <div class="stu-info"><h2 id="name-display">Name</h2><p id="class-display" style="font-size:12px; font-weight:700; color:#718096; margin:0;">Class: -</p></div>
                 </div>
-
                 <div class="stats-row">
                     <div class="stat-item"><small>Attendance</small><b id="att-val">0%</b></div>
                     <div class="stat-item"><small>Percentage</small><b id="avg-val">0%</b></div>
                     <div class="stat-item"><small>Grade</small><b id="grade-badge">-</b></div>
                     <div class="stat-item"><small>Result</small><b id="res-val">-</b></div>
                 </div>
-
                 <div id="marks-list"></div>
-
-                <div style="height: 160px; margin: 25px 0;"><canvas id="attChart"></canvas></div>
-
+                <div style="height: 150px; margin: 25px 0;"><canvas id="attChart"></canvas></div>
                 <div class="bottom-layout">
-                    <div class="sign-box">
-                        <div style="height: 35px;"></div>
-                        <div class="sign-line">CLASS TEACHER</div>
-                    </div>
-                    <div class="sign-box">
-                        <div style="height: 35px;"></div>
-                        <div class="sign-line">PRINCIPAL</div>
-                    </div>
+                    <div class="sign-box"><div style="height:30px;"></div><div class="sign-line">CLASS TEACHER</div></div>
+                    <div class="sign-box"><div style="height:30px;"></div><div class="sign-line">PRINCIPAL</div></div>
                     <div id="qrcode"></div>
                 </div>
             </div>
-
-            <div style="margin-top: 20px; display: grid; gap: 10px;">
-                <button class="btn btn-primary" onclick="window.print()">Print Official Marksheet 🖨️</button>
-                <button class="btn" style="background:#e2e8f0; color:#4a5568;" onclick="location.reload()">Sign Out</button>
-            </div>
+            <button class="btn btn-primary" style="margin-top:20px;" onclick="window.print()">Print Official Marksheet 🖨️</button>
+            <button class="btn" style="margin-top:10px; background:#e2e8f0;" onclick="location.reload()">Sign Out</button>
         </div>
     </div>
-
-    <footer class="footer-credit">© 2026 Kanpur Public School • Digitally Verified Marksheet</footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
@@ -151,32 +105,24 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Password Toggle
         document.getElementById('eyeBtn').addEventListener('click', () => {
             const p = document.getElementById('stu_pass');
             p.type = p.type === "password" ? "text" : "password";
         });
 
-        // Login Logic
         document.getElementById('loginBtn').addEventListener('click', async () => {
             const u = document.getElementById('stu_user').value.trim();
             const p = document.getElementById('stu_pass').value.trim();
-            const btn = document.getElementById('loginBtn');
-
-            if(!u || !p) return Swal.fire('Error', 'Fields cannot be empty', 'warning');
-            btn.innerHTML = "Verifying..."; 
-
+            if(!u || !p) return Swal.fire('Error', 'Enter Details', 'warning');
+            
             try {
                 const snap = await getDoc(doc(db, "student_data", u));
                 if(snap.exists() && snap.data().info.password == p) {
                     document.getElementById('login-section').style.display = 'none';
                     document.getElementById('dashboard').style.display = 'block';
                     loadData(snap.data());
-                } else {
-                    Swal.fire('Failed', 'Incorrect Credentials', 'error');
-                    btn.innerHTML = "Access Marksheet 🔒";
-                }
-            } catch (e) { Swal.fire('Error', 'Connection Failed', 'error'); }
+                } else { Swal.fire('Error', 'Wrong ID/PIN', 'error'); }
+            } catch (e) { console.error(e); }
         });
 
         function loadData(data) {
@@ -184,53 +130,56 @@
             const aca = data.academic || {};
             const att = data.attendance || {};
 
-            document.getElementById('meta-id').innerText = `ID: KPS-2026-${info.serial_no}`;
+            document.getElementById('meta-id').innerText = "ID: KPS-2026-" + info.serial_no;
             document.getElementById('meta-date').innerText = "DATE: " + new Date().toLocaleDateString('en-GB');
             document.getElementById('name-display').innerText = info.name;
             document.getElementById('class-display').innerText = `Class: ${info.class} | Section: ${info.section || 'A'}`;
 
-            const imgBox = document.getElementById('stu-photo');
-            if(info.image && info.image.length > 50) imgBox.innerHTML = `<img src="${info.image}">`;
-            else imgBox.innerText = info.name.charAt(0);
+            const photo = document.getElementById('stu-photo');
+            if(info.image && info.image.length > 50) photo.innerHTML = `<img src="${info.image}">`;
+            else photo.innerText = info.name.charAt(0);
 
             document.getElementById('qrcode').innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), { text: `KPS-VERIFIED-${info.serial_no}`, width: 65, height: 65 });
+            new QRCode(document.getElementById("qrcode"), { text: "KPS-"+info.serial_no, width: 60, height: 60 });
 
             const list = document.getElementById('marks-list');
             list.innerHTML = '';
-            
-            const icons = { english:'📖', hindi:'📙', maths:'🔢', physics:'⚡', chem:'🧪', music:'🎸', yoga:'🧘', it:'💻', science:'🔬', social:'🌍' };
-            
-            let englishScore = 0;
-            let otherSubjects = [];
+            const icons = { english:'📖', hindi:'📙', maths:'🔢', physics:'⚡', chem:'🧪', music:'🎸', science:'🔬', social:'🌍', computer:'💻', it:'💻', ai:'🤖', drawing:'🎨', gk:'🌍' };
 
-            // Separate Logic
-            Object.entries(aca).forEach(([sub, val]) => {
-                if(sub === 'password' || val === "" || isNaN(val)) return;
-                let s = parseInt(val);
-                if(sub.toLowerCase() === 'english') englishScore = s;
-                else otherSubjects.push({ name: sub, score: s });
+            let allSubs = [];
+            let englishData = null;
+
+            // Robust looping: Har field ko check karega
+            Object.keys(aca).forEach(key => {
+                let val = aca[key];
+                if(key === 'password' || val === "" || isNaN(val)) return;
+
+                let score = parseInt(val);
+                let subName = key.trim();
+
+                if(subName.toLowerCase() === 'english') {
+                    englishData = { name: subName, score: score };
+                } else {
+                    allSubs.push({ name: subName, score: score });
+                }
             });
 
-            // Best of 4 from others
-            otherSubjects.sort((a, b) => b.score - a.score);
-            let topFour = otherSubjects.slice(0, 4);
-            let topFourNames = topFour.map(item => item.name);
+            // Agar English nahi milta toh crash na ho
+            if(!englishData) englishData = { name: 'English', score: 0 };
 
-            let totalBestFive = englishScore + topFour.reduce((a, b) => a + b.score, 0);
+            // Sort others for Top 4
+            allSubs.sort((a, b) => b.score - a.score);
+            let topFour = allSubs.slice(0, 4);
+            let topFourNames = topFour.map(s => s.name);
 
-            // Render English first
-            renderRow('English', englishScore, true);
+            // Calculation Best of 5 (Eng + Top 4)
+            let total = englishData.score + topFour.reduce((a, b) => a + b.score, 0);
+            let perc = (total / 5).toFixed(1);
 
-            // Render others
-            otherSubjects.forEach(subObj => {
-                let isIncluded = topFourNames.includes(subObj.name);
-                renderRow(subObj.name, subObj.score, isIncluded);
-            });
-
-            function renderRow(name, score, included) {
+            // UI Rendering
+            const render = (name, score, included) => {
                 let icon = icons[name.toLowerCase()] || '📝';
-                let color = score >= 75 ? '#22c55e' : (score >= 33 ? '#3182ce' : '#e53e3e');
+                let color = score >= 75 ? '#22c55e' : (score >= 33 ? '#3182ce' : '#ef4444');
                 list.innerHTML += `
                     <div class="subject-box">
                         <div class="subject-info">
@@ -239,32 +188,26 @@
                         </div>
                         <div class="progress-rail"><div class="progress-bar" style="width:${score}%; background:${color}"></div></div>
                     </div>`;
-            }
+            };
 
-            // Calculation
-            let p = (totalBestFive / 5).toFixed(1);
-            document.getElementById('avg-val').innerText = p + "%";
-            document.getElementById('res-val').innerText = p >= 33 ? "PASSED" : "FAILED";
-            document.getElementById('res-val').style.color = p >= 33 ? "#22c55e" : "#ef4444";
+            render(englishData.name, englishData.score, true);
+            allSubs.forEach(s => render(s.name, s.score, topFourNames.includes(s.name)));
 
-            let grade = "E";
-            if(p >= 91) grade = "A1"; else if(p >= 81) grade = "A2";
-            else if(p >= 71) grade = "B1"; else if(p >= 61) grade = "B2";
-            else if(p >= 51) grade = "C1"; else if(p >= 41) grade = "C2";
-            else if(p >= 33) grade = "D";
-            document.getElementById('grade-badge').innerText = grade;
+            document.getElementById('avg-val').innerText = perc + "%";
+            document.getElementById('res-val').innerText = perc >= 33 ? "PASSED" : "FAILED";
+            document.getElementById('res-val').style.color = perc >= 33 ? "#22c55e" : "#ef4444";
 
-            // Attendance Chart
-            const months = ['apr','may','jul','aug','sep','oct','nov','dec','jan','feb','mar'];
-            const scores = months.map(m => parseInt(att[m]) || 0);
-            document.getElementById('att-val').innerText = Math.round(scores.reduce((a,b)=>a+b,0)/11) + "%";
+            let g = "E";
+            if(perc >= 91) g="A1"; else if(perc>=81) g="A2"; else if(perc>=71) g="B1"; else if(perc>=61) g="B2";
+            else if(perc>=51) g="C1"; else if(perc>=41) g="C2"; else if(perc>=33) g="D";
+            document.getElementById('grade-badge').innerText = g;
 
+            const mths = ['apr','may','jul','aug','sep','oct','nov','dec','jan','feb','mar'];
+            const scs = mths.map(m => parseInt(att[m]) || 0);
+            document.getElementById('att-val').innerText = Math.round(scs.reduce((a,b)=>a+b,0)/11) + "%";
             new Chart(document.getElementById('attChart').getContext('2d'), {
                 type: 'bar',
-                data: {
-                    labels: ['Apr','May','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],
-                    datasets: [{ label: 'Att %', data: scores, backgroundColor: '#004a99', borderRadius: 5 }]
-                },
+                data: { labels: ['Apr','May','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'], datasets: [{ data: scs, backgroundColor: '#004a99', borderRadius: 5 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
         }
