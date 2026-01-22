@@ -169,7 +169,7 @@ window.checkFeeStatus = async function() {
     if (!sn) return;
 
     try {
-        const studentRef = doc(db, "fee_records", sn);
+        const studentRef = doc(db, "student_data", sn);
         const snap = await getDoc(studentRef);
 
         if (snap.exists()) {
