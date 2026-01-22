@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KPS | PREMIUM DIGITAL PORTAL</title>
+    <title>KPS | DIGITAL REPORT CARD</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -13,118 +13,119 @@
     <style>
         :root { 
             --primary: #002d5b; --secondary: #004a99; --accent: #ffd700; 
-            --bg: #f3f6f9; --text: #2d3748; --success: #22c55e; --white: #ffffff;
+            --bg: #f3f6f9; --text: #2d3748; --success: #22c55e;
         }
-        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.3s ease; }
-        body { background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s ease; }
+        body { background: var(--bg); color: var(--text); margin: 0; }
         
-        /* Ticker */
-        .ticker-wrap { background: var(--primary); color: var(--accent); padding: 10px; font-weight: 800; font-size: 11px; text-align: center; border-bottom: 3px solid var(--accent); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        /* Logo Styling */
+        .school-logo { width: 60px; height: 60px; background: white; border-radius: 50%; padding: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 10px; }
 
-        .container { width: 100%; max-width: 550px; margin: 0 auto; padding: 20px; flex-grow: 1; }
+        .ticker-wrap { background: var(--primary); color: var(--accent); padding: 10px; font-weight: 800; font-size: 11px; text-align: center; border-bottom: 3px solid var(--accent); }
+        .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 20px; }
 
-        /* Login Card with Hover */
-        .auth-card { background: var(--white); padding: 40px 25px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); margin-top: 30px; border: 1px solid #eee; }
-        .auth-card:hover { transform: translateY(-5px); box-shadow: 0 20px 45px rgba(0,0,0,0.1); }
+        /* Login UI */
+        .auth-card { background: white; padding: 30px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); margin-top: 20px; }
+        .input-group { position: relative; margin-bottom: 15px; }
+        input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #e2e8f0; font-size: 16px; outline: none; }
+        .eye-icon { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 20px; color: var(--primary); z-index: 10; }
+
+        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; font-size: 16px; background: var(--primary); color: white; }
+        .btn:hover { background: var(--secondary); transform: translateY(-2px); }
+
+        /* Report Card */
+        #dashboard { display: none; }
+        .report-card { background: white; border-radius: 35px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
         
-        input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #e2e8f0; font-size: 16px; outline: none; margin-bottom: 15px; }
-        input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0,45,91,0.1); }
+        .profile-section { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+        .stu-photo { width: 80px; height: 80px; border-radius: 20px; border: 3px solid var(--accent); object-fit: cover; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 800; overflow: hidden; }
 
-        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--secondary); transform: scale(1.02); }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
+        .stat-box { background: #f8fafc; padding: 10px 5px; border-radius: 15px; text-align: center; border: 1px solid #edf2f7; }
+        .stat-box small { font-size: 8px; color: #a0aec0; font-weight: 800; display: block; }
+        .stat-box b { font-size: 14px; color: var(--primary); }
 
-        /* Report Card Design */
-        #dashboard { display: none; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .subject-item { margin-bottom: 15px; }
+        .sub-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 12px; margin-bottom: 5px; }
+        .best-tag { font-size: 8px; color: var(--success); background: #e8f5e9; padding: 2px 5px; border-radius: 4px; }
+        .p-bar-bg { background: #edf2f7; height: 10px; border-radius: 10px; overflow: hidden; }
+        .p-bar-fill { height: 100%; transition: width 1.5s ease; }
 
-        .report-card { background: var(--white); border-radius: 35px; padding: 25px; box-shadow: 0 25px 60px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; position: relative; overflow: hidden; }
-        
-        /* Glassmorphism Stats */
-        .stats-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 25px; }
-        .stat-item { background: #f8fafc; padding: 15px; border-radius: 20px; text-align: center; border: 1px solid #edf2f7; }
-        .stat-item:hover { background: var(--white); border-color: var(--primary); }
-        .stat-item b { font-size: 18px; color: var(--primary); display: block; }
-        .stat-item small { font-size: 9px; font-weight: 800; color: #a0aec0; text-transform: uppercase; }
+        .remarks-alert { background: #fffbeb; border-left: 4px solid var(--accent); padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 700; margin: 20px 0; color: #92400e; }
 
-        /* Subject Progress */
-        .subject-box { margin-bottom: 18px; padding: 5px; border-radius: 12px; }
-        .subject-box:hover { background: #fcfcfc; }
-        .subject-info { display: flex; justify-content: space-between; font-weight: 800; font-size: 13px; margin-bottom: 8px; }
-        .progress-rail { background: #edf2f7; height: 12px; border-radius: 20px; overflow: hidden; }
-        .progress-bar { height: 100%; border-radius: 20px; width: 0; transition: width 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67); }
+        .footer-signs { display: grid; grid-template-columns: 1fr 1fr 80px; align-items: flex-end; gap: 10px; margin-top: 30px; padding-top: 20px; border-top: 2px dashed #eee; }
+        .sign-text { border-top: 1px solid #ddd; padding-top: 5px; font-size: 9px; font-weight: 800; text-align: center; color: var(--primary); }
 
-        /* Remarks Section */
-        .remarks-box { background: #fffdf0; padding: 15px; border-radius: 15px; border-left: 5px solid var(--accent); margin: 20px 0; font-size: 13px; font-weight: 700; color: #744210; }
+        footer { text-align: center; padding: 30px; font-size: 10px; color: #a0aec0; font-weight: 700; }
 
-        /* Fixed Footer & Signatures */
-        .bottom-layout { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 30px; padding-top: 20px; border-top: 2px dashed #f1f5f9; }
-        .sign-line { border-top: 2px solid #cbd5e0; margin-top: 10px; font-size: 10px; font-weight: 800; color: var(--primary); padding-top: 5px; text-align: center; width: 100px; }
-        
-        footer { text-align: center; padding: 30px; font-size: 11px; color: #a0aec0; font-weight: 700; background: transparent; }
-
-        @media print { .btn, .ticker-wrap, footer { display: none !important; } .report-card { box-shadow: none; border: 1px solid #ddd; } }
+        @media print { .btn, .ticker-wrap, .eye-icon, footer { display: none !important; } }
     </style>
 </head>
 <body>
 
-    <div class="ticker-wrap"><marquee>✨ KPS DIGITAL REPORT CARD • SESSION 2025–26 • VERIFIED BY KPS BOARD ✨</marquee></div>
+    <div class="ticker-wrap"><marquee>OFFICIAL DIGITAL PROGRESS REPORT • SESSION 2025–26 • KANPUR PUBLIC SCHOOL</marquee></div>
 
     <div class="container">
-        <div id="login-section">
-            <h1 style="text-align:center; color:var(--primary); font-size: 45px; font-weight: 900;">KPS<span style="color:var(--accent)">.</span></h1>
+        <div id="login-section" style="text-align: center;">
+            <img src="https://img.icons8.com/fluency/96/school.png" class="school-logo" alt="Logo">
+            <h1 style="color:var(--primary); margin: 0; font-size: 35px;">KPS PORTAL</h1>
             <div class="auth-card">
-                <input type="text" id="stu_user" placeholder="Serial Number (e.g. 101)">
-                <div style="position:relative;">
-                    <input type="password" id="stu_pass" placeholder="Security PIN">
+                <div class="input-group">
+                    <input type="text" id="stu_user" placeholder="Serial No.">
                 </div>
-                <button class="btn btn-primary" id="loginBtn">View Marksheet 🔒</button>
+                <div class="input-group">
+                    <input type="password" id="stu_pass" placeholder="Security PIN">
+                    <span class="eye-icon" id="togglePass">👁️</span>
+                </div>
+                <button class="btn" id="loginBtn">Unlock Marksheet 🔒</button>
             </div>
         </div>
 
         <div id="dashboard">
             <div class="report-card">
-                <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:800; color:#a0aec0; margin-bottom:20px;">
-                    <span id="meta-id">ID: -</span>
-                    <span id="meta-date">DATE: -</span>
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <img src="https://img.icons8.com/fluency/96/school.png" style="width: 45px;" alt="Logo">
+                    <div style="font-size: 10px; font-weight: 800; color: #a0aec0;" id="report-id">ID: -</div>
                 </div>
 
-                <div style="display:flex; align-items:center; gap:20px; margin-bottom:30px;">
-                    <div id="stu-photo" class="stu-img" style="width:90px; height:90px; border-radius:22px; background:var(--primary); border:4px solid var(--accent); display:flex; align-items:center; justify-content:center; color:white; font-size:40px; font-weight:800; overflow:hidden;">?</div>
+                <div class="profile-section">
+                    <div id="stu-img-box" class="stu-photo">?</div>
                     <div>
-                        <h2 id="name-display" style="margin:0; font-size:24px; color:var(--primary);">Student Name</h2>
-                        <p id="class-display" style="margin:5px 0; font-size:13px; font-weight:700; color:#718096;">Class: -</p>
+                        <h2 id="name-txt" style="margin:0; font-size:22px; color:var(--primary);">Name</h2>
+                        <p id="class-txt" style="margin:0; font-size:12px; font-weight:700; color:#718096;">Class: -</p>
                     </div>
                 </div>
 
-                <div class="stats-row">
-                    <div class="stat-item"><small>Percentage</small><b id="avg-val">0%</b></div>
-                    <div class="stat-item"><small>Grade</small><b id="grade-badge">-</b></div>
-                    <div class="stat-item"><small>Attendance</small><b id="att-val">0%</b></div>
-                    <div class="stat-item"><small>Result</small><b id="res-val">-</b></div>
+                <div class="stats-grid">
+                    <div class="stat-box"><small>Percent</small><b id="v-perc">0%</b></div>
+                    <div class="stat-box"><small>Grade</small><b id="v-grade">-</b></div>
+                    <div class="stat-box"><small>Attnd.</small><b id="v-att">0%</b></div>
+                    <div class="stat-box"><small>Status</small><b id="v-res">-</b></div>
                 </div>
 
-                <div id="marks-list"></div>
+                <div id="subjects-container"></div>
 
-                <div class="remarks-box">
-                    📝 REMARKS: <span id="remarks-text">Calculating performance...</span>
+                <div class="remarks-alert">
+                    📝 REMARKS: <span id="v-remarks">Good effort!</span>
                 </div>
 
-                <div style="height:150px; margin:30px 0;"><canvas id="attChart"></canvas></div>
+                <div style="height: 150px; margin: 25px 0;">
+                    <canvas id="attChart"></canvas>
+                </div>
 
-                <div class="bottom-layout">
-                    <div class="sign-box"><div class="sign-line">TEACHER</div></div>
-                    <div id="qrcode"></div>
-                    <div class="sign-box"><div class="sign-line">PRINCIPAL</div></div>
+                <div class="footer-signs">
+                    <div class="sign-text">CLASS TEACHER</div>
+                    <div class="sign-text">PRINCIPAL</div>
+                    <div id="qrcode-box"></div>
                 </div>
             </div>
 
-            <button class="btn btn-primary" style="margin-top:20px;" onclick="window.print()">Print Report Card 🖨️</button>
-            <button class="btn" style="margin-top:10px; background:#e2e8f0; color:#4a5568;" onclick="location.reload()">Secure Logout</button>
+            <button class="btn" style="margin-top:20px;" onclick="window.print()">Print Marksheet 🖨️</button>
+            <button class="btn" style="margin-top:10px; background:#e2e8f0; color:#4a5568;" onclick="location.reload()">Log Out</button>
         </div>
     </div>
 
-    <footer>© 2026 Kanpur Public School • All Rights Reserved</footer>
+    <footer>© 2026 Kanpur Public School • Digitally Verified</footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
@@ -142,101 +143,116 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Toggle Password
+        document.getElementById('togglePass').addEventListener('click', () => {
+            const p = document.getElementById('stu_pass');
+            p.type = p.type === 'password' ? 'text' : 'password';
+        });
+
         document.getElementById('loginBtn').addEventListener('click', async () => {
             const u = document.getElementById('stu_user').value.trim();
             const p = document.getElementById('stu_pass').value.trim();
-            if(!u || !p) return Swal.fire('Wait!', 'Enter both Serial No. and PIN', 'warning');
+            if(!u || !p) return;
 
-            try {
-                const snap = await getDoc(doc(db, "student_data", u));
-                if(snap.exists() && snap.data().info.password == p) {
-                    document.getElementById('login-section').style.display = 'none';
-                    document.getElementById('dashboard').style.display = 'block';
-                    renderData(snap.data());
-                } else { Swal.fire('Access Denied', 'Invalid Credentials', 'error'); }
-            } catch (e) { console.error(e); }
+            const snap = await getDoc(doc(db, "student_data", u));
+            if(snap.exists() && snap.data().info.password == p) {
+                document.getElementById('login-section').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                showMarksheet(snap.data());
+            } else { Swal.fire('Error', 'Invalid Serial/PIN', 'error'); }
         });
 
-        function renderData(data) {
-            const info = data.info || {};
-            const aca = data.academic || {};
-            const att = data.attendance || {};
-
-            document.getElementById('meta-id').innerText = "REPORT ID: KPS-" + info.serial_no;
-            document.getElementById('meta-date').innerText = "DATE: " + new Date().toLocaleDateString('en-GB');
-            document.getElementById('name-display').innerText = info.name;
-            document.getElementById('class-display').innerText = `Class: ${info.class} | Section: ${info.section || 'A'}`;
-
-            if(info.image) document.getElementById('stu-photo').innerHTML = `<img src="${info.image}" style="width:100%; height:100%; object-fit:cover;">`;
+        function showMarksheet(data) {
+            const { info, academic, attendance } = data;
             
-            document.getElementById('qrcode').innerHTML = "";
-            new QRCode(document.getElementById("qrcode"), { text: "VERIFIED-"+info.serial_no, width: 60, height: 60 });
+            document.getElementById('report-id').innerText = "STUDENT ID: KPS-2026-" + info.serial_no;
+            document.getElementById('name-txt').innerText = info.name;
+            document.getElementById('class-txt').innerText = `Class: ${info.class} | Section: ${info.section || 'A'}`;
+            
+            if(info.image) document.getElementById('stu-img-box').innerHTML = `<img src="${info.image}" style="width:100%; height:100%; object-fit:cover;">`;
+            else document.getElementById('stu-img-box').innerText = info.name.charAt(0);
 
-            // Subject Extraction (ULTRA ROBUST)
-            const list = document.getElementById('marks-list');
-            list.innerHTML = '';
-            const icons = { english:'📖', hindi:'📙', maths:'🔢', physics:'⚡', chemistry:'🧪', science:'🔬', social:'🌍', computer:'💻', it:'💻', ai:'🤖', drawing:'🎨', gk:'🌍' };
-
-            let englishScore = 0;
-            let otherSubjects = [];
-
-            // Fetching all keys from academic node
-            Object.entries(aca).forEach(([key, val]) => {
-                if(key === 'password' || val === "" || isNaN(val)) return;
+            // Subject Finder (Ultra Deep)
+            const subList = [];
+            let englishMark = 0;
+            
+            // Loop through academic object and ignore non-subject keys
+            Object.entries(academic || {}).forEach(([key, val]) => {
+                if(key.toLowerCase() === 'password' || isNaN(val) || val === "") return;
+                
                 let score = parseInt(val);
-                if(key.toLowerCase().includes('english')) englishScore = score;
-                else otherSubjects.push({ name: key, score: score });
+                if(key.toLowerCase().includes('english')) englishMark = score;
+                else subList.push({ name: key, score: score });
             });
 
-            // Best of 5 Logic (Eng + Top 4)
-            otherSubjects.sort((a,b) => b.score - a.score);
-            let topFour = otherSubjects.slice(0, 4);
-            let topFourNames = topFour.map(s => s.name);
-            let totalMarks = englishScore + topFour.reduce((a,b) => a + b.score, 0);
-            let perc = (totalMarks / 5).toFixed(1);
+            // Best of 4 calculation
+            subList.sort((a,b) => b.score - a.score);
+            const topFour = subList.slice(0, 4);
+            const topFourNames = topFour.map(s => s.name);
+            const total = englishMark + topFour.reduce((a,b) => a + b.score, 0);
+            const perc = (total / 5).toFixed(1);
 
-            // Render Subjects
-            const drawRow = (n, s, inc) => {
-                let icon = icons[n.toLowerCase()] || '📝';
-                let color = s >= 75 ? '#22c55e' : (s >= 33 ? '#3182ce' : '#ef4444');
-                list.innerHTML += `
-                    <div class="subject-box">
-                        <div class="subject-info">
-                            <span>${icon} ${n.toUpperCase()} ${inc ? '<span class="best-tag">Included</span>' : ''}</span>
+            // Display
+            const container = document.getElementById('subjects-container');
+            container.innerHTML = '';
+            
+            const render = (n, s, inc) => {
+                const color = s >= 75 ? '#22c55e' : (s >= 33 ? '#3182ce' : '#ef4444');
+                container.innerHTML += `
+                    <div class="subject-item">
+                        <div class="sub-header">
+                            <span>${n.toUpperCase()} ${inc ? '<span class="best-tag">Included</span>' : ''}</span>
                             <span>${s}/100</span>
                         </div>
-                        <div class="progress-rail"><div class="progress-bar" style="width:${s}%; background:${color}"></div></div>
+                        <div class="p-bar-bg"><div class="p-bar-fill" style="width:${s}%; background:${color}"></div></div>
                     </div>`;
             };
 
-            drawRow('English', englishScore, true);
-            otherSubjects.forEach(s => drawRow(s.name, s.score, topFourNames.includes(s.name)));
+            render('English', englishMark, true);
+            subList.forEach(s => render(s.name, s.score, topFourNames.includes(s.name)));
 
             // Stats Update
-            document.getElementById('avg-val').innerText = perc + "%";
-            document.getElementById('res-val').innerText = perc >= 33 ? "PASSED" : "FAILED";
-            document.getElementById('res-val').style.color = perc >= 33 ? "#22c55e" : "#ef4444";
+            document.getElementById('v-perc').innerText = perc + "%";
+            document.getElementById('v-res').innerText = perc >= 33 ? "PASS" : "FAIL";
+            document.getElementById('v-res').style.color = perc >= 33 ? "#22c55e" : "#ef4444";
 
-            // Grades & Remarks
-            let g = "E", r = "Needs Improvement";
-            if(perc >= 91) { g="A1"; r="Outstanding Performance! Keep it up."; }
-            else if(perc>=81) { g="A2"; r="Excellent work, very consistent."; }
-            else if(perc>=71) { g="B1"; r="Very Good! Can reach the top with more effort."; }
-            else if(perc>=61) { g="B2"; r="Good performance, keep practicing."; }
-            else if(perc>=33) { g="D"; r="Fair performance, work harder on weak subjects."; }
-            
-            document.getElementById('grade-badge').innerText = g;
-            document.getElementById('remarks-text').innerText = r;
+            let g = "D", rem = "Needs focus";
+            if(perc >= 91) { g="A1"; rem="Excellent! Your hard work is visible."; }
+            else if(perc >= 81) { g="A2"; rem="Great job! Keep up the momentum."; }
+            else if(perc >= 71) { g="B1"; rem="Good performance! Aim higher next time."; }
+            document.getElementById('v-grade').innerText = g;
+            document.getElementById('v-remarks').innerText = rem;
 
-            // Chart
+            // Attendance Chart with Tooltips
             const mths = ['apr','may','jul','aug','sep','oct','nov','dec','jan','feb','mar'];
-            const scs = mths.map(m => parseInt(att[m]) || 0);
-            document.getElementById('att-val').innerText = Math.round(scs.reduce((a,b)=>a+b,0)/11) + "%";
-            new Chart(document.getElementById('attChart').getContext('2d'), {
+            const fullNames = ['April','May','July','August','September','October','November','December','January','February','March'];
+            const scs = mths.map(m => parseInt(attendance[m]) || 0);
+            
+            document.getElementById('v-att').innerText = Math.round(scs.reduce((a,b)=>a+b,0)/11) + "%";
+
+            new Chart(document.getElementById('attChart'), {
                 type: 'bar',
-                data: { labels: ['Apr','May','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'], datasets: [{ data: scs, backgroundColor: '#004a99', borderRadius: 5 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                data: {
+                    labels: fullNames,
+                    datasets: [{ label: 'Attendance %', data: scs, backgroundColor: '#004a99', borderRadius: 5 }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => `Attendance: ${ctx.raw}%`
+                            }
+                        }
+                    },
+                    scales: { y: { beginAtZero: true, max: 100 } }
+                }
             });
+
+            document.getElementById('qrcode-box').innerHTML = "";
+            new QRCode(document.getElementById("qrcode-box"), { text: "KPS-"+info.serial_no, width: 60, height: 60 });
         }
     </script>
 </body>
