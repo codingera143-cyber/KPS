@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KPS | DIGITAL REPORT CARD</title>
+    <title>KPS | OFFICIAL DIGITAL REPORT CARD</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -18,128 +18,126 @@
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
         
-        /* Ticker */
-        .ticker-wrap { background: var(--primary); color: var(--accent); padding: 10px; font-weight: 800; font-size: 12px; text-align: center; border-bottom: 3px solid var(--accent); }
+        .ticker-wrap { background: var(--primary); color: var(--accent); padding: 10px; font-weight: 800; font-size: 11px; text-align: center; border-bottom: 3px solid var(--accent); }
+        .container { width: 100%; max-width: 550px; margin: 0 auto; padding: 15px; flex-grow: 1; }
 
-        .container { width: 100%; max-width: 600px; margin: 0 auto; padding: 15px; flex-grow: 1; }
-
-        /* Login */
-        .auth-card { background: white; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-top: 50px; }
-        .input-wrapper { position: relative; margin-bottom: 15px; }
-        input { width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 16px; outline: none; }
-        .toggle-pass { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--primary); }
-        .btn { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        /* Login UI */
+        .auth-card { background: white; padding: 35px 25px; border-radius: 30px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-top: 40px; }
+        .input-wrapper { position: relative; margin-bottom: 18px; }
+        input { width: 100%; padding: 16px; border-radius: 15px; border: 2px solid #e2e8f0; font-size: 16px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); }
+        .toggle-pass { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--primary); font-size: 20px; }
+        .btn { width: 100%; padding: 16px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; font-size: 16px; }
         .btn-primary { background: var(--primary); color: white; }
 
-        /* Dashboard */
+        /* Report Card Layout */
         #dashboard { display: none; }
-        .report-card { background: white; border-radius: 25px; padding: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.1); position: relative; overflow: hidden; border: 1px solid #e2e8f0; }
+        .report-card { background: white; border-radius: 35px; padding: 25px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; position: relative; }
         
-        /* Unique ID & Date Header */
-        .report-meta { display: flex; justify-content: space-between; font-size: 10px; color: #a0aec0; margin-bottom: 15px; font-weight: 700; text-transform: uppercase; }
+        .report-header { display: flex; justify-content: space-between; font-size: 10px; color: #a0aec0; margin-bottom: 20px; font-weight: 800; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
 
-        /* Profile Section */
-        .profile-section { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px dashed #edf2f7; }
-        .stu-img { width: 80px; height: 80px; border-radius: 15px; background: var(--primary); border: 3px solid var(--accent); object-fit: cover; display: flex; align-items: center; justify-content: center; color: white; font-size: 30px; font-weight: 800; }
-        .stu-info h2 { margin: 0; font-size: 20px; color: var(--primary); }
-        .stu-info p { margin: 3px 0; font-size: 12px; font-weight: 600; color: #718096; }
+        .profile-area { display: flex; align-items: center; gap: 20px; margin-bottom: 25px; }
+        .stu-img { width: 90px; height: 90px; border-radius: 20px; background: var(--primary); border: 4px solid var(--accent); display: flex; align-items: center; justify-content: center; color: white; font-size: 38px; font-weight: 800; overflow: hidden; }
+        .stu-img img { width: 100%; height: 100%; object-fit: cover; }
+        .stu-info h2 { margin: 0; font-size: 22px; color: var(--primary); letter-spacing: -0.5px; }
+        .stu-info p { margin: 4px 0; font-size: 13px; font-weight: 700; color: #718096; }
 
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
-        .stat-box { background: #f8fafc; padding: 12px; border-radius: 15px; text-align: center; border: 1px solid #edf2f7; }
-        .stat-box small { font-size: 9px; color: #718096; font-weight: 800; }
-        .stat-box b { display: block; font-size: 16px; color: var(--primary); }
+        .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 30px; }
+        .stat-item { background: #f8fafc; padding: 15px 10px; border-radius: 20px; text-align: center; border: 1px solid #edf2f7; }
+        .stat-item small { font-size: 9px; color: #a0aec0; font-weight: 800; text-transform: uppercase; }
+        .stat-item b { display: block; font-size: 18px; color: var(--primary); margin-top: 4px; }
 
-        /* Progress Bars for Subjects */
-        .subject-container { margin-bottom: 20px; }
-        .sub-row { margin-bottom: 15px; }
-        .sub-label { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-weight: 700; font-size: 13px; }
-        .sub-label span { display: flex; align-items: center; gap: 8px; }
-        .progress-bg { background: #edf2f7; height: 8px; border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; border-radius: 10px; transition: width 1s ease-in-out; }
+        /* Subjects Progress Section */
+        .subject-list { margin-bottom: 30px; }
+        .subject-box { margin-bottom: 18px; }
+        .subject-info { display: flex; justify-content: space-between; font-weight: 800; font-size: 13px; margin-bottom: 6px; }
+        .progress-rail { background: #edf2f7; height: 10px; border-radius: 20px; overflow: hidden; }
+        .progress-bar { height: 100%; border-radius: 20px; transition: width 1.5s cubic-bezier(0.1, 0, 0, 1); }
 
-        /* QR & Signatures - Fix Layout */
-        .footer-layout { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 30px; padding-top: 20px; border-top: 1px solid #edf2f7; }
-        .sig-block { text-align: center; flex: 1; }
-        .sig-line { border-top: 1px solid #cbd5e0; margin-top: 8px; font-size: 10px; font-weight: 800; padding-top: 5px; color: var(--primary); }
-        #qrcode { margin: 0 10px; }
+        /* Footer: Signs and QR */
+        .bottom-layout { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; padding-top: 20px; border-top: 2px dashed #f1f5f9; }
+        .sign-box { text-align: center; width: 120px; }
+        .sign-line { border-top: 2px solid #cbd5e0; margin-top: 10px; font-size: 10px; font-weight: 800; color: var(--primary); padding-top: 5px; }
+        #qrcode-container { text-align: right; }
 
-        .footer-main { text-align: center; padding: 20px; font-size: 11px; color: #a0aec0; font-weight: 600; }
+        .footer-credit { text-align: center; padding: 25px; font-size: 11px; color: #a0aec0; font-weight: 700; }
 
         @media print {
-            .ticker-wrap, .btn, .auth-card, .footer-main { display: none !important; }
+            .ticker-wrap, .btn, .auth-card, .footer-credit, #logout-btn { display: none !important; }
             .container { padding: 0; max-width: 100%; }
-            .report-card { box-shadow: none; border: 1px solid #eee; }
-            body { background: white; }
+            .report-card { box-shadow: none; border: 1px solid #ddd; border-radius: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div class="ticker-wrap"><marquee>✨ KPS DIGITAL PORTAL | SESSION 2025-26 | ACCREDITED BY KPS BOARD ✨</marquee></div>
+    <div class="ticker-wrap"><marquee>SESSION 2025–26 | ACCREDITED BY KPS BOARD ✨ | DIGITAL PROGRESS REPORT</marquee></div>
 
     <div class="container">
         <div id="login-section">
-            <h1 style="text-align:center; color:var(--primary); font-weight:900;">KPS<span style="color:var(--accent)">.</span></h1>
+            <h1 style="text-align:center; color:var(--primary); font-size: 40px; margin-bottom: 10px;">KPS<span style="color:var(--accent)">.</span></h1>
             <div class="auth-card">
                 <div class="input-wrapper">
-                    <input type="text" id="stu_user" placeholder="Serial No.">
+                    <input type="text" id="stu_user" placeholder="Enter Serial No.">
                 </div>
                 <div class="input-wrapper">
-                    <input type="password" id="stu_pass" placeholder="Security PIN">
+                    <input type="password" id="stu_pass" placeholder="Enter Security PIN">
                     <span class="toggle-pass" id="eyeBtn">👁️</span>
                 </div>
-                <button class="btn btn-primary" id="loginBtn">Unlock Marksheet 🔒</button>
+                <button class="btn btn-primary" id="loginBtn">Access Marksheet 🔒</button>
             </div>
         </div>
 
         <div id="dashboard">
             <div class="report-card">
-                <div class="report-meta">
-                    <span>ID: <b id="unique-id">-</b></span>
-                    <span>Date: <b id="current-date">-</b></span>
+                <div class="report-header">
+                    <span id="meta-id">ID: KPS-2026-000</span>
+                    <span id="meta-date">DATE: 00/00/0000</span>
                 </div>
 
-                <div class="profile-section">
+                <div class="profile-area">
                     <div id="stu-photo" class="stu-img">?</div>
                     <div class="stu-info">
-                        <h2 id="name-display">Student Name</h2>
+                        <h2 id="name-display">Name</h2>
                         <p id="class-display">Class: -</p>
-                        <p id="roll-display">Roll No: -</p>
+                        <p id="roll-display">Roll ID: -</p>
                     </div>
                 </div>
 
-                <div class="stats-grid">
-                    <div class="stat-box"><small>ATTENDANCE</small><b id="att-val">0%</b></div>
-                    <div class="stat-box"><small>PERCENTAGE</small><b id="avg-val">0%</b></div>
-                    <div class="stat-box"><small>RESULT</small><b id="grade-val">-</b></div>
+                <div class="stats-row">
+                    <div class="stat-item"><small>Attendance</small><b id="att-val">0%</b></div>
+                    <div class="stat-item"><small>Percentage</small><b id="avg-val">0%</b></div>
+                    <div class="stat-item"><small>Result</small><b id="grade-val">-</b></div>
                 </div>
 
-                <div class="subject-container" id="marks-container">
+                <div class="subject-list" id="marks-list">
                     </div>
 
-                <div style="height: 150px; margin-bottom: 20px;"><canvas id="attendanceChart"></canvas></div>
+                <div style="height: 180px; margin-bottom: 30px;"><canvas id="attChart"></canvas></div>
 
-                <div class="footer-layout">
-                    <div class="sig-block">
-                        <div style="height: 40px;"></div> <div class="sig-line">CLASS TEACHER</div>
-                    </div>
-                    <div id="qrcode"></div>
-                    <div class="sig-block">
+                <div class="bottom-layout">
+                    <div class="sign-box">
                         <div style="height: 40px;"></div>
-                        <div class="sig-line">PRINCIPAL</div>
+                        <div class="sign-line">CLASS TEACHER</div>
+                    </div>
+                    <div class="sign-box">
+                        <div style="height: 40px;"></div>
+                        <div class="sign-line">PRINCIPAL</div>
+                    </div>
+                    <div id="qrcode-container">
+                        <div id="qrcode"></div>
                     </div>
                 </div>
             </div>
 
-            <div style="margin-top: 20px; display: grid; gap: 10px;">
-                <button class="btn btn-primary" onclick="window.print()">Print Official Copy 🖨️</button>
-                <button class="btn" style="background:#e2e8f0;" onclick="location.reload()">Secure Logout</button>
+            <div style="margin-top: 25px; display: grid; gap: 12px;">
+                <button class="btn btn-primary" onclick="window.print()">Print Official Marksheet 🖨️</button>
+                <button class="btn" id="logout-btn" style="background:#e2e8f0; color:#4a5568;" onclick="location.reload()">Secure Sign Out</button>
             </div>
         </div>
     </div>
 
-    <footer class="footer-main">© 2026 Kanpur Public School. All Rights Reserved.</footer>
+    <footer class="footer-credit">© 2026 Kanpur Public School • Digital Excellence</footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
@@ -157,104 +155,116 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- PASSWORD TOGGLE ---
+        // --- EYE TOGGLE ---
         document.getElementById('eyeBtn').addEventListener('click', () => {
             const p = document.getElementById('stu_pass');
             p.type = p.type === "password" ? "text" : "password";
         });
 
-        // --- LOGIN ACTION ---
+        // --- LOGIN ---
         document.getElementById('loginBtn').addEventListener('click', async () => {
             const u = document.getElementById('stu_user').value.trim();
             const p = document.getElementById('stu_pass').value.trim();
             const btn = document.getElementById('loginBtn');
 
-            if(!u || !p) return Swal.fire('Error', 'Enter credentials', 'warning');
-            btn.innerHTML = "Verifying..."; 
+            if(!u || !p) return Swal.fire('Error', 'Fields cannot be empty', 'warning');
+            btn.innerHTML = "Verifying Identity..."; 
 
             try {
                 const snap = await getDoc(doc(db, "student_data", u));
                 if(snap.exists() && snap.data().info.password == p) {
                     document.getElementById('login-section').style.display = 'none';
                     document.getElementById('dashboard').style.display = 'block';
-                    renderDashboard(snap.data());
+                    startDashboard(snap.data());
                 } else {
-                    Swal.fire('Access Denied', 'Wrong Serial No. or PIN', 'error');
-                    btn.innerHTML = "Unlock Marksheet 🔒";
+                    Swal.fire('Failed', 'Incorrect Credentials', 'error');
+                    btn.innerHTML = "Access Marksheet 🔒";
                 }
             } catch (e) {
-                Swal.fire('Error', 'Server Connection Failed', 'error');
+                Swal.fire('Error', 'Database Error: Check connection', 'error');
             }
         });
 
-        function renderDashboard(data) {
+        function startDashboard(data) {
             const info = data.info || {};
             const aca = data.academic || {};
             const att = data.attendance || {};
 
-            // Meta Info
-            document.getElementById('unique-id').innerText = `KPS-${new Date().getFullYear()}-${info.serial_no}`;
-            document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-GB');
+            // Meta
+            document.getElementById('meta-id').innerText = `ID: KPS-2026-${info.serial_no}`;
+            document.getElementById('meta-date').innerText = "DATE: " + new Date().toLocaleDateString('en-GB');
             document.getElementById('name-display').innerText = info.name;
-            document.getElementById('class-display').innerText = "Class: " + info.class;
-            document.getElementById('roll-display').innerText = "ID: " + info.serial_no;
+            document.getElementById('class-display').innerText = "Class: " + info.class + " | Section: " + (info.section || 'A');
+            document.getElementById('roll-display').innerText = "Roll No: " + info.serial_no;
 
-            // Student Image Logic
-            const photoBox = document.getElementById('stu-photo');
+            // Photo
+            const imgBox = document.getElementById('stu-photo');
             if(info.image && info.image.length > 50) {
-                photoBox.innerHTML = `<img src="${info.image}" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">`;
+                imgBox.innerHTML = `<img src="${info.image}">`;
             } else {
-                photoBox.innerText = info.name.charAt(0);
+                imgBox.innerText = info.name.charAt(0);
             }
 
-            // QR Code
-            new QRCode(document.getElementById("qrcode"), { text: "VERIFIED_KPS_" + info.serial_no, width: 60, height: 60 });
+            // QR Code (Moved to right)
+            document.getElementById('qrcode').innerHTML = "";
+            new QRCode(document.getElementById("qrcode"), { text: `KPS-VERIFIED-${info.serial_no}`, width: 65, height: 65 });
 
-            // Process Marks with Progress Bars & Icons
-            const marksContainer = document.getElementById('marks-container');
-            marksContainer.innerHTML = '';
-
-            const icons = {
-                'english': '📖', 'hindi': '📙', 'maths': '🔢', 'science': '🔬', 
-                'physics': '⚡', 'chemistry': '🧪', 'biology': '🧬', 'computer': '💻',
-                'sanskrit': '🕉️', 'arts': '🎨', 'gk': '🌍', 'history': '🏛️'
+            // Subject Progress Bars logic
+            const list = document.getElementById('marks-list');
+            list.innerHTML = '';
+            
+            const subIcons = { 
+                english: '📖', hindi: '📙', maths: '🔢', science: '🔬', physics: '⚡', 
+                chemistry: '🧪', biology: '🧬', computer: '💻', gk: '🌍', drawing: '🎨',
+                it: '📡', ai: '🤖', history: '🏛️'
             };
 
-            let total = 0, count = 0;
-            for(let [sub, val] of Object.entries(aca)) {
-                if(val === "" || isNaN(val)) continue;
-                let score = parseInt(val);
-                total += score; count++;
+            let totalMarks = 0, subCount = 0;
 
-                let icon = icons[sub.toLowerCase()] || '📝';
-                let color = score >= 80 ? '#22c55e' : (score >= 40 ? '#3182ce' : '#e53e3e');
+            Object.entries(aca).forEach(([subject, value]) => {
+                // Skip non-subject fields
+                if(subject === 'password' || value === "" || value === undefined) return;
+                
+                let score = parseInt(value);
+                if(isNaN(score)) return;
 
-                marksContainer.innerHTML += `
-                    <div class="sub-row">
-                        <div class="sub-label">
-                            <span>${icon} ${sub.toUpperCase()}</span>
+                totalMarks += score;
+                subCount++;
+
+                let icon = subIcons[subject.toLowerCase()] || '📝';
+                let color = score >= 75 ? '#22c55e' : (score >= 33 ? '#3182ce' : '#e53e3e');
+
+                list.innerHTML += `
+                    <div class="subject-box">
+                        <div class="subject-info">
+                            <span>${icon} ${subject.toUpperCase()}</span>
                             <span>${score}/100</span>
                         </div>
-                        <div class="progress-bg">
-                            <div class="progress-fill" style="width: ${score}%; background: ${color}"></div>
+                        <div class="progress-rail">
+                            <div class="progress-bar" style="width: ${score}%; background: ${color}"></div>
                         </div>
                     </div>`;
-            }
+            });
 
-            let avg = count > 0 ? Math.round(total / count) : 0;
-            document.getElementById('avg-val').innerText = avg + "%";
-            document.getElementById('grade-val').innerText = avg >= 33 ? "PASSED" : "FAIL";
+            // Summary Stats
+            let perc = subCount > 0 ? Math.round(totalMarks / subCount) : 0;
+            document.getElementById('avg-val').innerText = perc + "%";
+            document.getElementById('grade-val').innerText = perc >= 33 ? "PASSED" : "FAILED";
+            document.getElementById('grade-val').style.color = perc >= 33 ? "#22c55e" : "#ef4444";
 
-            // Chart
-            const ctx = document.getElementById('attendanceChart').getContext('2d');
-            const attData = ['apr','may','jul','aug','sep','oct','nov','dec','jan','feb','mar'].map(m => parseInt(att[m]) || 0);
-            document.getElementById('att-val').innerText = Math.round(attData.reduce((a,b)=>a+b,0)/11) + "%";
+            // Attendance Chart
+            const ctx = document.getElementById('attChart').getContext('2d');
+            const attMonths = ['apr','may','jul','aug','sep','oct','nov','dec','jan','feb','mar'];
+            const attScores = attMonths.map(m => parseInt(att[m]) || 0);
+            
+            let attAvg = Math.round(attScores.reduce((a,b)=>a+b,0) / 11);
+            document.getElementById('att-val').innerText = attAvg + "%";
 
             new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: ['Apr','May','Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar'],
-                    datasets: [{ label: 'Att %', data: attData, backgroundColor: '#004a99', borderRadius: 5 }]
+                    datasets: [{ label: 'Att %', data: attScores, backgroundColor: '#004a99', borderRadius: 8 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
             });
