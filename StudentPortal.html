@@ -202,7 +202,7 @@
         classAddons = classAddons.filter(s => s !== "BANKING");
     }
 
-    // 3. Subject Categorization
+ // 3. Subject Categorization (Sirf unhe uthayega jisme value hai)
     let engMarks = 0;
     let engLabel = "ENGLISH";
     let coreSubjects = [];
@@ -210,6 +210,10 @@
 
     Object.entries(academic || {}).forEach(([key, val]) => {
         if(key.toLowerCase() === 'password') return;
+        
+        // CHECK: Agar value empty hai ya zero (aur student ne exam nahi diya), toh skip karo
+        if (!val || val.toString().trim() === "") return; 
+
         let score = parseInt(val) || 0;
         let name = key.toUpperCase().trim();
 
