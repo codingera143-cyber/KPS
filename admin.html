@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KPS | Advanced Admin Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <style>
         :root {
             --primary: #003366;
@@ -16,68 +19,51 @@
             --error: #e74c3c;
         }
 
-        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: 0.3s; }
         
         body { 
             margin: 0; 
             background: var(--bg); 
-            background-image: radial-gradient(circle at 10% 20%, rgba(0,51,102,0.05) 0%, transparent 20%), 
-                              radial-gradient(circle at 90% 80%, rgba(212,170,0,0.05) 0%, transparent 20%);
+            background-image: radial-gradient(circle at 10% 20%, rgba(0,51,102,0.05) 0%, transparent 20%);
             display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;
         }
 
-        /* Animations */
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Login & Dashboard Container */
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            width: 100%;
-            max-width: 500px;
-            padding: 40px;
-            border-radius: 30px;
+            width: 100%; max-width: 500px;
+            padding: 40px; border-radius: 30px;
             box-shadow: 0 25px 50px rgba(0,0,0,0.1);
             text-align: center;
-            animation: slideUp 0.6s ease-out;
         }
 
         .logo-area {
-            width: 90px; height: 90px; background: var(--primary); color: var(--accent);
-            border-radius: 22px; display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 25px; font-size: 28px; font-weight: 800;
-            transform: rotate(-10deg); box-shadow: 0 10px 20px rgba(0,51,102,0.2);
+            width: 80px; height: 80px; background: var(--primary); color: var(--accent);
+            border-radius: 20px; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px; font-size: 24px; font-weight: 800;
+            box-shadow: 0 10px 20px rgba(0,51,102,0.2);
         }
 
-        h1 { color: var(--primary); font-size: 24px; margin-bottom: 8px; font-weight: 700; }
-        p.desc { color: #7f8c8d; font-size: 14px; margin-bottom: 30px; }
+        h1 { color: var(--primary); font-size: 22px; margin-bottom: 5px; }
+        p.desc { color: #7f8c8d; font-size: 13px; margin-bottom: 25px; }
 
-        /* Form Elements */
-        .input-group { margin-bottom: 20px; text-align: left; }
-        label { display: block; font-size: 12px; font-weight: 600; color: var(--primary); margin-left: 10px; margin-bottom: 5px; text-transform: uppercase; }
+        .input-group { text-align: left; margin-bottom: 20px; }
+        label { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-left: 5px; }
         
         input {
-            width: 100%; padding: 15px 20px; border-radius: 15px; border: 2px solid #eee;
-            font-size: 16px; outline: none; transition: 0.3s; background: #fafafa;
+            width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #eee;
+            font-size: 16px; outline: none; margin-top: 5px;
         }
-        input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 15px rgba(0,51,102,0.05); }
+        input:focus { border-color: var(--primary); }
 
-        /* Buttons */
         .btn {
-            width: 100%; padding: 16px; border: none; border-radius: 15px;
-            font-size: 16px; font-weight: 700; cursor: pointer;
+            width: 100%; padding: 16px; border: none; border-radius: 12px;
+            font-size: 15px; font-weight: 700; cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 10px;
-            transition: 0.4s;
         }
-        .btn-main { background: var(--primary); color: var(--accent); box-shadow: 0 10px 20px rgba(0,51,102,0.15); }
-        .btn-main:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(0,51,102,0.25); background: #002244; }
-        .btn-main:active { transform: translateY(-1px); }
+        .btn-main { background: var(--primary); color: var(--accent); }
+        .btn-main:hover { transform: translateY(-2px); opacity: 0.9; }
 
-        /* Dashboard View */
         #adminDashboard { display: none; }
         
         .sync-info {
@@ -85,62 +71,38 @@
             padding: 15px; border-radius: 15px; margin-bottom: 25px;
             display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
         }
-        .info-tag { font-size: 11px; color: #666; }
-        .info-val { font-size: 13px; font-weight: 600; color: var(--primary); display: block; }
+        .info-tag { font-size: 10px; color: #666; display: block; }
+        .info-val { font-size: 12px; font-weight: 600; color: var(--primary); }
 
-        /* Progress & Status */
-        .status-pill {
-            margin-top: 20px; padding: 12px; border-radius: 12px; font-size: 13px; font-weight: 600;
-            display: none; animation: fadeIn 0.3s;
-        }
-        .status-success { display: block; background: #dff6e8; color: var(--success); }
-        .status-error { display: block; background: #fdeaea; color: var(--error); }
-
-        .logout { margin-top: 25px; font-size: 13px; color: #95a5a6; cursor: pointer; text-decoration: underline; }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .glass-card { padding: 30px 20px; }
-            h1 { font-size: 20px; }
-        }
+        .logout { margin-top: 20px; font-size: 12px; color: #95a5a6; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
 
 <div id="loginPanel" class="glass-card">
     <div class="logo-area">KPS</div>
-    <h1>Admin Login</h1>
-    <p class="desc">Enter master password to access school database</p>
-    
+    <h1>Admin Access</h1>
+    <p class="desc">Authentication required for cloud sync</p>
     <div class="input-group">
-        <label>Security Key</label>
+        <label>Master Password</label>
         <input type="password" id="passKey" placeholder="••••••••">
     </div>
-    
-    <button class="btn btn-main" onclick="verifyAdmin()">Unlock Dashboard</button>
+    <button class="btn btn-main" onclick="verifyAdmin()">Login to Dashboard</button>
 </div>
 
 <div id="adminDashboard" class="glass-card">
-    <div class="logo-area" style="transform: rotate(0deg); width: 60px; height: 60px; font-size: 18px;">DB</div>
-    <h1>Cloud Control</h1>
-    <p class="desc">Sync CSV records with Firebase Cloud Store</p>
+    <div class="logo-area">DB</div>
+    <h1>Cloud Controller</h1>
+    <p class="desc">Database: kanpur-public-school-d8f4a</p>
 
     <div class="sync-info">
-        <div>
-            <span class="info-tag">SOURCE</span>
-            <span class="info-val">Google Sheet</span>
-        </div>
-        <div>
-            <span class="info-tag">TARGET</span>
-            <span class="info-val">Firebase V9</span>
-        </div>
+        <div><span class="info-tag">SOURCE</span><span class="info-val">Google CSV</span></div>
+        <div><span class="info-tag">COLLECTION</span><span class="info-val">student_data</span></div>
     </div>
 
     <button id="syncActionBtn" class="btn btn-main" onclick="performCloudSync()">
-        <span id="btnTxt">🔄 START DATA SYNC</span>
+        <span id="btnTxt">🔄 START CLOUD SYNC</span>
     </button>
-
-    <div id="msgBox" class="status-pill"></div>
 
     <div class="logout" onclick="location.reload()">Secure Logout</div>
 </div>
@@ -149,7 +111,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
     import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
-    // 1. TODO: Replace with your actual Firebase Config
     const firebaseConfig = {
         apiKey: "AIzaSyCQ6S-YfO61gEfB2Ad7neDU-nG4WNn1z8E",
         authDomain: "kanpur-public-school-d8f4a.firebaseapp.com",
@@ -161,30 +122,29 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
-    // 2. TODO: Replace with your Google Sheet CSV Link
     const csvUrl = "https://docs.google.com/spreadsheets/d/1ykfR3DTZqifvOzE0SEBHhdS7RVWobkjRXFfYLPM7sdk/export?format=csv";
 
-    // Authentication Logic
     window.verifyAdmin = function() {
-        const pass = document.getElementById('passKey').value;
-        if(pass === "KPS@2026") {
+        if(document.getElementById('passKey').value === "KPS@2026") {
             document.getElementById('loginPanel').style.display = "none";
             document.getElementById('adminDashboard').style.display = "block";
         } else {
-            alert("❌ Access Denied: Wrong Password");
+            Swal.fire('Error', 'Wrong Password!', 'error');
         }
     }
 
-    // Cloud Sync Logic (Handles all 40+ columns)
     window.performCloudSync = function() {
         const btn = document.getElementById('syncActionBtn');
-        const txt = document.getElementById('btnTxt');
-        const msg = document.getElementById('msgBox');
-
         btn.disabled = true;
-        txt.innerText = "⚡ WRITING TO CLOUD...";
-        msg.style.display = "none";
+        document.getElementById('btnTxt').innerText = "⚡ SYNCING...";
+
+        // Initial Loading Popup
+        Swal.fire({
+            title: 'Processing...',
+            text: 'Reading Google Sheet and updating Firebase',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading() }
+        });
 
         Papa.parse(csvUrl, {
             download: true,
@@ -192,29 +152,28 @@
             skipEmptyLines: true,
             complete: async function(results) {
                 const rows = results.data;
-                let successCount = 0;
+                let count = 0;
 
                 try {
                     for (let r of rows) {
-                        if (r['Serial No']) {
-                            const studentID = r['Serial No'].toString();
-                            
-                            // Advanced mapping for your 40+ columns
+                        const sID = r['Serial No'] || r['Serial_No'];
+                        if (sID) {
+                            const studentID = sID.toString().trim();
                             const fullData = {
                                 info: {
-                                    serial_no: r['Serial No'],
-                                    name: r['Name'],
-                                    class: r['Class'],
-                                    section: r['Section'],
+                                    serial_no: studentID,
+                                    name: r['Name'] || "",
+                                    class: r['Class'] || "",
+                                    section: r['Section'] || "",
                                     password: r['Password'] || "12345",
-                                    image: r['Student Image'],
-                                    behavior: r['Behavior'],
-                                    advice: r['Advice']
+                                    image: r['Student Image'] || "",
+                                    behavior: r['Behavior'] || "",
+                                    advice: r['Advice'] || ""
                                 },
                                 attendance: {
-                                    apr: r['Apr_Att'], may: r['May_Att'], jun: r['Jun_Att'], jul: r['Jul_Att'],
-                                    aug: r['Aug_Att'], sep: r['Sep_Att'], oct: r['Oct_Att'], nov: r['Nov_Att'],
-                                    dec: r['Dec_Att'], jan: r['Jan_Att'], feb: r['Feb_Att'], mar: r['Mar_Att']
+                                    apr: r['Apr_Att'], may: r['May_Att'], jul: r['Jul_Att'], aug: r['Aug_Att'],
+                                    sep: r['Sep_Att'], oct: r['Oct_Att'], nov: r['Nov_Att'], dec: r['Dec_Att'],
+                                    jan: r['Jan_Att'], feb: r['Feb_Att'], mar: r['Mar_Att']
                                 },
                                 academic: {
                                     maths: r['Maths'], science: r['Science'], arts: r['Arts'], comp: r['Computer'],
@@ -225,31 +184,30 @@
                                     evs: r['EVS'], sanskrit: r['Sanskrit'], gk: r['GK']
                                 },
                                 fees: {
-                                    i: r['Ist Installment'],
-                                    ii: r['IInd installment'],
-                                    iii: r['IIIrd installment'],
-                                    iv: r['IVth installment']
+                                    i: r['Ist Installment'], ii: r['IInd installment'],
+                                    iii: r['IIIrd installment'], iv: r['IVth installment']
                                 },
-                                timestamp: new Date()
+                                last_update: new Date()
                             };
-
                             await setDoc(doc(db, "student_data", studentID), fullData, { merge: true });
-                            successCount++;
+                            count++;
                         }
                     }
-                    msg.className = "status-pill status-success";
-                    msg.innerText = `✅ Cloud Sync Complete: ${successCount} Students Updated`;
+                    Swal.fire('Success!', `${count} Students synced successfully.`, 'success');
                 } catch (err) {
-                    msg.className = "status-pill status-error";
-                    msg.innerText = "❌ Sync Failed: " + err.message;
+                    console.error(err);
+                    Swal.fire('Sync Failed', err.message, 'error');
                 }
-
                 btn.disabled = false;
-                txt.innerText = "🔄 RE-SYNC DATABASE";
+                document.getElementById('btnTxt').innerText = "🔄 RE-SYNC DATABASE";
+            },
+            error: function(err) {
+                Swal.fire('CSV Error', 'Could not read Google Sheet link.', 'error');
+                btn.disabled = false;
+                document.getElementById('btnTxt').innerText = "🔄 START DATA SYNC";
             }
         });
     }
 </script>
-
 </body>
-  </html>
+</html>
