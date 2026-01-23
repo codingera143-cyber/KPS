@@ -199,7 +199,7 @@
 
         try {
             // fee_records collection se data uthana (Jahan Razorpay update karta hai)
-            const querySnapshot = await getDocs(collection(db, "fee_records"));
+            const querySnapshot = await getDocs(collection(db, "student_data"));
             let studentData = [];
 
             querySnapshot.forEach((doc) => {
