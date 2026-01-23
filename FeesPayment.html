@@ -214,7 +214,7 @@ window.generateReceipt = function(details) {
     doc.save(`Receipt_KPS_${details.sn}.pdf`);
 };
 
-// --- SMART AMOUNT LOGIC ---
+// Smart Update Logic
 window.updateAmount = function() {
     const classVal = document.getElementById('classSelect').value;
     const streamVal = document.getElementById('streamSelect').value;
@@ -224,25 +224,45 @@ window.updateAmount = function() {
     let base = 0, fine = 0, cbse = 0;
 
     if (classVal) {
+        // 1. Base Fees
         if (classVal === "11" || classVal === "12") {
             if (streamVal) base = feesData[classVal][streamVal];
         } else {
             base = feesData[classVal];
         }
 
+        // 2. 🧠 MASTER SLAB FINE LOGIC
         const today = new Date();
-        const month = today.getMonth(); 
+        const month = today.getMonth(); // 0=Jan, 3=Apr, 6=July, 9=Oct
         const date = today.getDate();
 
-        let isLate = false;
-        if (instVal === "1" && (month > 4 || (month === 4 && date > 15))) isLate = true;
-        if (instVal === "2" && (month > 7 || (month === 7 && date > 15))) isLate = true;
-        if (instVal === "3" && (month > 10 || (month === 10 && date > 15))) isLate = true;
-        if (instVal === "4" && (month > 1 || (month === 1 && date > 15))) isLate = true;
+        // Har installment ka starting month define karein
+        let startMonth; 
+        if (instVal === "1") startMonth = 3; // April
+        else if (instVal === "2") startMonth = 6; // July
+        else if (instVal === "3") startMonth = 9; // October
+        else if (instVal === "4") startMonth = 0; // January
 
-        if (isLate) fine = 100;
+        // Calculate months passed since installment started
+        // (Handling Jan as month 0 for 4th installment logic)
+        let monthsPassed = month - startMonth;
+        if (monthsPassed < 0) monthsPassed += 12; // Yearly cycle handle karne ke liye
 
-        if ((classVal === "9" || classVal === "11") && (month >= 7 && month <= 9)) {
+        // Check slabs
+        if (monthsPassed === 0 && date > 15) {
+            fine = 50;  // 16-30 of 1st month
+        } else if (monthsPassed === 1) {
+            fine = (date <= 15) ? 100 : 150; // 2nd month slabs
+        } else if (monthsPassed === 2) {
+            fine = (date <= 15) ? 200 : 250; // 3rd month slabs
+        } else if (monthsPassed > 2 || monthsPassed < 0) {
+            // Agar pura quarter nikal gaya tab bhi minimum 250 fine rahega
+            fine = 250;
+        }
+
+        // 3. CBSE Fees (Aug-Oct)
+        const currentMonth = today.getMonth();
+        if ((classVal === "9" || classVal === "11") && (currentMonth >= 7 && currentMonth <= 9)) {
             cbse = 400;
         }
     }
@@ -251,7 +271,7 @@ window.updateAmount = function() {
     document.getElementById('displayAmount').innerText = "₹ " + total.toLocaleString('en-IN') + ".00";
     
     let notes = [];
-    if (fine > 0) notes.push("+ ₹100 Late Fine");
+    if (fine > 0) notes.push(`+ ₹${fine} Slab Fine`);
     if (cbse > 0) notes.push("+ ₹400 CBSE Reg.");
     breakupDiv.innerText = notes.join(" | ");
 
