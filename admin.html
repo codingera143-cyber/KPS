@@ -24,13 +24,11 @@
         body { 
             margin: 0; 
             background: var(--bg); 
-            background-image: radial-gradient(circle at 10% 20%, rgba(0,51,102,0.05) 0%, transparent 20%);
             display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;
         }
 
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
             width: 100%; max-width: 500px;
             padding: 40px; border-radius: 30px;
             box-shadow: 0 25px 50px rgba(0,0,0,0.1);
@@ -41,7 +39,6 @@
             width: 80px; height: 80px; background: var(--primary); color: var(--accent);
             border-radius: 20px; display: flex; align-items: center; justify-content: center;
             margin: 0 auto 20px; font-size: 24px; font-weight: 800;
-            box-shadow: 0 10px 20px rgba(0,51,102,0.2);
         }
 
         h1 { color: var(--primary); font-size: 22px; margin-bottom: 5px; }
@@ -54,15 +51,16 @@
             width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #eee;
             font-size: 16px; outline: none; margin-top: 5px;
         }
-        input:focus { border-color: var(--primary); }
 
         .btn {
             width: 100%; padding: 16px; border: none; border-radius: 12px;
-            font-size: 15px; font-weight: 700; cursor: pointer;
+            font-size: 14px; font-weight: 700; cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 10px;
+            margin-bottom: 15px;
         }
         .btn-main { background: var(--primary); color: var(--accent); }
-        .btn-main:hover { transform: translateY(-2px); opacity: 0.9; }
+        .btn-sync { background: var(--success); color: white; border: 2px solid #2ecc71; }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
         #adminDashboard { display: none; }
         
@@ -93,15 +91,19 @@
 <div id="adminDashboard" class="glass-card">
     <div class="logo-area">DB</div>
     <h1>Cloud Controller</h1>
-    <p class="desc">Database: kanpur-public-school-d8f4a</p>
+    <p class="desc">Managed by Kanpur Public School</p>
 
     <div class="sync-info">
-        <div><span class="info-tag">SOURCE</span><span class="info-val">Google CSV</span></div>
-        <div><span class="info-tag">COLLECTION</span><span class="info-val">student_data</span></div>
+        <div><span class="info-tag">STATUS</span><span class="info-val" id="syncStatus">Ready</span></div>
+        <div><span class="info-tag">LOGGED IN</span><span class="info-val">Admin Mode</span></div>
     </div>
 
     <button id="syncActionBtn" class="btn btn-main" onclick="performCloudSync()">
-        <span id="btnTxt">🔄 START CLOUD SYNC</span>
+        <span id="btnTxt">🔄 SYNC MARKS TO FIREBASE</span>
+    </button>
+
+    <button id="feeSyncBtn" class="btn btn-sync" onclick="syncFeesToGoogleSheet()">
+        <span>📤 SYNC FEES TO GOOGLE SHEET</span>
     </button>
 
     <div class="logout" onclick="location.reload()">Secure Logout</div>
@@ -109,7 +111,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCQ6S-YfO61gEfB2Ad7neDU-nG4WNn1z8E",
@@ -123,6 +125,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const csvUrl = "https://docs.google.com/spreadsheets/d/1ykfR3DTZqifvOzE0SEBHhdS7RVWobkjRXFfYLPM7sdk/export?format=csv";
+    
+    // REPLACE THIS with your Apps Script Web App URL
+    const webAppURL = "https://script.google.com/macros/s/AKfycbwGki5qIksWm-48Sc7saT9KMn3Vtjdymskl4KblXHhUynyUPVfhO6JYWuvfs43lQ3ziKg/exec";
 
     window.verifyAdmin = function() {
         if(document.getElementById('passKey').value === "KPS@2026") {
@@ -133,27 +138,17 @@
         }
     }
 
+    // --- LOGIC 1: GOOGLE SHEET (CSV) -> FIREBASE ---
     window.performCloudSync = function() {
         const btn = document.getElementById('syncActionBtn');
         btn.disabled = true;
-        document.getElementById('btnTxt').innerText = "⚡ SYNCING...";
-
-        // Initial Loading Popup
-        Swal.fire({
-            title: 'Processing...',
-            text: 'Reading Google Sheet and updating Firebase',
-            allowOutsideClick: false,
-            didOpen: () => { Swal.showLoading() }
-        });
+        document.getElementById('btnTxt').innerText = "⚡ SYNCING MARKS...";
 
         Papa.parse(csvUrl, {
-            download: true,
-            header: true,
-            skipEmptyLines: true,
+            download: true, header: true, skipEmptyLines: true,
             complete: async function(results) {
                 const rows = results.data;
                 let count = 0;
-
                 try {
                     for (let r of rows) {
                         const sID = r['Serial No'] || r['Serial_No'];
@@ -165,15 +160,11 @@
                                     name: r['Name'] || "",
                                     class: r['Class'] || "",
                                     section: r['Section'] || "",
+                                    stream: r['Stream'] || "",
                                     password: r['Password'] || "12345",
                                     image: r['Student Image'] || "",
                                     behavior: r['Behavior'] || "",
                                     advice: r['Advice'] || ""
-                                },
-                                attendance: {
-                                    apr: r['Apr_Att'], may: r['May_Att'], jul: r['Jul_Att'], aug: r['Aug_Att'],
-                                    sep: r['Sep_Att'], oct: r['Oct_Att'], nov: r['Nov_Att'], dec: r['Dec_Att'],
-                                    jan: r['Jan_Att'], feb: r['Feb_Att'], mar: r['Mar_Att']
                                 },
                                 academic: {
                                     maths: r['Maths'], science: r['Science'], arts: r['Arts'], comp: r['Computer'],
@@ -183,31 +174,76 @@
                                     accounts: r['Accounts'], micro: r['Microeconomics'], banking: r['Banking'],
                                     evs: r['EVS'], sanskrit: r['Sanskrit'], gk: r['GK']
                                 },
-                                fees: {
-                                    i: r['Ist Installment'], ii: r['IInd installment'],
-                                    iii: r['IIIrd installment'], iv: r['IVth installment']
-                                },
                                 last_update: new Date()
                             };
+                            // NOTE: Fees data is not updated from CSV to prevent overwriting PAID status
                             await setDoc(doc(db, "student_data", studentID), fullData, { merge: true });
                             count++;
                         }
                     }
-                    Swal.fire('Success!', `${count} Students synced successfully.`, 'success');
+                    Swal.fire('Success', `${count} Students records updated!`, 'success');
                 } catch (err) {
-                    console.error(err);
-                    Swal.fire('Sync Failed', err.message, 'error');
+                    Swal.fire('Error', err.message, 'error');
                 }
                 btn.disabled = false;
-                document.getElementById('btnTxt').innerText = "🔄 RE-SYNC DATABASE";
-            },
-            error: function(err) {
-                Swal.fire('CSV Error', 'Could not read Google Sheet link.', 'error');
-                btn.disabled = false;
-                document.getElementById('btnTxt').innerText = "🔄 START DATA SYNC";
+                document.getElementById('btnTxt').innerText = "🔄 SYNC MARKS TO FIREBASE";
             }
         });
     }
+
+    // --- LOGIC 2: FIREBASE -> GOOGLE SHEET (Using Apps Script) ---
+    window.syncFeesToGoogleSheet = async function() {
+        const feeBtn = document.getElementById('feeSyncBtn');
+        feeBtn.disabled = true;
+        feeBtn.innerText = "⏳ SENDING TO SHEET...";
+
+        try {
+            // fee_records collection se data uthana (Jahan Razorpay update karta hai)
+            const querySnapshot = await getDocs(collection(db, "fee_records"));
+            let studentData = [];
+
+            querySnapshot.forEach((doc) => {
+                const d = doc.data();
+                studentData.push({
+                    sn: doc.id,
+                    name: d.name || "-",
+                    class: d.class || "-",
+                    section: d.section || "A",
+                    stream: d.stream || "N/A",
+                    inst1: d.installment_1_status || "Unpaid",
+                    inst2: d.installment_2_status || "Unpaid",
+                    inst3: d.installment_3_status || "Unpaid",
+                    inst4: d.installment_4_status || "Unpaid"
+                });
+            });
+
+            if(studentData.length === 0) {
+                Swal.fire('Notice', 'No fee records found in Firebase!', 'info');
+                feeBtn.disabled = false;
+                feeBtn.innerText = "📤 SYNC FEES TO GOOGLE SHEET";
+                return;
+            }
+
+            // POST to Apps Script (Bypass 400 Error)
+            fetch(webAppURL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(studentData)
+            }).then(() => {
+                Swal.fire('Sent!', 'Data sent to Google Sheet successfully.', 'success');
+            }).catch(e => {
+                Swal.fire('Error', 'Connection failed!', 'error');
+            });
+
+        } catch (error) {
+            Swal.fire('Firebase Error', error.message, 'error');
+        }
+        
+        feeBtn.disabled = false;
+        feeBtn.innerText = "📤 SYNC FEES TO GOOGLE SHEET";
+    }
 </script>
+
 </body>
 </html>
