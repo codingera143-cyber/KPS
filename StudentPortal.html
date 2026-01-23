@@ -10,7 +10,12 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        :root { --primary: #002d5b; --accent: #ffd700; --bg: #f3f6f9; --white: #ffffff; }
+        :root { --primary: #002d5b; --accent: #ffd700; --bg: #f3f6f9; --white: #ffffff; --primary-blue: #003366;
+    --accent-gold: #d4aa00;
+    --text-dark: #333333;
+    --bg-light: #f4f7f9;
+    --white: #ffffff;
+    --shadow: 0 10px 30px rgba(0,0,0,0.1); }
         * { box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s ease; }
         body { background: var(--bg); margin: 0; color: #2d3748; }
         
@@ -62,9 +67,86 @@
         footer { text-align: center; padding: 30px; font-size: 11px; color: #a0aec0; font-weight: 700; }
 
         @media print { .btn-main, .eye-btn, .header-brand, footer { display: none !important; } .container { padding: 0; } .report-card { box-shadow: none; border: 1px solid #eee; } }
+/* Reset and Global Styles */
+#portal-root {
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-dark);
+    margin: 0;
+    padding: 0;
+}
+
+/* 🔒 Lock Screen Styling */
+#lockScreen {
+    height: 100vh;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, #001f40 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    text-align: center;
+    padding: 20px;
+}
+
+#lockScreen h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: var(--accent-gold);
+}
+
+#lockScreen p {
+    font-size: 1.1rem;
+    max-width: 500px;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+#lockScreen .back-home {
+    margin-top: 30px;
+    padding: 12px 25px;
+    background: var(--accent-gold);
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 700;
+    border-radius: 50px;
+    transition: transform 0.3s ease;
+}
+
+#lockScreen .back-home:hover {
+    transform: scale(1.05);
+}
+
+/* 🔓 Active Portal Styling */
+#portalContent {
+    min-height: 100vh;
+    background: var(--bg-light);
+}
+
+#portalContent h2 {
+    background: var(--primary-blue);
+    color: var(--white);
+    margin: 0;
+    padding: 20px 5%;
+    font-size: 1.5rem;
+    border-bottom: 4px solid var(--accent-gold);
+    text-align: center;
+}
+
+/* Container for your Search/Data code */
+.portal-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    background: var(--white);
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+}
     </style>
 </head>
 <body>
+    
+
+    </div>
 
     <div id="login-section">
         <div class="header-brand">
@@ -373,6 +455,28 @@
         document.getElementById('qr-code').innerHTML = "";
         new QRCode(document.getElementById("qr-code"), { text: "KPS-VERIFIED-"+info.serial_no, width: 60, height: 60 });
     }
+    function handlePortalAccess() {
+        // Target Date set karein: Year, Month (0-11), Date
+        // March is index 2
+        const openDate = new Date(2026, 2, 15); 
+        const today = new Date();
+
+        const lockDiv = document.getElementById('lockScreen');
+        const contentDiv = document.getElementById('portalContent');
+
+        if (today < openDate) {
+            // Agar aaj ki date 15 March se pehle hai
+            lockDiv.style.display = 'block';
+            contentDiv.style.display = 'none';
+        } else {
+            // Agar 15 March ya uske baad hai
+            lockDiv.style.display = 'none';
+            contentDiv.style.display = 'block';
+        }
+    }
+
+    // Page load hote hi check karein
+    window.onload = handlePortalAccess;
     </script>
 </body>
 </html>
