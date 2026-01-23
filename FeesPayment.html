@@ -8,63 +8,37 @@
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
         :root { --blue: #003366; --gold: #d4aa00; --light-bg: #f0f4f8; --white: #ffffff; }
-        
         * { box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: all 0.3s ease; }
-        
         body { margin: 0; background: var(--light-bg); color: #333; display: flex; flex-direction: column; min-height: 100vh; }
 
-        /* Modern Navbar */
         nav { background: var(--blue); padding: 15px 5%; border-bottom: 4px solid var(--gold); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .school-name { color: white; font-weight: 700; font-size: 1.2rem; letter-spacing: 1px; }
         .back-btn { color: var(--gold); text-decoration: none; font-size: 14px; font-weight: 600; border: 1.5px solid var(--gold); padding: 5px 15px; border-radius: 8px; }
         .back-btn:hover { background: var(--gold); color: var(--blue); transform: translateY(-2px); }
 
         .container { width: 95%; max-width: 550px; margin: 40px auto; }
-
-        /* Card Styling */
         .payment-card { background: var(--white); border-radius: 20px; padding: 30px; box-shadow: 0 15px 35px rgba(0,51,102,0.1); border-top: 8px solid var(--blue); position: relative; overflow: hidden; }
         .payment-card::before { content: ""; position: absolute; top: 0; right: 0; width: 100px; height: 100px; background: var(--gold); opacity: 0.1; border-radius: 0 0 0 100%; }
 
         h2 { color: var(--blue); margin-top: 0; font-size: 1.5rem; text-align: center; }
         p.sub-text { text-align: center; font-size: 13px; color: #666; margin-bottom: 25px; }
 
-        /* Input Styling */
         .input-group { margin-bottom: 18px; }
         .input-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: var(--blue); }
-        
-        input, select { 
-            width: 100%; padding: 12px 15px; border: 2px solid #e1e8ee; border-radius: 12px; font-size: 15px; outline: none; background: #fcfdfe;
-        }
+        input, select { width: 100%; padding: 12px 15px; border: 2px solid #e1e8ee; border-radius: 12px; font-size: 15px; outline: none; background: #fcfdfe; }
         input:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 8px rgba(0,51,102,0.1); }
-        input:hover, select:hover { border-color: var(--gold); }
-
-        /* Stream Section Animation */
+        
         #streamSection { display: none; animation: slideDown 0.4s ease-out; }
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Fee Amount Display */
-        .amount-box { 
-            background: #f8faff; border: 2px solid #e1e8ee; border-radius: 15px; padding: 20px; text-align: center; margin-top: 25px;
-            position: relative;
-        }
+        .amount-box { background: #f8faff; border: 2px solid #e1e8ee; border-radius: 15px; padding: 20px; text-align: center; margin-top: 25px; }
         .amount-box span { font-size: 12px; color: #777; text-transform: uppercase; font-weight: 700; }
         .amount-box div { font-size: 2rem; font-weight: 800; color: var(--blue); margin-top: 5px; }
+        #feeBreakup { font-size: 11px; color: #e74c3c; margin-top: 5px; font-weight: 500; }
         
-        /* Payment Button */
-        .pay-now-btn { 
-            width: 100%; background: var(--blue); color: var(--gold); border: none; padding: 16px; 
-            border-radius: 12px; font-size: 17px; font-weight: 700; cursor: pointer; margin-top: 25px;
-            box-shadow: 0 8px 20px rgba(0,51,102,0.2);
-        }
-        .pay-now-btn:hover { background: #002244; transform: scale(1.02); box-shadow: 0 10px 25px rgba(0,51,102,0.3); }
-        .pay-now-btn:active { transform: scale(0.98); }
-
-        /* Responsive Mobile Adjustments */
-        @media (max-width: 480px) {
-            .payment-card { padding: 20px; }
-            h2 { font-size: 1.2rem; }
-            .container { margin: 20px auto; }
-        }
+        .pay-now-btn { width: 100%; background: var(--blue); color: var(--gold); border: none; padding: 16px; border-radius: 12px; font-size: 17px; font-weight: 700; cursor: pointer; margin-top: 25px; box-shadow: 0 8px 20px rgba(0,51,102,0.2); }
+        .pay-now-btn:hover { background: #002244; transform: scale(1.02); }
+        .pay-now-btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; }
     </style>
 </head>
 <body>
@@ -93,18 +67,12 @@
             <label>Class</label>
             <select id="classSelect" onchange="handleClassChange()">
                 <option value="">-- Select Class --</option>
-                <option value="1">Class 1st</option>
-                <option value="2">Class 2nd</option>
-                <option value="3">Class 3rd</option>
-                <option value="4">Class 4th</option>
-                <option value="5">Class 5th</option>
-                <option value="6">Class 6th</option>
-                <option value="7">Class 7th</option>
-                <option value="8">Class 8th</option>
-                <option value="9">Class 9th</option>
-                <option value="10">Class 10th</option>
-                <option value="11">Class 11th</option>
-                <option value="12">Class 12th</option>
+                <option value="1">Class 1st</option><option value="2">Class 2nd</option>
+                <option value="3">Class 3rd</option><option value="4">Class 4th</option>
+                <option value="5">Class 5th</option><option value="6">Class 6th</option>
+                <option value="7">Class 7th</option><option value="8">Class 8th</option>
+                <option value="9">Class 9th</option><option value="10">Class 10th</option>
+                <option value="11">Class 11th</option><option value="12">Class 12th</option>
             </select>
         </div>
 
@@ -120,7 +88,7 @@
 
         <div class="input-group">
             <label>Installment</label>
-            <select id="instSelect">
+            <select id="instSelect" onchange="updatePayButton()">
                 <option value="1">1st Installment</option>
                 <option value="2">2nd Installment</option>
                 <option value="3">3rd Installment</option>
@@ -131,15 +99,16 @@
         <div class="amount-box">
             <span>Payable Amount</span>
             <div id="displayAmount">₹ 0.00</div>
+            <div id="feeBreakup"></div>
         </div>
 
         <button class="pay-now-btn" onclick="startPayment()">PROCEED TO PAYMENT</button>
     </div>
 </div>
-    <script type="module">
-     // 1. Firebase SDKs Import
+
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-import { getFirestore, doc, updateDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCQ6S-YfO61gEfB2Ad7neDU-nG4WNn1z8E",
@@ -160,89 +129,96 @@ const feesData = {
     "12": { "PCM": 4500, "PCB": 4500, "COMMERCE": 3500 }
 };
 
-// --- NEW: FETCH STATUS FROM FIREBASE ---
+// 🎯 SMART AMOUNT CALCULATION (Fine + CBSE)
+window.updateAmount = function() {
+    const classVal = document.getElementById('classSelect').value;
+    const streamVal = document.getElementById('streamSelect').value;
+    const breakupDiv = document.getElementById('feeBreakup');
+    let base = 0, fine = 0, cbse = 0;
+
+    if (classVal) {
+        // 1. Base Fee
+        if (classVal === "11" || classVal === "12") {
+            if (streamVal) base = feesData[classVal][streamVal];
+        } else {
+            base = feesData[classVal];
+        }
+
+        // 2. Late Fine (After 15th)
+        const today = new Date();
+        if (today.getDate() > 15) fine = 100;
+
+        // 3. CBSE Fees (Aug-Oct for Class 9 & 11)
+        const month = today.getMonth(); // 7=Aug, 8=Sep, 9=Oct
+        if ((classVal === "9" || classVal === "11") && (month >= 7 && month <= 9)) {
+            cbse = 400;
+        }
+    }
+
+    const total = base + fine + cbse;
+    document.getElementById('displayAmount').innerText = "₹ " + total.toLocaleString('en-IN') + ".00";
+    
+    // Show Breakup info
+    let notes = [];
+    if (fine > 0) notes.push("+ ₹100 Late Fine");
+    if (cbse > 0) notes.push("+ ₹400 CBSE Reg.");
+    breakupDiv.innerText = notes.join(" | ");
+
+    return total;
+};
+
+// --- CHECK STATUS ---
 window.checkFeeStatus = async function() {
     const sn = document.getElementById('sNo').value;
     const instDropdown = document.getElementById('instSelect');
-    const payBtn = document.querySelector('.pay-now-btn');
-
     if (!sn) return;
 
     try {
-        const studentRef = doc(db, "student_data", sn);
+        const studentRef = doc(db, "fee_records", sn);
         const snap = await getDoc(studentRef);
-
         if (snap.exists()) {
             const data = snap.data();
-            // Dropdown options check karo
             for (let i = 0; i < instDropdown.options.length; i++) {
                 let opt = instDropdown.options[i];
-                let statusField = `installment_${opt.value}_status`;
-
-                if (data[statusField] === "PAID") {
+                if (data[`installment_${opt.value}_status`] === "PAID") {
                     opt.text = `Installment ${opt.value} - PAID ✅`;
                     opt.style.color = "green";
-                    // Agar current selected option hi paid hai toh button disable kar do
-                    updatePayButton();
                 } else {
-                    opt.text = `${opt.value}${opt.value == 1 ? 'st' : (opt.value == 2 ? 'nd' : (opt.value == 3 ? 'rd' : 'th'))} Installment`;
+                    opt.text = `${opt.value}${opt.value==1?'st':(opt.value==2?'nd':(opt.value==3?'rd':'th'))} Installment`;
                     opt.style.color = "black";
                 }
             }
         }
+        updatePayButton();
     } catch (err) { console.error(err); }
 };
 
-// Button status update function
 window.updatePayButton = async function() {
     const sn = document.getElementById('sNo').value;
     const inst = document.getElementById('instSelect').value;
     const payBtn = document.querySelector('.pay-now-btn');
-
     if(!sn) return;
     
     const studentRef = doc(db, "fee_records", sn);
     const snap = await getDoc(studentRef);
-    
     if (snap.exists() && snap.data()[`installment_${inst}_status`] === "PAID") {
         payBtn.innerText = "ALREADY PAID ✅";
-        payBtn.style.background = "#94a3b8"; // Gray color
         payBtn.disabled = true;
     } else {
         payBtn.innerText = "PROCEED TO PAYMENT";
-        payBtn.style.background = "#003366";
         payBtn.disabled = false;
     }
 };
 
-// Existing UI Logic
 window.handleClassChange = function() {
     const classVal = document.getElementById('classSelect').value;
-    const streamSec = document.getElementById('streamSection');
-    streamSec.style.display = (classVal === "11" || classVal === "12") ? "block" : "none";
+    document.getElementById('streamSection').style.display = (classVal === "11" || classVal === "12") ? "block" : "none";
     updateAmount();
 };
 
-window.updateAmount = function() {
-    const classVal = document.getElementById('classSelect').value;
-    const streamVal = document.getElementById('streamSelect').value;
-    let amount = 0;
-    if (classVal) {
-        if (classVal === "11" || classVal === "12") {
-            if (streamVal) amount = feesData[classVal][streamVal];
-        } else {
-            amount = feesData[classVal];
-        }
-    }
-    document.getElementById('displayAmount').innerText = "₹ " + amount.toLocaleString('en-IN') + ".00";
-    return amount;
-};
-
-// Events Attach
 document.getElementById('sNo').addEventListener('blur', checkFeeStatus);
-document.getElementById('instSelect').addEventListener('change', updatePayButton);
+document.getElementById('classSelect').addEventListener('change', updateAmount);
 
-// Payment Start
 window.startPayment = async function() {
     const name = document.getElementById('studentName').value;
     const sn = document.getElementById('sNo').value;
@@ -259,30 +235,24 @@ window.startPayment = async function() {
         "amount": finalAmt * 100,
         "currency": "INR",
         "name": "Kanpur Public School",
-        "description": `Fee Installment ${inst} - ${name}`,
+        "description": `Installment ${inst} - ${name}`,
         "handler": async function (response) {
             try {
-                const studentRef = doc(db, "fee_records", sn); 
-                await setDoc(studentRef, {
+                await setDoc(doc(db, "fee_records", sn), {
                     name: name,
-                    rollNo: sn,
                     [`installment_${inst}_status`]: "PAID",
                     [`installment_${inst}_id`]: response.razorpay_payment_id,
                     last_updated: new Date()
                 }, { merge: true });
-
-                alert("✅ Payment Successful! Student Record Updated.");
-                location.reload(); 
-            } catch (error) {
-                alert("Database Update Failed!");
-            }
+                alert("✅ Payment Successful!");
+                location.reload();
+            } catch (error) { alert("Database Error!"); }
         },
         "prefill": { "name": name },
         "theme": { "color": "#003366" }
     };
-    var rzp1 = new Razorpay(options);
-    rzp1.open();
+    new Razorpay(options).open();
 };
-            </script>
+</script>
 </body>
-</html>
+    </html>
