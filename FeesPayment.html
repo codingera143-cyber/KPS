@@ -214,68 +214,83 @@ window.generateReceipt = function(details) {
     doc.save(`Receipt_KPS_${details.sn}.pdf`);
 };
 
-// Smart Update Logic
 window.updateAmount = function() {
     const classVal = document.getElementById('classSelect').value;
     const streamVal = document.getElementById('streamSelect').value;
     const instVal = document.getElementById('instSelect').value;
     const breakupDiv = document.getElementById('feeBreakup');
+    const payBtn = document.querySelector('.pay-now-btn');
     
     let base = 0, fine = 0, cbse = 0;
 
-    if (classVal) {
-        // 1. Base Fees
-        if (classVal === "11" || classVal === "12") {
-            if (streamVal) base = feesData[classVal][streamVal];
-        } else {
-            base = feesData[classVal];
-        }
+    if (classVal && instVal) {
+        base = (classVal === "11" || classVal === "12") ? (feesData[classVal][streamVal] || 0) : feesData[classVal];
 
-        // 2. 🧠 MASTER SLAB FINE LOGIC
         const today = new Date();
-        const month = today.getMonth(); // 0=Jan, 3=Apr, 6=July, 9=Oct
+        const month = today.getMonth(); // 0-11
         const date = today.getDate();
 
-        // Har installment ka starting month define karein
-        let startMonth; 
-        if (instVal === "1") startMonth = 3; // April
-        else if (instVal === "2") startMonth = 6; // July
-        else if (instVal === "3") startMonth = 9; // October
-        else if (instVal === "4") startMonth = 0; // January
-
-        // Calculate months passed since installment started
-        // (Handling Jan as month 0 for 4th installment logic)
+        // Quarterly Start Months: 3(Apr), 6(Jul), 9(Oct), 0(Jan)
+        let startMonth = [3, 6, 9, 0][parseInt(instVal) - 1];
+        
+        // Calculate Months Difference
         let monthsPassed = month - startMonth;
-        if (monthsPassed < 0) monthsPassed += 12; // Yearly cycle handle karne ke liye
+        if (monthsPassed < 0) monthsPassed += 12;
 
-        // Check slabs
-        if (monthsPassed === 0 && date > 15) {
-            fine = 50;  // 16-30 of 1st month
-        } else if (monthsPassed === 1) {
-            fine = (date <= 15) ? 100 : 150; // 2nd month slabs
-        } else if (monthsPassed === 2) {
-            fine = (date <= 15) ? 200 : 250; // 3rd month slabs
-        } else if (monthsPassed > 2 || monthsPassed < 0) {
-            // Agar pura quarter nikal gaya tab bhi minimum 250 fine rahega
-            fine = 250;
+        // --- 🚫 RE-ADMISSION LOGIC ---
+        // Agar 3 mahine ya usse zyada guzar chuke hain (i.e. Quarter khatam)
+        if (monthsPassed >= 3) {
+            document.getElementById('displayAmount').innerText = "BLOCKED";
+            breakupDiv.innerHTML = "<span style='color:red; font-size:14px;'>Contact School for Re-Admission of Your Ward</span>";
+            payBtn.innerText = "PAYMENT BLOCKED ❌";
+            payBtn.disabled = true;
+            return 0; 
         }
 
-        // 3. CBSE Fees (Aug-Oct)
-        const currentMonth = today.getMonth();
-        if ((classVal === "9" || classVal === "11") && (currentMonth >= 7 && currentMonth <= 9)) {
-            cbse = 400;
-        }
+        // --- 💰 SLAB FINE LOGIC ---
+        if (monthsPassed === 0 && date > 15) fine = 50;
+        else if (monthsPassed === 1) fine = (date <= 15) ? 100 : 150;
+        else if (monthsPassed === 2) fine = (date <= 15) ? 200 : 250;
+
+        // CBSE Fees
+        if ((classVal === "9" || classVal === "11") && (month >= 7 && month <= 9)) cbse = 400;
+
+        // Reset Button if not blocked (and not already paid)
+        updatePayButton(); 
     }
 
     const total = base + fine + cbse;
-    document.getElementById('displayAmount').innerText = "₹ " + total.toLocaleString('en-IN') + ".00";
-    
-    let notes = [];
-    if (fine > 0) notes.push(`+ ₹${fine} Slab Fine`);
-    if (cbse > 0) notes.push("+ ₹400 CBSE Reg.");
-    breakupDiv.innerText = notes.join(" | ");
-
+    if(total > 0) {
+        document.getElementById('displayAmount').innerText = "₹ " + total.toLocaleString('en-IN');
+        let notes = [];
+        if (fine > 0) notes.push(`+ ₹${fine} Fine`);
+        if (cbse > 0) notes.push("+ ₹400 CBSE Reg.");
+        breakupDiv.innerText = notes.join(" | ");
+    }
     return total;
+};
+
+// Update pay button to handle both PAID and BLOCKED status
+window.updatePayButton = async function() {
+    const sn = document.getElementById('sNo').value;
+    const inst = document.getElementById('instSelect').value;
+    const payBtn = document.querySelector('.pay-now-btn');
+    if(!sn || !inst) return;
+
+    // Check if it's already blocked by time logic in updateAmount
+    const displayAmt = document.getElementById('displayAmount').innerText;
+    if(displayAmt === "BLOCKED") return;
+
+    const studentRef = doc(db, "fee_records", sn);
+    const snap = await getDoc(studentRef);
+    
+    if (snap.exists() && snap.data()[`installment_${inst}_status`] === "PAID") {
+        payBtn.innerText = "ALREADY PAID ✅";
+        payBtn.disabled = true;
+    } else {
+        payBtn.innerText = "PROCEED TO PAYMENT";
+        payBtn.disabled = false;
+    }
 };
 
 window.updateInstallmentChange = function() {
