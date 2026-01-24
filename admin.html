@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="robots" content="noindex, nofollow, noarchive">
-    <meta name="googlebot" content="noindex, nofollow">
-    
+    <meta name="robots" content="noindex, nofollow">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KPS | Stealth Command Center</title>
+    <title>KPS | Command Center v2.0</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
@@ -14,133 +12,138 @@
 
     <style>
         :root {
-            --primary: #001f3f; /* Deep Navy */
-            --accent: #d4aa00; /* Gold */
-            --bg: #0a0a0a; /* Dark Stealth Mode */
-            --glass: rgba(255, 255, 255, 0.05);
-            --card-bg: #111111;
+            --primary: #001f3f;
+            --accent: #d4aa00;
+            --bg: #050505;
+            --card: #111111;
+            --text: #e2e8f0;
         }
 
         body { 
-            margin: 0; background: var(--bg); color: white;
+            margin: 0; background: var(--bg); color: var(--text);
             font-family: 'Poppins', sans-serif; display: flex; 
-            align-items: center; justify-content: center; min-height: 100vh;
-            overflow-x: hidden;
+            align-items: center; justify-content: center; min-height: 100vh; padding: 15px;
         }
 
-        /* ✨ Glass Login Card */
-        .admin-box {
-            background: var(--card-bg); width: 100%; max-width: 450px;
-            padding: 40px; border-radius: 25px; border: 1px solid rgba(212, 170, 0, 0.2);
-            box-shadow: 0 0 50px rgba(0,0,0,1); text-align: center;
-            transition: 0.4s;
-        }
-        .admin-box:hover { border-color: var(--accent); box-shadow: 0 0 60px rgba(212, 170, 0, 0.1); }
-
-        .school-logo-anim {
-            width: 70px; height: 70px; background: var(--accent); color: var(--primary);
-            border-radius: 18px; display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px; font-weight: 800; font-size: 24px;
-            box-shadow: 0 0 20px var(--accent); animation: pulse 2s infinite;
+        /* 🔒 Login Styling */
+        .glass-login {
+            background: var(--card); width: 100%; max-width: 400px;
+            padding: 40px; border-radius: 28px; border: 1px solid rgba(212, 170, 0, 0.2);
+            text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .logo-img { width: 80px; filter: drop-shadow(0 0 10px var(--accent)); margin-bottom: 15px; }
 
-        .input-field { position: relative; margin-bottom: 20px; text-align: left; }
-        .input-field label { font-size: 10px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; }
-        
+        .input-group { position: relative; margin-top: 20px; text-align: left; }
         input {
-            width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 15px;
-            color: white; border-radius: 12px; margin-top: 5px; outline: none;
+            width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 14px;
+            color: white; border-radius: 12px; outline: none; transition: 0.3s;
         }
-        input:focus { border-color: var(--accent); }
+        input:focus { border-color: var(--accent); box-shadow: 0 0 10px rgba(212, 170, 0, 0.2); }
 
-        /* 👁️ Eye Icon */
-        .eye-btn {
-            position: absolute; right: 15px; top: 38px; cursor: pointer; color: #666;
+        /* 👁️ Enhanced Eye Animation */
+        .eye-box {
+            position: absolute; right: 15px; top: 15px; cursor: pointer;
+            transition: transform 0.2s;
         }
+        .eye-box:active { transform: scale(0.8); }
 
         .btn {
-            width: 100%; padding: 16px; border: none; border-radius: 12px;
-            font-weight: 700; cursor: pointer; transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            margin-bottom: 15px;
+            width: 100%; padding: 15px; border: none; border-radius: 12px;
+            font-weight: 800; cursor: pointer; margin-top: 20px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .btn-gold { background: var(--accent); color: var(--primary); }
         .btn-gold:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(212, 170, 0, 0.3); }
 
-        /* Dashboard Internal Layout */
-        #adminDashboard { display: none; max-width: 900px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
-        .stat-item { background: #1a1a1a; padding: 15px; border-radius: 15px; border-bottom: 3px solid var(--accent); }
+        /* 🛰️ Dashboard Layout */
+        #adminDashboard { display: none; width: 100%; max-width: 1000px; animation: slideUp 0.5s ease; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-        /* Tab System */
-        .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 10px; background: #222; border-radius: 8px; cursor: pointer; font-size: 12px; border: 1px solid #333; }
-        .tab-btn.active { background: var(--accent); color: var(--primary); border: none; }
-        .tab-pane { display: none; animation: fadeIn 0.5s; }
-        .tab-pane.active { display: block; }
+        .dashboard-grid { display: grid; grid-template-columns: 250px 1fr; gap: 20px; }
+        @media (max-width: 850px) { .dashboard-grid { grid-template-columns: 1fr; } }
 
+        .sidebar { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #222; }
+        .nav-item { 
+            padding: 12px; margin-bottom: 10px; cursor: pointer; border-radius: 10px; 
+            font-size: 14px; transition: 0.3s; border-left: 0 solid var(--accent);
+        }
+        .nav-item:hover, .nav-item.active { background: #1a1a1a; border-left: 4px solid var(--accent); color: var(--accent); }
+
+        .main-panel { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #222; position: relative; }
+
+        /* 🔍 Search Results */
+        .search-results { margin-top: 20px; display: grid; gap: 10px; max-height: 400px; overflow-y: auto; }
+        .student-tile {
+            background: #1a1a1a; padding: 15px; border-radius: 12px; cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center; border: 1px solid transparent;
+        }
+        .student-tile:hover { border-color: var(--accent); background: #222; }
+
+        /* 📋 Detail Modal (Pure CSS/JS) */
+        .detail-view {
+            background: #000; border: 1px solid var(--accent); padding: 20px; border-radius: 15px;
+            margin-top: 20px; display: none; animation: fadeIn 0.3s;
+        }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .logout-link { color: #555; font-size: 12px; cursor: pointer; margin-top: 20px; }
-        .logout-link:hover { color: var(--error); }
+        .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 13px; margin-top: 15px; }
+        .data-item { background: #111; padding: 8px; border-radius: 5px; border-left: 2px solid var(--accent); }
     </style>
 </head>
 <body>
 
-<div id="loginPanel" class="admin-box">
-    <div class="school-logo-anim">KPS</div>
-    <h1>STAFF ACCESS</h1>
-    <p style="color: #666; font-size: 12px;">Authorized Personnel Only</p>
+<div id="loginPanel" class="glass-login">
+    <img src="https://img.icons8.com/color/96/university.png" class="logo-img" alt="Logo">
+    <h2 style="margin:0; color:var(--accent);">KPS COMMAND</h2>
+    <p style="font-size:12px; color:#666;">Secured Terminal v2.0</p>
     
-    <div class="input-field">
-        <label>Passkey</label>
-        <input type="password" id="passKey" placeholder="••••••••">
-        <span class="eye-btn" onclick="togglePass()">👁️</span>
+    <div class="input-group">
+        <input type="password" id="passKey" placeholder="Enter Admin Secret PIN">
+        <div class="eye-box" onclick="togglePass()">
+            <svg id="eyeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
     </div>
-    
-    <button class="btn btn-gold" onclick="verifyAdmin()">ACCESS COMMAND CENTER</button>
+    <button class="btn btn-gold" onclick="verifyAdmin()">IDENTITY VERIFIED & ENTER</button>
 </div>
 
-<div id="adminDashboard" class="admin-box">
-    <div class="tab-nav">
-        <div class="tab-btn active" onclick="switchTab('sync')">🔄 Cloud Sync</div>
-        <div class="tab-btn" onclick="switchTab('search')">🔍 Search/Edit</div>
-        <div class="tab-btn" onclick="switchTab('logs')">📋 Logs</div>
-    </div>
-
-    <div id="syncTab" class="tab-pane active">
-        <div class="stats-grid">
-            <div class="stat-item"><small>Students</small><br><b id="countStudents">-</b></div>
-            <div class="stat-item"><small>Last Sync</small><br><b id="lastSyncTime">Never</b></div>
+<div id="adminDashboard">
+    <div class="dashboard-grid">
+        <div class="sidebar">
+            <h3 style="color:var(--accent); margin-top:0;">Menu</h3>
+            <div class="nav-item active" onclick="showTab('sync')">⚡ Cloud Sync</div>
+            <div class="nav-item" onclick="showTab('search')">🔍 Student Search</div>
+            <div class="nav-item" style="color:#e74c3c" onclick="location.reload()">🔒 Secure Exit</div>
         </div>
-        <button class="btn btn-gold" id="syncBtn" onclick="performCloudSync()">⚡ SYNC FROM GOOGLE SHEET</button>
-        <button class="btn" style="background:#222; color:white;" onclick="syncFeesToGoogleSheet()">📤 EXPORT FEES TO SHEET</button>
-    </div>
 
-    <div id="searchTab" class="tab-pane">
-        <div class="input-field">
-            <input type="text" id="searchID" placeholder="Enter Serial No..." onkeyup="searchStudentLocally()">
-        </div>
-        <div id="quickResult" style="text-align: left; font-size: 13px; background: #1a1a1a; padding: 15px; border-radius: 10px; display: none;">
+        <div class="main-panel">
+            <div id="tab-sync">
+                <h3>Global Cloud Sync</h3>
+                <p style="font-size:12px; color:#888;">Sync Google Sheet marks & data to Firebase Database.</p>
+                <button class="btn btn-gold" id="syncBtn" onclick="performSync()">START SYNC PROCESS</button>
             </div>
-    </div>
 
-    <div id="logsTab" class="tab-pane">
-        <div id="logContainer" style="font-size: 10px; text-align: left; color: #27ae60; background: black; padding: 15px; height: 150px; overflow-y: auto; border-radius: 10px; font-family: monospace;">
-            > Initializing Secure Connection...<br>
-            > Waiting for commands...
+            <div id="tab-search" style="display:none;">
+                <h3>Student Intelligence</h3>
+                <input type="text" id="searchInput" placeholder="Search by Name or S.No..." onkeyup="filterStudents()">
+                
+                <div id="studentList" class="search-results">
+                    </div>
+
+                <div id="studentDetail" class="detail-view">
+                    <button onclick="this.parentElement.style.display='none'" style="float:right; background:none; color:red; border:none; cursor:pointer;">CLOSE ✖</button>
+                    <h3 id="det-name" style="color:var(--accent); margin:0;">-</h3>
+                    <p id="det-id" style="font-size:12px; color:#888;">ID: -</p>
+                    <div class="data-grid" id="det-grid">
+                        </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="logout-link" onclick="location.reload()">TERMINATE SESSION (LOGOUT)</div>
 </div>
 
 <script type="module">
-    // Firebase setup (Same as your config)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDocs, collection, getDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCQ6S-YfO61gEfB2Ad7neDU-nG4WNn1z8E",
@@ -155,92 +158,97 @@
     const db = getFirestore(app);
     const csvUrl = "https://docs.google.com/spreadsheets/d/1ykfR3DTZqifvOzE0SEBHhdS7RVWobkjRXFfYLPM7sdk/export?format=csv";
 
-    // --- HELPER: UI Functions ---
+    // 👁️ Eye Toggle Animation
     window.togglePass = () => {
         const p = document.getElementById('passKey');
-        p.type = p.type === "password" ? "text" : "password";
+        const s = document.getElementById('eyeIcon');
+        if(p.type === "password") {
+            p.type = "text"; s.style.stroke = "var(--accent)";
+        } else {
+            p.type = "password"; s.style.stroke = "#666";
+        }
     };
 
-    window.switchTab = (tab) => {
-        document.querySelectorAll('.tab-btn, .tab-pane').forEach(el => el.classList.remove('active'));
-        if(tab === 'sync') { document.getElementById('syncTab').classList.add('active'); event.target.classList.add('active'); }
-        if(tab === 'search') { document.getElementById('searchTab').classList.add('active'); event.target.classList.add('active'); }
-        if(tab === 'logs') { document.getElementById('logsTab').classList.add('active'); event.target.classList.add('active'); }
-    };
-
-    window.addLog = (msg) => {
-        const con = document.getElementById('logContainer');
-        con.innerHTML += `> ${msg}<br>`;
-        con.scrollTop = con.scrollHeight;
-    };
-
-    // --- AUTH ---
+    // 🔑 Auth
     window.verifyAdmin = () => {
         if(document.getElementById('passKey').value === "KPS@2026") {
-            document.getElementById('loginPanel').style.display = "none";
-            document.getElementById('adminDashboard').style.display = "block";
-            addLog("Access Granted. Session Started.");
+            Swal.fire({ title: 'Access Granted', icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+            document.getElementById('loginPanel').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
         } else {
-            Swal.fire('Restricted', 'Unauthorized Access Attempt!', 'error');
-            addLog("ALERT: Wrong Password Attempted!");
+            Swal.fire('Identity Failed', 'Incorrect PIN!', 'error');
         }
     };
 
-    // --- SEARCH STUDENT (No need to go to Firebase) ---
-    window.searchStudentLocally = async () => {
-        const id = document.getElementById('searchID').value;
-        const resBox = document.getElementById('quickResult');
-        if(id.length < 2) { resBox.style.display = "none"; return; }
-
-        const docRef = doc(db, "student_data", id);
-        const snap = await getDoc(docRef);
-
-        if(snap.exists()) {
-            const d = snap.data();
-            resBox.style.display = "block";
-            resBox.innerHTML = `
-                <b style="color:var(--accent)">${d.info.name}</b> (${d.info.class})<br>
-                <span>PIN: ${d.info.password}</span> | <span>Status: Active</span><br>
-                <div style="margin-top:10px; font-size:11px; color:#888">Details synced from Cloud.</div>
-            `;
-        } else {
-            resBox.style.display = "block";
-            resBox.innerHTML = "No student found with this ID.";
-        }
+    // 📑 Tab Switcher
+    window.showTab = (t) => {
+        document.getElementById('tab-sync').style.display = t === 'sync' ? 'block' : 'none';
+        document.getElementById('tab-search').style.display = t === 'search' ? 'block' : 'none';
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        event.target.classList.add('active');
+        if(t === 'search') loadStudentTiles();
     };
 
-    // --- CLOUD SYNC LOGIC ---
-    window.performCloudSync = function() {
+    // ⚡ Sync Logic with Popups
+    window.performSync = () => {
         const btn = document.getElementById('syncBtn');
-        btn.disabled = true;
-        addLog("Downloading Google Sheet Data...");
+        btn.innerText = "⚡ SYNCING..."; btn.disabled = true;
 
         Papa.parse(csvUrl, {
-            download: true, header: true, skipEmptyLines: true,
-            complete: async function(results) {
-                const rows = results.data;
-                addLog(`Parsing ${rows.length} records...`);
+            download: true, header: true,
+            complete: async (results) => {
                 try {
-                    for (let r of rows) {
-                        const sID = (r['Serial No'] || r['Serial_No'] || "").toString().trim();
-                        if (sID) {
-                            await setDoc(doc(db, "student_data", sID), {
-                                info: { 
-                                    serial_no: sID, name: r['Name'], class: r['Class'], 
-                                    password: r['Password'] || "12345", image: r['Student Image'] 
-                                },
-                                academic: { hindi: r['Hindi'], eng: r['English'], maths: r['Maths'] },
-                                last_sync: new Date().toLocaleString()
+                    for(let r of results.data) {
+                        const id = r['Serial No'] || r['Serial_No'];
+                        if(id) {
+                            await setDoc(doc(db, "student_data", id.toString()), {
+                                ...r, lastSync: new Date().toLocaleString()
                             }, { merge: true });
                         }
                     }
-                    addLog("SYNC SUCCESSFUL.");
-                    document.getElementById('lastSyncTime').innerText = new Date().toLocaleTimeString();
                     Swal.fire('Success', 'Cloud Database Updated!', 'success');
-                } catch (e) { addLog("ERROR: " + e.message); }
-                btn.disabled = false;
+                } catch(e) { Swal.fire('Error', 'Sync Failed!', 'error'); }
+                btn.innerText = "START SYNC PROCESS"; btn.disabled = false;
             }
         });
+    };
+
+    // 🔍 Dynamic Search Tiles
+    async function loadStudentTiles() {
+        const list = document.getElementById('studentList');
+        list.innerHTML = "Loading Students...";
+        const snap = await getDocs(collection(db, "student_data"));
+        list.innerHTML = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            const div = document.createElement('div');
+            div.className = "student-tile";
+            div.innerHTML = `<span><b>${d.Name || d.info?.name}</b></span> <small style="color:var(--accent)">S.No: ${doc.id}</small>`;
+            div.onclick = () => showStudentFullDetail(doc.id);
+            list.appendChild(div);
+        });
+    }
+
+    // 📋 Full Detail Viewer (A-Z)
+    window.showStudentFullDetail = async (id) => {
+        const snap = await getDoc(doc(db, "student_data", id));
+        if(snap.exists()) {
+            const d = snap.data();
+            document.getElementById('studentDetail').style.display = 'block';
+            document.getElementById('det-name').innerText = d.Name || d.info?.name;
+            document.getElementById('det-id').innerText = "Database ID: " + id;
+            
+            let html = "";
+            for(let key in d) {
+                if(typeof d[key] === 'object') {
+                    for(let subKey in d[key]) html += `<div class="data-item"><b>${subKey}:</b> ${d[key][subKey]}</div>`;
+                } else {
+                    html += `<div class="data-item"><b>${key}:</b> ${d[key]}</div>`;
+                }
+            }
+            document.getElementById('det-grid').innerHTML = html;
+            window.scrollTo(0, document.body.scrollHeight);
+        }
     };
 </script>
 </body>
