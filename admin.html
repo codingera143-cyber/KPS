@@ -124,7 +124,7 @@
     </div>
     <div id="drawerContent"></div>
 </div>
-    <script type="module">
+   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
     import { getFirestore, doc, setDoc, getDocs, collection, getDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
@@ -141,7 +141,7 @@
     const db = getFirestore(app);
     const csvUrl = "https://docs.google.com/spreadsheets/d/1ykfR3DTZqifvOzE0SEBHhdS7RVWobkjRXFfYLPM7sdk/export?format=csv";
 
-    // --- UI FUNCTIONS ---
+    // --- UI HELPERS ---
     window.togglePass = () => {
         const p = document.getElementById('passKey');
         const s = document.getElementById('eyeSvg');
@@ -153,7 +153,7 @@
         if(document.getElementById('passKey').value === "KPS@2026") {
             document.getElementById('loginPanel').style.display = 'none';
             document.getElementById('adminDashboard').style.display = 'flex';
-        } else { Swal.fire('Error', 'Wrong PIN', 'error'); }
+        } else { Swal.fire('Error', 'Invalid PIN', 'error'); }
     };
 
     window.switchNav = (tab, el) => {
@@ -164,10 +164,10 @@
         if(tab === 'search') fetchStudents();
     };
 
-    // --- 🛠️ UPDATED OVERWRITE SYNC LOGIC ---
+    // --- 🛠️ THE DUPLICATE KILLER SYNC ---
     window.performSync = () => {
         const btn = document.getElementById('syncBtn');
-        btn.innerText = "⚡ UPDATING DATABASE...";
+        btn.innerText = "⚡ CLEANING & SYNCING...";
         btn.disabled = true;
 
         Papa.parse(csvUrl, {
@@ -176,10 +176,12 @@
                 try {
                     let count = 0;
                     for(let r of res.data) {
-                        const id = (r['Serial No'] || "").toString().trim();
-                        if(!id) continue;
+                        // 🧹 ID Cleaning: removes accidental spaces
+                        let rawId = r['Serial No'] || r['Serial_No'];
+                        if(!rawId) continue;
+                        const id = rawId.toString().trim(); 
 
-                        const sClass = (r['Class'] || "").toString();
+                        const sClass = (r['Class'] || "").toString().trim();
 
                         // 1. INFO FOLDER
                         const info = {
@@ -194,7 +196,7 @@
                         };
                         if(sClass === "11" || sClass === "12") info.stream = r['Stream'] || "";
 
-                        // 2. ACADEMIC FOLDER (Dynamic Filtering from your list)
+                        // 2. ACADEMIC FOLDER (Dynamic Filtering)
                         const subList = ["Maths", "Science", "Chemistry", "Physics", "MSc.", "GK", "Computer", "IT", "English", "Hindi", "Music", "Health & Physical Education", "Yoga", "Biology", "Accounts", "BST", "Microeconomics", "Banking", "Sanskrit", "Arts", "EVS"];
                         let academic = {};
                         subList.forEach(sub => {
@@ -203,7 +205,7 @@
                             }
                         });
 
-                        // 3. ATTENDANCE FOLDER (Exact Column Match)
+                        // 3. ATTENDANCE FOLDER (Exact Mapping)
                         const attendance = {
                             apr: r['Apr_Att'] || "0", may: r['May_Att'] || "0", jul: r['Jul_Att'] || "0", 
                             aug: r['Aug_Att'] || "0", sep: r['Sep_Att'] || "0", oct: r['Oct_Att'] || "0", 
@@ -211,7 +213,7 @@
                             feb: r['Feb_Att'] || "0", mar: r['Mar_Att'] || "0"
                         };
 
-                        // 4. FEES FOLDER (Exact Column Match)
+                        // 4. FEES FOLDER (Exact Mapping)
                         const fees = {
                             i: r['Ist Installment'] || "Unpaid",
                             ii: r['IInd installment'] || "Unpaid",
@@ -219,11 +221,11 @@
                             iv: r['IVth installment'] || "Unpaid"
                         };
 
-                        // 🔄 OVERWRITE LOGIC: Using merge:true updates existing fields
+                        // 🔄 Force Overwrite to prevent duplicates
                         await setDoc(doc(db, "student_data", id), { info, academic, attendance, fees }, { merge: true });
                         count++;
                     }
-                    Swal.fire('Updated!', `${count} Student records synchronized.`, 'success');
+                    Swal.fire('Mission Success', `${count} Records Synced (No Duplicates).`, 'success');
                 } catch(e) { 
                     console.error(e);
                     Swal.fire('Sync Error', e.message, 'error'); 
@@ -237,7 +239,7 @@
     // --- SEARCH & DRAWER ---
     async function fetchStudents() {
         const cont = document.getElementById('listContainer');
-        cont.innerHTML = "<p style='text-align:center;'>Fetching Records...</p>";
+        cont.innerHTML = "<p style='text-align:center;'>Accessing Database...</p>";
         const snap = await getDocs(collection(db, "student_data"));
         cont.innerHTML = "";
         snap.forEach(d => {
@@ -258,10 +260,8 @@
             let html = "";
             ['info', 'academic', 'attendance', 'fees'].forEach(f => {
                 if(d[f] && Object.keys(d[f]).length > 0) {
-                    html += `<div style="background:#222; padding:5px 10px; margin:15px 0 5px; border-radius:5px; color:var(--accent); font-size:11px; font-weight:bold; letter-spacing:1px;">${f.toUpperCase()}</div>`;
-                    for(let k in d[f]) {
-                        html += `<div class="data-line"><b>${k.replace('_',' ')}</b><span>${d[f][k]}</span></div>`;
-                    }
+                    html += `<div style="background:#222; padding:5px 10px; margin:15px 0 5px; border-radius:5px; color:var(--accent); font-size:11px; font-weight:bold;">${f.toUpperCase()}</div>`;
+                    for(let k in d[f]) html += `<div class="data-line"><b>${k}</b><span>${d[f][k]}</span></div>`;
                 }
             });
             cont.innerHTML = html;
