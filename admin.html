@@ -128,7 +128,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
     import { getFirestore, doc, setDoc, getDocs, collection, getDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
-    // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
         apiKey: "AIzaSyCQ6S-YfO61gEfB2Ad7neDU-nG4WNn1z8E",
         authDomain: "kanpur-public-school-d8f4a.firebaseapp.com",
@@ -142,7 +141,7 @@
     const db = getFirestore(app);
     const csvUrl = "https://docs.google.com/spreadsheets/d/1ykfR3DTZqifvOzE0SEBHhdS7RVWobkjRXFfYLPM7sdk/export?format=csv";
 
-    // --- UI & AUTH LOGIC ---
+    // --- UI FUNCTIONS ---
     window.togglePass = () => {
         const p = document.getElementById('passKey');
         const s = document.getElementById('eyeSvg');
@@ -154,10 +153,7 @@
         if(document.getElementById('passKey').value === "KPS@2026") {
             document.getElementById('loginPanel').style.display = 'none';
             document.getElementById('adminDashboard').style.display = 'flex';
-            Swal.fire({ title: 'Welcome Admin', icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
-        } else { 
-            Swal.fire('Access Denied', 'Invalid Master PIN', 'error'); 
-        }
+        } else { Swal.fire('Error', 'Wrong PIN', 'error'); }
     };
 
     window.switchNav = (tab, el) => {
@@ -168,10 +164,10 @@
         if(tab === 'search') fetchStudents();
     };
 
-    // --- 🚀 MASTER SYNC LOGIC (The Core) ---
+    // --- 🛠️ UPDATED OVERWRITE SYNC LOGIC ---
     window.performSync = () => {
         const btn = document.getElementById('syncBtn');
-        btn.innerText = "⚡ PROCESSING CLOUD...";
+        btn.innerText = "⚡ UPDATING DATABASE...";
         btn.disabled = true;
 
         Papa.parse(csvUrl, {
@@ -180,69 +176,57 @@
                 try {
                     let count = 0;
                     for(let r of res.data) {
-                        const id = (r['Serial No'] || r['Serial_No'] || "").toString().trim();
+                        const id = (r['Serial No'] || "").toString().trim();
                         if(!id) continue;
 
                         const sClass = (r['Class'] || "").toString();
 
                         // 1. INFO FOLDER
-                        const infoData = {
+                        const info = {
                             serial_no: id,
                             name: r['Name'] || "",
                             class: sClass,
-                            section: r['Section'] || "A",
+                            section: r['Section'] || "",
                             password: r['Password'] || "12345",
                             image: r['Student Image'] || "",
-                            behavior: r['Behavior'] || "Good",
-                            advice: r['Advice'] || "Work Hard"
+                            behavior: r['Behavior'] || "",
+                            advice: r['Advice'] || ""
                         };
-                        // Stream only for 11 & 12
-                        if(sClass === "11" || sClass === "12") {
-                            infoData.stream = r['Stream'] || "N/A";
-                        }
+                        if(sClass === "11" || sClass === "12") info.stream = r['Stream'] || "";
 
-                        // 2. ACADEMIC FOLDER (Dynamic Subject Logic)
-                        // List of possible subjects in your Google Sheet
-                        const subjects = ["Hindi", "English", "Maths", "Science", "Social", "Sanskrit", "Computer", "GK", "Drawing", "Physics", "Chemistry", "Biology", "Accounts", "BST", "Economics", "History", "Geography"];
-                        let academicData = {};
-                        subjects.forEach(sub => {
-                            // Agar subject column mein data hai aur wo 0 ya empty nahi hai
+                        // 2. ACADEMIC FOLDER (Dynamic Filtering from your list)
+                        const subList = ["Maths", "Science", "Chemistry", "Physics", "MSc.", "GK", "Computer", "IT", "English", "Hindi", "Music", "Health & Physical Education", "Yoga", "Biology", "Accounts", "BST", "Microeconomics", "Banking", "Sanskrit", "Arts", "EVS"];
+                        let academic = {};
+                        subList.forEach(sub => {
                             if(r[sub] && r[sub].toString().trim() !== "" && r[sub].toString() !== "0") {
-                                academicData[sub] = r[sub];
+                                academic[sub] = r[sub];
                             }
                         });
 
-                        // 3. ATTENDANCE FOLDER
-                        const attendanceData = {
-                            apr: r['Apr'] || "0", jul: r['Jul'] || "0", aug: r['Aug'] || "0",
-                            sep: r['Sep'] || "0", oct: r['Oct'] || "0", nov: r['Nov'] || "0",
-                            dec: r['Dec'] || "0", jan: r['Jan'] || "0", feb: r['Feb'] || "0", mar: r['Mar'] || "0"
+                        // 3. ATTENDANCE FOLDER (Exact Column Match)
+                        const attendance = {
+                            apr: r['Apr_Att'] || "0", may: r['May_Att'] || "0", jul: r['Jul_Att'] || "0", 
+                            aug: r['Aug_Att'] || "0", sep: r['Sep_Att'] || "0", oct: r['Oct_Att'] || "0", 
+                            nov: r['Nov_Att'] || "0", dec: r['Dec_Att'] || "0", jan: r['Jan_Att'] || "0", 
+                            feb: r['Feb_Att'] || "0", mar: r['Mar_Att'] || "0"
                         };
 
-                        // 4. FEES FOLDER (Roman Indexing)
-                        const feesData = {
-                            i: r['Installment_1'] || "Unpaid",
-                            ii: r['Installment_2'] || "Unpaid",
-                            iii: r['Installment_3'] || "Unpaid",
-                            iv: r['Installment_4'] || "Unpaid"
+                        // 4. FEES FOLDER (Exact Column Match)
+                        const fees = {
+                            i: r['Ist Installment'] || "Unpaid",
+                            ii: r['IInd installment'] || "Unpaid",
+                            iii: r['IIIrd installment'] || "Unpaid",
+                            iv: r['IVth installment'] || "Unpaid"
                         };
 
-                        // FINAL BUNDLE
-                        const finalObject = {
-                            info: infoData,
-                            academic: academicData,
-                            attendance: attendanceData,
-                            fees: feesData,
-                            lastSync: new Date().toLocaleString()
-                        };
-
-                        await setDoc(doc(db, "student_data", id), finalObject, { merge: true });
+                        // 🔄 OVERWRITE LOGIC: Using merge:true updates existing fields
+                        await setDoc(doc(db, "student_data", id), { info, academic, attendance, fees }, { merge: true });
                         count++;
                     }
-                    Swal.fire('Success', `${count} Students Synced with proper folders!`, 'success');
+                    Swal.fire('Updated!', `${count} Student records synchronized.`, 'success');
                 } catch(e) { 
                     console.error(e);
-                    Swal.fire('Sync Failed', e.message, 'error'); 
+                    Swal.fire('Sync Error', e.message, 'error'); 
                 }
                 btn.innerText = "🔄 SYNC MARKS";
                 btn.disabled = false;
@@ -250,23 +234,20 @@
         });
     };
 
-    // --- SEARCH & DRAWER LOGIC ---
+    // --- SEARCH & DRAWER ---
     async function fetchStudents() {
         const cont = document.getElementById('listContainer');
-        cont.innerHTML = "<p style='text-align:center;'>Accessing Database...</p>";
-        try {
-            const snap = await getDocs(collection(db, "student_data"));
-            cont.innerHTML = "";
-            snap.forEach(d => {
-                const data = d.data();
-                const studentName = data.info?.name || "Unknown";
-                const div = document.createElement('div');
-                div.className = 'student-item';
-                div.innerHTML = `<span>${studentName}</span> <b>${d.id}</b>`;
-                div.onclick = () => openDrawer(d.id);
-                cont.appendChild(div);
-            });
-        } catch(e) { cont.innerHTML = "Error loading list."; }
+        cont.innerHTML = "<p style='text-align:center;'>Fetching Records...</p>";
+        const snap = await getDocs(collection(db, "student_data"));
+        cont.innerHTML = "";
+        snap.forEach(d => {
+            const data = d.data();
+            const div = document.createElement('div');
+            div.className = 'student-item';
+            div.innerHTML = `<span>${data.info?.name || 'Unknown'}</span> <b>${d.id}</b>`;
+            div.onclick = () => openDrawer(d.id);
+            cont.appendChild(div);
+        });
     }
 
     window.openDrawer = async (id) => {
@@ -274,53 +255,21 @@
         if(snap.exists()) {
             const d = snap.data();
             const cont = document.getElementById('drawerContent');
-            
             let html = "";
-            const folders = ['info', 'academic', 'attendance', 'fees'];
-            
-            folders.forEach(f => {
+            ['info', 'academic', 'attendance', 'fees'].forEach(f => {
                 if(d[f] && Object.keys(d[f]).length > 0) {
-                    html += `<div style="background:#222; padding:8px 12px; margin:15px 0 5px; border-radius:8px; color:var(--accent); font-size:11px; font-weight:800; letter-spacing:1px;">${f.toUpperCase()}</div>`;
-                    for(let key in d[f]) {
-                        html += `<div class="data-line"><b>${key.replace('_',' ')}</b><span>${d[f][key]}</span></div>`;
+                    html += `<div style="background:#222; padding:5px 10px; margin:15px 0 5px; border-radius:5px; color:var(--accent); font-size:11px; font-weight:bold; letter-spacing:1px;">${f.toUpperCase()}</div>`;
+                    for(let k in d[f]) {
+                        html += `<div class="data-line"><b>${k.replace('_',' ')}</b><span>${d[f][k]}</span></div>`;
                     }
                 }
             });
-            
             cont.innerHTML = html;
             document.getElementById('drawer').classList.add('active');
         }
     };
 
     window.closeDrawer = () => document.getElementById('drawer').classList.remove('active');
-
-    // --- FEES EXPORT LOGIC ---
-    window.syncFeesToSheet = async () => {
-        Swal.fire({ title: 'Exporting...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-        try {
-            const snap = await getDocs(collection(db, "student_data"));
-            let exportData = [];
-            snap.forEach(doc => {
-                const d = doc.data();
-                exportData.push({
-                    id: doc.id,
-                    name: d.info?.name || "",
-                    inst_1: d.fees?.i || "Unpaid",
-                    inst_2: d.fees?.ii || "Unpaid",
-                    inst_3: d.fees?.iii || "Unpaid",
-                    inst_4: d.fees?.iv || "Unpaid"
-                });
-            });
-
-            const scriptURL = "https://script.google.com/macros/s/AKfycbwGki5qIksWm-48Sc7saT9KMn3Vtjdymskl4KblXHhUynyUPVfhO6JYWuvfs43lQ3ziKg/exec";
-            await fetch(scriptURL, {
-                method: "POST",
-                mode: "no-cors",
-                body: JSON.stringify(exportData)
-            });
-            Swal.fire('Exported!', 'Fees data sent to Google Sheet.', 'success');
-        } catch(e) { Swal.fire('Error', e.message, 'error'); }
-    };
 </script>
 </body>
 </html>
