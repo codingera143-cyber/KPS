@@ -4,173 +4,132 @@
     <meta name="robots" content="noindex, nofollow">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>KPS | Command Center</title>
+    <title>KPS | Command Center v3.0</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         :root {
             --bg: #000000;
-            --card: #121212;
+            --card: #111111;
             --accent: #d4aa00;
             --text: #ffffff;
-            --secondary: #1e1e1e;
+            --field: #1a1a1a;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            margin: 0; background: var(--bg); color: var(--text);
-            font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden;
-        }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; }
 
-        /* 🔒 Login: Full Screen App Style */
-        #loginPanel {
-            height: 100vh; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; padding: 30px;
-        }
-        .login-card {
-            width: 100%; max-width: 400px; text-align: center;
-        }
-        .logo-circle {
-            width: 90px; height: 90px; background: var(--accent);
-            border-radius: 25px; margin: 0 auto 20px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 30px rgba(212, 170, 0, 0.3);
-        }
-
+        /* 🔒 Login Panel */
+        #loginPanel { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; }
+        
+        .input-wrapper { position: relative; width: 100%; max-width: 350px; margin-top: 20px; }
         .input-box {
-            width: 100%; background: var(--secondary); border: 1px solid #333;
-            padding: 16px; border-radius: 15px; color: white; font-size: 16px;
-            margin-top: 20px; outline: none; text-align: center;
+            width: 100%; background: var(--field); border: 1px solid #333;
+            padding: 16px; border-radius: 15px; color: white; font-size: 16px; outline: none; text-align: center;
         }
 
-        /* 📱 Main App Layout */
-        #adminDashboard { 
-            display: none; height: 100vh; flex-direction: column; 
+        /* 👁️ Eye Icon Button */
+        .eye-toggle {
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            cursor: pointer; color: #666; transition: 0.3s;
         }
 
-        .app-header {
-            padding: 20px; background: var(--bg); border-bottom: 1px solid #222;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .btn-gold { background: var(--accent); color: #000; font-weight: 800; border: none; padding: 16px; border-radius: 15px; width: 100%; max-width: 350px; margin-top: 20px; cursor: pointer; }
 
-        .scroll-area { 
-            flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; 
-        }
+        /* 📱 App Interface */
+        #adminDashboard { display: none; height: 100vh; flex-direction: column; }
+        .app-header { padding: 20px; background: var(--bg); border-bottom: 1px solid #222; font-weight: 800; color: var(--accent); text-align: center; }
+        
+        .scroll-area { flex: 1; overflow-y: auto; padding: 20px 15px 100px 15px; }
 
-        /* 🧭 Bottom Navigation (App Feel) */
+        /* 👤 Student List */
+        .student-item {
+            background: var(--card); padding: 18px; border-radius: 16px; margin-bottom: 12px;
+            display: flex; justify-content: space-between; align-items: center; border: 1px solid #222;
+        }
+        .student-item:active { transform: scale(0.98); background: #1a1a1a; }
+
+        /* 📋 Profile Drawer (Mobile Style) */
+        .profile-drawer {
+            position: fixed; bottom: -100%; left: 0; width: 100%; height: 90vh;
+            background: var(--card); border-radius: 25px 25px 0 0; z-index: 2000;
+            transition: bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 25px; overflow-y: auto; border-top: 2px solid var(--accent);
+        }
+        .profile-drawer.active { bottom: 0; }
+
+        /* 📄 Data Lines (Line-by-Line View) */
+        .data-line {
+            display: flex; flex-direction: column; padding: 12px 0; border-bottom: 1px solid #222;
+        }
+        .data-line b { font-size: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; }
+        .data-line span { font-size: 15px; margin-top: 4px; color: #eee; }
+
+        /* 🧭 Bottom Navigation */
         .bottom-nav {
-            position: fixed; bottom: 0; width: 100%; height: 70px;
-            background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px);
-            display: flex; justify-content: space-around; align-items: center;
-            border-top: 1px solid #333; z-index: 1000;
+            position: fixed; bottom: 0; width: 100%; height: 75px;
+            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(15px);
+            display: flex; justify-content: space-around; border-top: 1px solid #222;
         }
-        .nav-item { 
-            display: flex; flex-direction: column; align-items: center; 
-            font-size: 10px; color: #666; cursor: pointer; transition: 0.3s;
-        }
-        .nav-item.active { color: var(--accent); }
-        .nav-item svg { width: 24px; height: 24px; margin-bottom: 4px; }
-
-        /* 💳 Data Cards */
-        .app-card {
-            background: var(--card); padding: 20px; border-radius: 20px;
-            margin-bottom: 15px; border: 1px solid #222;
-        }
-        .btn-app {
-            width: 100%; padding: 16px; border-radius: 15px; border: none;
-            font-weight: 800; font-size: 14px; cursor: pointer; margin-top: 10px;
-        }
-        .btn-gold { background: var(--accent); color: #000; }
-
-        /* 👤 Student List & Profile */
-        .student-row {
-            background: var(--secondary); padding: 15px; border-radius: 12px;
-            margin-bottom: 10px; display: flex; justify-content: space-between;
-            align-items: center; border-left: 4px solid transparent;
-        }
-        .student-row:active { background: #333; border-left-color: var(--accent); }
-
-        .full-profile {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg); z-index: 2000; display: none;
-            padding: 25px; overflow-y: auto;
-        }
-
-        .profile-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;
-        }
-        .data-point { background: var(--secondary); padding: 12px; border-radius: 10px; font-size: 12px; }
-        .data-point b { display: block; color: var(--accent); font-size: 10px; text-transform: uppercase; }
-
+        .nav-link { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #555; font-size: 10px; text-decoration: none; cursor: pointer; }
+        .nav-link.active { color: var(--accent); }
     </style>
 </head>
 <body>
 
 <div id="loginPanel">
-    <div class="login-card">
-        <div class="logo-circle"><img src="https://img.icons8.com/color/48/university.png"></div>
-        <h1 style="margin:0; font-weight:800; letter-spacing:-1px;">KPS COMMAND</h1>
-        <input type="password" id="passKey" class="input-box" placeholder="Admin PIN">
-        <button class="btn-app btn-gold" onclick="verifyAdmin()">SIGN IN</button>
+    <img src="https://img.icons8.com/color/96/university.png" style="width:70px; margin-bottom:10px;">
+    <h2 style="margin:0; letter-spacing:-1px;">KPS COMMAND</h2>
+    <div class="input-wrapper">
+        <input type="password" id="passKey" class="input-box" placeholder="Master PIN">
+        <span class="eye-toggle" onclick="togglePass()">
+            <svg id="eyeSvg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </span>
     </div>
+    <button class="btn-gold" onclick="verifyAdmin()">UNLOCK TERMINAL</button>
 </div>
 
 <div id="adminDashboard">
-    <div class="app-header">
-        <span style="font-weight:800; color:var(--accent);">KPS.ADMIN</span>
-        <img src="https://img.icons8.com/color/30/settings.png" onclick="location.reload()">
-    </div>
+    <div class="app-header">KPS STEALTH ADMIN</div>
 
-    <div class="scroll-area" id="mainContent">
-        <div id="tab-sync">
-            <div class="app-card">
-                <h3>Cloud Operations</h3>
-                <p style="color:#666; font-size:12px;">Update marks from Sheet or export fees back to Sheet.</p>
-                <button class="btn-app btn-gold" id="syncBtn" onclick="performSync()">🔄 SYNC MARKS TO FIREBASE</button>
-                
-                <button class="btn-app" style="background:#222; color:white; border:1px solid #444;" onclick="syncFeesToSheet()">📤 EXPORT FEES TO SHEET</button>
-            </div>
-            
-            <div class="app-card" style="background: linear-gradient(135deg, #1a1a1a, #000);">
-                <small style="color:var(--accent)">SYSTEM STATUS</small>
-                <h2 style="margin:5px 0;">Operational</h2>
-                <div style="font-size:12px; color:#555;">All cloud services are connected.</div>
+    <div class="scroll-area">
+        <div id="tab-ops">
+            <div style="background:var(--card); padding:20px; border-radius:20px; margin-bottom:20px;">
+                <h4 style="margin-top:0;">Cloud Controls</h4>
+                <button class="btn-gold" id="syncBtn" onclick="performSync()" style="margin-bottom:10px;">🔄 SYNC MARKS</button>
+                <button onclick="syncFeesToSheet()" style="width:100%; padding:15px; background:#222; border:none; color:white; border-radius:15px; font-weight:700;">📤 EXPORT FEES</button>
             </div>
         </div>
 
         <div id="tab-search" style="display:none;">
-            <input type="text" id="stuSearch" class="input-box" placeholder="Search S.No or Name..." onkeyup="filterList()" style="margin-bottom:20px; text-align:left;">
-            <div id="studentContainer"></div>
+            <input type="text" id="searchBar" class="input-box" placeholder="Type name or S.No..." onkeyup="searchFilter()" style="text-align:left; margin-bottom:15px;">
+            <div id="listContainer"></div>
         </div>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchNav('sync', this)">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21l-8-8h16l-8 8zM12 3l8 8H4l8-8z"/></svg>
-            <span>OPERATIONS</span>
-        </div>
-        <div class="nav-item" onclick="switchNav('search', this)">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-            <span>STUDENTS</span>
-        </div>
+        <div class="nav-link active" onclick="switchNav('ops', this)"><span>⚙️ OPS</span></div>
+        <div class="nav-link" onclick="switchNav('search', this)"><span>🔍 SEARCH</span></div>
+        <div class="nav-link" onclick="location.reload()"><span>🔒 EXIT</span></div>
     </div>
 </div>
 
-<div id="profileView" class="full-profile">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-        <button onclick="closeProfile()" style="background:none; color:var(--accent); border:none; font-size:24px;">✕</button>
-        <span style="font-weight:800;">STUDENT DOSSIER</span>
+<div id="drawer" class="profile-drawer">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <span style="font-weight:800; color:var(--accent);">STUDENT PROFILE</span>
+        <button onclick="closeDrawer()" style="background:none; border:none; color:white; font-size:20px;">✕</button>
     </div>
-    <div id="profileContent"></div>
+    <div id="drawerContent"></div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
     import { getFirestore, doc, setDoc, getDocs, collection, getDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
+    // Firebase Config (Aapki config paste karein)
     const firebaseConfig = {
         apiKey: "AIzaSyCQ6S-YfO61gEfB2Ad7neDU-nG4WNn1z8E",
         authDomain: "kanpur-public-school-d8f4a.firebaseapp.com",
@@ -184,94 +143,79 @@
     const db = getFirestore(app);
     const csvUrl = "https://docs.google.com/spreadsheets/d/1ykfR3DTZqifvOzE0SEBHhdS7RVWobkjRXFfYLPM7sdk/export?format=csv";
 
-    // --- NAVIGATION LOGIC ---
-    window.switchNav = (tab, el) => {
-        document.getElementById('tab-sync').style.display = tab === 'sync' ? 'block' : 'none';
-        document.getElementById('tab-search').style.display = tab === 'search' ? 'block' : 'none';
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        el.classList.add('active');
-        if(tab === 'search') loadStudents();
+    // --- UI LOGIC ---
+    window.togglePass = () => {
+        const p = document.getElementById('passKey');
+        const s = document.getElementById('eyeSvg');
+        p.type = p.type === "password" ? "text" : "password";
+        s.style.color = p.type === "text" ? "var(--accent)" : "#666";
     };
 
-    // --- AUTH ---
     window.verifyAdmin = () => {
         if(document.getElementById('passKey').value === "KPS@2026") {
             document.getElementById('loginPanel').style.display = 'none';
             document.getElementById('adminDashboard').style.display = 'flex';
-        } else {
-            Swal.fire('Error', 'Incorrect PIN', 'error');
-        }
+        } else { Swal.fire('Error', 'Wrong PIN', 'error'); }
     };
 
-    // --- SYNC MARKS (G-Sheet to Firebase) ---
+    window.switchNav = (tab, el) => {
+        document.getElementById('tab-ops').style.display = tab === 'ops' ? 'block' : 'none';
+        document.getElementById('tab-search').style.display = tab === 'search' ? 'block' : 'none';
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        el.classList.add('active');
+        if(tab === 'search') fetchStudents();
+    };
+
+    // --- CLOUD SYNC ---
     window.performSync = () => {
         const btn = document.getElementById('syncBtn');
-        btn.innerText = "⏳ SYNCING..."; btn.disabled = true;
+        btn.innerText = "⚡ SYNCING...";
         Papa.parse(csvUrl, {
             download: true, header: true,
-            complete: async (results) => {
-                try {
-                    for(let r of results.data) {
-                        const id = r['Serial No'] || r['Serial_No'];
-                        if(id) {
-                            await setDoc(doc(db, "student_data", id.toString()), { ...r }, { merge: true });
-                        }
-                    }
-                    Swal.fire('Success', 'Cloud Synced!', 'success');
-                } catch(e) { Swal.fire('Error', 'Sync Failed', 'error'); }
-                btn.innerText = "🔄 SYNC MARKS TO FIREBASE"; btn.disabled = false;
+            complete: async (res) => {
+                for(let r of res.data) {
+                    const id = r['Serial No'] || r['Serial_No'];
+                    if(id) await setDoc(doc(db, "student_data", id.toString()), r, {merge:true});
+                }
+                Swal.fire('Success', 'Database Updated', 'success');
+                btn.innerText = "🔄 SYNC MARKS";
             }
         });
     };
 
-    // --- SYNC FEES (Firebase to G-Sheet) ---
-    window.syncFeesToSheet = async () => {
-        Swal.fire('Processing', 'Exporting fee records to sheet...', 'info');
-        // Yahan aapka Apps Script URL aayega
-        const webAppURL = "https://script.google.com/macros/s/AKfycbwGki5qIksWm-48Sc7saT9KMn3Vtjdymskl4KblXHhUynyUPVfhO6JYWuvfs43lQ3ziKg/exec";
-        try {
-            const snap = await getDocs(collection(db, "student_data"));
-            let data = [];
-            snap.forEach(d => data.push(d.data()));
-            // Fetch logic for Apps Script...
-            Swal.fire('Sent', 'Data forwarded to Google Sheet', 'success');
-        } catch(e) { Swal.fire('Error', 'Export failed', 'error'); }
-    };
-
-    // --- STUDENT LIST & PROFILE ---
-    async function loadStudents() {
-        const cont = document.getElementById('studentContainer');
-        cont.innerHTML = "Loading...";
+    // --- SEARCH & DRAWER ---
+    async function fetchStudents() {
+        const cont = document.getElementById('listContainer');
+        cont.innerHTML = "<p>Loading...</p>";
         const snap = await getDocs(collection(db, "student_data"));
         cont.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
+        snap.forEach(d => {
+            const data = d.data();
             const div = document.createElement('div');
-            div.className = "student-row";
-            div.innerHTML = `<span>${d.Name || 'No Name'}</span> <small style="color:var(--accent)">${doc.id}</small>`;
-            div.onclick = () => openProfile(doc.id);
+            div.className = 'student-item';
+            div.innerHTML = `<span>${data.Name || 'Unknown'}</span> <b>${d.id}</b>`;
+            div.onclick = () => openDrawer(d.id);
             cont.appendChild(div);
         });
     }
 
-    window.openProfile = async (id) => {
+    window.openDrawer = async (id) => {
         const snap = await getDoc(doc(db, "student_data", id));
         if(snap.exists()) {
             const d = snap.data();
-            const prof = document.getElementById('profileView');
-            const cont = document.getElementById('profileContent');
-            prof.style.display = 'block';
+            const draw = document.getElementById('drawer');
+            const cont = document.getElementById('drawerContent');
             
-            let gridHtml = `<div class="profile-grid">`;
+            let lines = "";
             for(let key in d) {
-                gridHtml += `<div class="data-point"><b>${key}</b>${d[key] || '-'}</div>`;
+                lines += `<div class="data-line"><b>${key}</b><span>${d[key] || 'N/A'}</span></div>`;
             }
-            gridHtml += `</div>`;
-            cont.innerHTML = `<h2 style="margin-top:20px;">${d.Name || 'Student'}</h2>` + gridHtml;
+            cont.innerHTML = lines;
+            draw.classList.add('active');
         }
     };
 
-    window.closeProfile = () => document.getElementById('profileView').style.display = 'none';
+    window.closeDrawer = () => document.getElementById('drawer').classList.remove('active');
 
 </script>
 </body>
