@@ -277,7 +277,7 @@ window.syncFeesToSheet = async () => {
         text: "This is will update fees data in Google sheet via firebase.",
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Haan, bhej do!'
+        confirmButtonText: 'Yes'
     });
 
     if (!result.isConfirmed) return;
@@ -305,7 +305,7 @@ window.syncFeesToSheet = async () => {
         });
 
         // 3. Google Apps Script Web App URL (Yahan apna URL dalein)
-        const webAppURL = "https://script.google.com/macros/s/AKfycbzAVg0REHsKeMKAFv0MyotaXro3LtN1qdvg8socBnV50MTrG7IcSUMT_bAmGnKj4nZ6ow/exec";
+        const webAppURL = "https://script.google.com/macros/s/AKfycbyzJWoxrI16rA_-qa7sopXp77mT_WTx-HbSREekAZL5vAaaBj6ofHrQo_WeiOkBPnJ7SQ/exec";
 
         // 4. Post request bhejien
         await fetch(webAppURL, {
