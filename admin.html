@@ -190,7 +190,7 @@
                             class: sClass,
                             section: r['Section'] || "",
                             password: r['Password'] || "12345",
-                            image: r['Student Image'] || "",
+                            image: (r['Student Image'] && r['Student Image'].trim() !== "") ? r['Student Image'] : existingImage,
                             behavior: r['Behavior'] || "",
                             advice: r['Advice'] || "",
                             father_name: r["Father's Name"] || "---",
