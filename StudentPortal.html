@@ -122,6 +122,49 @@
     letter-spacing: 1px;
     max-width: 600px;
 }*/
+        /* Details Container */
+.student-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Do columns mein divide karega */
+    gap: 15px;
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    margin: 20px 0;
+}
+
+/* Individual Data Item */
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* Label Style (Father's Name, etc.) */
+.detail-item label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #64748b;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Value Style (Actual Names) */
+.detail-item span {
+    font-size: 14px;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+/* Mobile Responsive: Ek column ho jaye jab screen chhoti ho */
+@media (max-width: 480px) {
+    .student-details-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 15px;
+    }
+}
     </style>
 </head>
 <body>
@@ -172,6 +215,24 @@
                 <div id="disp-photo" class="avatar">?</div>
                 <div>
                     <h2 id="disp-name" style="margin:0; font-size:24px; color:var(--primary); letter-spacing: -0.5px;">Student Name</h2>
+                    <div class="student-details-grid">
+    <div class="detail-item">
+        <label>Father's Name</label>
+        <span id="disp-father">---</span>
+    </div>
+    <div class="detail-item">
+        <label>Mother's Name</label>
+        <span id="disp-mother">---</span>
+    </div>
+    <div class="detail-item">
+        <label>Mobile Number</label>
+        <span id="disp-mobile">---</span>
+    </div>
+    <div class="detail-item">
+        <label>Alt. Mobile Number</label>
+        <span id="disp-alt">---</span>
+    </div>
+                    </div>
                     <p id="disp-class" style="margin:2px 0; font-size:13px; color:#718096; font-weight:700;">Class: -</p>
                 </div>
             </div>
@@ -247,6 +308,10 @@
     // 1. Basic Info Display (Keeping your logic)
     document.getElementById('disp-id').innerText = "KPS-2026-" + info.serial_no;
     document.getElementById('disp-name').innerText = info.name;
+document.getElementById('disp-father').innerText = info.father_name || "---";
+document.getElementById('disp-mother').innerText = info.mother_name || "---";
+document.getElementById('disp-mobile').innerText = info.mobile || "---";
+document.getElementById('disp-alt').innerText = info.alt_mobile || "---";
     const currentClass = info.class.replace(/\D/g, ''); 
     const section = (info.section || 'A').toUpperCase();
     document.getElementById('disp-class').innerText = `Class: ${info.class} | Section: ${section}`;
