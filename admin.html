@@ -124,12 +124,10 @@
     </div>
     <div id="drawerContent"></div>
 </div>
-
-<script type="module">
+    <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
     import { getFirestore, doc, setDoc, getDocs, collection, getDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
-    // Firebase Config (Aapki config paste karein)
     const firebaseConfig = {
         apiKey: "AIzaSyCQ6S-YfO61gEfB2Ad7neDU-nG4WNn1z8E",
         authDomain: "kanpur-public-school-d8f4a.firebaseapp.com",
@@ -166,19 +164,56 @@
         if(tab === 'search') fetchStudents();
     };
 
-    // --- CLOUD SYNC ---
+    // --- 🚀 UPDATED CLOUD SYNC LOGIC ---
     window.performSync = () => {
         const btn = document.getElementById('syncBtn');
         btn.innerText = "⚡ SYNCING...";
+        btn.disabled = true;
+
         Papa.parse(csvUrl, {
-            download: true, header: true,
+            download: true, header: true, skipEmptyLines: true,
             complete: async (res) => {
-                for(let r of res.data) {
-                    const id = r['Serial No'] || r['Serial_No'];
-                    if(id) await setDoc(doc(db, "student_data", id.toString()), r, {merge:true});
+                try {
+                    let count = 0;
+                    for(let r of res.data) {
+                        const id = (r['Serial No'] || r['Serial_No'] || "").toString().trim();
+                        if(id) {
+                            // 📂 Data Structure Organization
+                            const structuredData = {
+                                info: {
+                                    serial_no: id,
+                                    name: r['Name'] || "",
+                                    class: r['Class'] || "",
+                                    password: r['Password'] || "12345",
+                                    image: r['Student Image'] || "",
+                                    behavior: r['Behavior'] || "Good",
+                                    advice: r['Advice'] || "Keep it up"
+                                },
+                                academic: {
+                                    hindi: r['Hindi'] || "0", eng: r['English'] || "0", maths: r['Maths'] || "0",
+                                    science: r['Science'] || "0", social: r['Social'] || "0", sanskrit: r['Sanskrit'] || "0",
+                                    computer: r['Computer'] || "0", gk: r['GK'] || "0", drawing: r['Drawing'] || "0"
+                                },
+                                fees: {
+                                    inst1: r['Installment_1'] || "Unpaid",
+                                    inst2: r['Installment_2'] || "Unpaid",
+                                    inst3: r['Installment_3'] || "Unpaid",
+                                    inst4: r['Installment_4'] || "Unpaid"
+                                },
+                                lastSync: new Date().toLocaleString()
+                            };
+                            
+                            await setDoc(doc(db, "student_data", id), structuredData, {merge:true});
+                            count++;
+                        }
+                    }
+                    Swal.fire('Success', `${count} Records Synced with Folders!`, 'success');
+                } catch(e) { 
+                    console.error(e);
+                    Swal.fire('Error', 'Sync Failed: ' + e.message, 'error'); 
                 }
-                Swal.fire('Success', 'Database Updated', 'success');
                 btn.innerText = "🔄 SYNC MARKS";
+                btn.disabled = false;
             }
         });
     };
@@ -193,7 +228,9 @@
             const data = d.data();
             const div = document.createElement('div');
             div.className = 'student-item';
-            div.innerHTML = `<span>${data.Name || 'Unknown'}</span> <b>${d.id}</b>`;
+            // Accessing data from info folder
+            const studentName = data.info ? data.info.name : (data.Name || 'Unknown');
+            div.innerHTML = `<span>${studentName}</span> <b>${d.id}</b>`;
             div.onclick = () => openDrawer(d.id);
             cont.appendChild(div);
         });
@@ -207,67 +244,65 @@
             const cont = document.getElementById('drawerContent');
             
             let lines = "";
-            for(let key in d) {
-                lines += `<div class="data-line"><b>${key}</b><span>${d[key] || 'N/A'}</span></div>`;
-            }
+            // Logic to show nested folders line by line
+            const folders = ['info', 'academic', 'fees'];
+            folders.forEach(f => {
+                if(d[f]) {
+                    lines += `<div style="background:#222; padding:5px 10px; margin:10px 0; border-radius:5px; color:var(--accent); font-size:12px; font-weight:bold;">${f.toUpperCase()}</div>`;
+                    for(let key in d[f]) {
+                        lines += `<div class="data-line"><b>${key}</b><span>${d[f][key] || 'N/A'}</span></div>`;
+                    }
+                }
+            });
             cont.innerHTML = lines;
             draw.classList.add('active');
         }
     };
 
     window.closeDrawer = () => document.getElementById('drawer').classList.remove('active');
+
     window.syncFeesToSheet = async () => {
-    const feeBtn = document.getElementById('feeSyncBtn'); // Ensure this ID matches your button
-    
-    // 1. Confirm from Admin
-    const result = await Swal.fire({
-        title: 'Export to Sheet?',
-        text: "This will send all Firebase records to Google Sheets.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, Export!'
-    });
+        const result = await Swal.fire({
+            title: 'Export to Sheet?',
+            text: "This will send all Firebase records to Google Sheets.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Export!'
+        });
 
-    if (!result.isConfirmed) return;
+        if (!result.isConfirmed) return;
 
-    Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+        Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
-    try {
-        // 2. Fetch ALL data from Firebase
-        const querySnapshot = await getDocs(collection(db, "student_data"));
-        let allStudents = [];
+        try {
+            const querySnapshot = await getDocs(collection(db, "student_data"));
+            let allStudents = [];
 
-        querySnapshot.forEach((doc) => {
-            const d = doc.data();
-            // Sirf wahi data bhejein jo Sheet mein chahiye
-            allStudents.push({
-                serial_no: doc.id,
-                name: d.Name || d.info?.name || "",
-                class: d.Class || d.info?.class || "",
-                fees_paid: d.installment_1_status || "Unpaid", // Example field
-                last_sync: new Date().toLocaleString()
+            querySnapshot.forEach((doc) => {
+                const d = doc.data();
+                allStudents.push({
+                    serial_no: doc.id,
+                    name: d.info?.name || "",
+                    class: d.info?.class || "",
+                    fees_status: d.fees?.inst1 || "Unpaid", 
+                    last_sync: new Date().toLocaleString()
+                });
             });
-        });
 
-        // 3. Post to Google Apps Script
-        // REPLACE THIS URL with your deployed Apps Script URL
-        const webAppURL = "https://script.google.com/macros/s/AKfycbwGki5qIksWm-48Sc7saT9KMn3Vtjdymskl4KblXHhUynyUPVfhO6JYWuvfs43lQ3ziKg/exec";
+            const webAppURL = "https://script.google.com/macros/s/AKfycbwGki5qIksWm-48Sc7saT9KMn3Vtjdymskl4KblXHhUynyUPVfhO6JYWuvfs43lQ3ziKg/exec";
 
-        const response = await fetch(webAppURL, {
-            method: "POST",
-            mode: "no-cors", // Crucial for Google Script
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(allStudents)
-        });
+            await fetch(webAppURL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(allStudents)
+            });
 
-        Swal.fire('Success', 'Data sent to Google Sheet successfully!', 'success');
-
-    } catch (error) {
-        console.error(error);
-        Swal.fire('Error', 'Failed to export: ' + error.message, 'error');
-    }
-};
-
+            Swal.fire('Success', 'Data sent to Google Sheet!', 'success');
+        } catch (error) {
+            Swal.fire('Error', 'Failed: ' + error.message, 'error');
+        }
+    };
 </script>
 </body>
 </html>
