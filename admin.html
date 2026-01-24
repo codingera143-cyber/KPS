@@ -192,11 +192,11 @@
                             password: r['Password'] || "12345",
                             image: r['Student Image'] || "",
                             behavior: r['Behavior'] || "",
-                            advice: r['Advice'] || ""
-                            father_name: row[48] || "---",
-                            mother_name: row[49] || "---",
-                            mobile: row[50] || "---",
-                            alt_mobile: row[51] || "---",
+                            advice: r['Advice'] || "",
+                            father_name: r["Father's Name"] || "---",
+                            mother_name: r["Mother's Name"] || "---",
+                            mobile: r["Mobile No"] || "---",
+                            alt_mobile: r["Alternate Mobile No"] || "---",
                         };
                         if(sClass === "11" || sClass === "12") info.stream = r['Stream'] || "";
 
