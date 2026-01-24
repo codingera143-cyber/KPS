@@ -270,6 +270,58 @@
     };
 
     window.closeDrawer = () => document.getElementById('drawer').classList.remove('active');
+window.syncFeesToSheet = async () => {
+    // 1. Confirm karein
+    const result = await Swal.fire({
+        title: 'Export Fees Data?',
+        text: "This is will update fees data in Google sheet via firebase.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Haan, bhej do!'
+    });
+
+    if (!result.isConfirmed) return;
+
+    Swal.fire({ title: 'Exporting...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+    try {
+        // 2. Firebase se saara data fetch karein
+        const querySnapshot = await getDocs(collection(db, "student_data"));
+        let exportData = [];
+
+        querySnapshot.forEach((doc) => {
+            const d = doc.data();
+            // Sirf wahi data le rahe hain jo Sheet mein bhejni hai
+            exportData.push({
+                serial_no: doc.id,
+                name: d.info?.name || "Unknown",
+                // Yahan se fees folder ka data uth raha hai
+                inst_1: d.fees?.i || "Unpaid",
+                inst_2: d.fees?.ii || "Unpaid",
+                inst_3: d.fees?.iii || "Unpaid",
+                inst_4: d.fees?.iv || "Unpaid",
+                sync_time: new Date().toLocaleString()
+            });
+        });
+
+        // 3. Google Apps Script Web App URL (Yahan apna URL dalein)
+        const webAppURL = "https://script.google.com/macros/s/AKfycbwGki5qIksWm-48Sc7saT9KMn3Vtjdymskl4KblXHhUynyUPVfhO6JYWuvfs43lQ3ziKg/exec";
+
+        // 4. Post request bhejien
+        await fetch(webAppURL, {
+            method: "POST",
+            mode: "no-cors", 
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(exportData)
+        });
+
+        Swal.fire('Success!', 'Fees Data Sheet Updated.', 'success');
+
+    } catch (error) {
+        console.error(error);
+        Swal.fire('Error', 'Export Failed: ' + error.message, 'error');
+    }
+};
 </script>
 </body>
 </html>
