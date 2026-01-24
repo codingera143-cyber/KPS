@@ -216,6 +216,57 @@
     };
 
     window.closeDrawer = () => document.getElementById('drawer').classList.remove('active');
+    window.syncFeesToSheet = async () => {
+    const feeBtn = document.getElementById('feeSyncBtn'); // Ensure this ID matches your button
+    
+    // 1. Confirm from Admin
+    const result = await Swal.fire({
+        title: 'Export to Sheet?',
+        text: "This will send all Firebase records to Google Sheets.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, Export!'
+    });
+
+    if (!result.isConfirmed) return;
+
+    Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+    try {
+        // 2. Fetch ALL data from Firebase
+        const querySnapshot = await getDocs(collection(db, "student_data"));
+        let allStudents = [];
+
+        querySnapshot.forEach((doc) => {
+            const d = doc.data();
+            // Sirf wahi data bhejein jo Sheet mein chahiye
+            allStudents.push({
+                serial_no: doc.id,
+                name: d.Name || d.info?.name || "",
+                class: d.Class || d.info?.class || "",
+                fees_paid: d.installment_1_status || "Unpaid", // Example field
+                last_sync: new Date().toLocaleString()
+            });
+        });
+
+        // 3. Post to Google Apps Script
+        // REPLACE THIS URL with your deployed Apps Script URL
+        const webAppURL = "https://script.google.com/macros/s/AKfycbwGki5qIksWm-48Sc7saT9KMn3Vtjdymskl4KblXHhUynyUPVfhO6JYWuvfs43lQ3ziKg/exec";
+
+        const response = await fetch(webAppURL, {
+            method: "POST",
+            mode: "no-cors", // Crucial for Google Script
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(allStudents)
+        });
+
+        Swal.fire('Success', 'Data sent to Google Sheet successfully!', 'success');
+
+    } catch (error) {
+        console.error(error);
+        Swal.fire('Error', 'Failed to export: ' + error.message, 'error');
+    }
+};
 
 </script>
 </body>
