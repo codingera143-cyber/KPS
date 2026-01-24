@@ -68,7 +68,7 @@
 
         @media print { .btn-main, .eye-btn, .header-brand, footer { display: none !important; } .container { padding: 0; } .report-card { box-shadow: none; border: 1px solid #eee; } }
 /* Full Screen Overlay */
-.full-screen-lock {
+*/.full-screen-lock {
     position: fixed;
     top: 0;
     left: 0;
@@ -121,11 +121,11 @@
     font-weight: 400;
     letter-spacing: 1px;
     max-width: 600px;
-}
+}*/
     </style>
 </head>
 <body>
-     <div id="portal-root">
+     <!------ <div id="portal-root">
     <div id="lockScreen" class="full-screen-lock">
         <div class="lock-container">
             <svg class="lock-svg" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -135,7 +135,7 @@
             <h1 class="lock-text">Portal will open from 15 March 2027 to 15 April 2027</h1>
         </div>
     </div>
-</div>
+</div> ------->
 <div id="main-content-wrapper">
     <div id="login-section">
         <div class="header-brand">
@@ -444,12 +444,12 @@
         document.getElementById('qr-code').innerHTML = "";
         new QRCode(document.getElementById("qr-code"), { text: "KPS-VERIFIED-"+info.serial_no, width: 60, height: 60 });
     }
-    function managePortalLock() {
+    /*function managePortalLock() {
     const now = new Date();
     
     // Exact dates for 2027
-    const openDate = new Date(2026, 0, 15); // 15 March
-    const closeDate = new Date(2027, 0, 25); // 15 April
+    const openDate = new Date(2027, 2, 15); // 15 March
+    const closeDate = new Date(2027, 3, 25); // 15 April
 
     const lockScreen = document.getElementById('lockScreen');
     const mainWrapper = document.getElementById('main-content-wrapper');
@@ -466,7 +466,7 @@
 }
 
 // Page load par start karein
-window.addEventListener('DOMContentLoaded', managePortalLock);
+window.addEventListener('DOMContentLoaded', managePortalLock);*/
     </script>
 </body>
 </html>
