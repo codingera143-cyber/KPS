@@ -352,7 +352,7 @@ document.getElementById('classSelect').addEventListener('change', updateAmount);
 window.startPayment = async function() {
     const name = document.getElementById('studentName').value;
     const sn = document.getElementById('sNo').value;
-    const inst = document.getElementById('instSelect').value;
+    const inst = document.getElementById('instSelect').value; // Value: 1, 2, 3, 4
     const className = document.getElementById('classSelect').value;
     const finalAmt = updateAmount();
 
@@ -361,22 +361,29 @@ window.startPayment = async function() {
         return;
     }
 
+    // Convert Numeric Installment to Firebase Keys (1 -> i, 2 -> ii...)
+    const instKeyMap = { "1": "i", "2": "ii", "3": "iii", "4": "iv" };
+    const dbKey = instKeyMap[inst];
+
     var options = {
         "key": "rzp_test_8y6P9L3K2V9xZ8",
         "amount": finalAmt * 100,
         "currency": "INR",
         "name": "Kanpur Public School",
-        "description": `Installment ${inst} - ${name}`,
+        "description": `Fees - Inst ${inst} (${name})`,
         "handler": async function (response) {
             try {
-                await setDoc(doc(db, "fee_records", sn), {
-                    name: name,
-                    [`installment_${inst}_status`]: "PAID",
-                    [`installment_${inst}_id`]: response.razorpay_payment_id,
-                    last_updated: new Date()
+                // UPDATE: Ab ye "student_data" collection ke fees folder mein update karega
+                const studentRef = doc(db, "student_data", sn);
+                
+                await setDoc(studentRef, {
+                    fees: {
+                        [dbKey]: "PAID", // i: "PAID"
+                        [`${dbKey}_date`]: new Date().toLocaleDateString(),
+                        [`${dbKey}_ref`]: response.razorpay_payment_id
+                    }
                 }, { merge: true });
 
-                // 📄 Receipt Generate Karo
                 generateReceipt({
                     name: name,
                     sn: sn,
@@ -386,14 +393,44 @@ window.startPayment = async function() {
                     txId: response.razorpay_payment_id
                 });
 
-                alert("✅ Payment Successful! Receipt Downloaded.");
+                alert("✅ Payment Successful! Sheet updated.");
                 location.reload();
-            } catch (error) { alert("Database Error!"); }
+            } catch (error) { 
+                console.error(error);
+                alert("Database Error!"); 
+            }
         },
         "prefill": { "name": name },
         "theme": { "color": "#003366" }
     };
     new Razorpay(options).open();
+};
+
+// --- FIXING STATUS CHECK LOGIC ---
+window.checkFeeStatus = async function() {
+    const sn = document.getElementById('sNo').value;
+    const instDropdown = document.getElementById('instSelect');
+    if (!sn) return;
+
+    try {
+        const studentRef = doc(db, "student_data", sn); // Using main collection
+        const snap = await getDoc(studentRef);
+        
+        if (snap.exists()) {
+            const fees = snap.data().fees || {};
+            const instKeyMap = { "1": "i", "2": "ii", "3": "iii", "4": "iv" };
+
+            for (let i = 0; i < instDropdown.options.length; i++) {
+                let opt = instDropdown.options[i];
+                let dbKey = instKeyMap[opt.value];
+                
+                if (fees[dbKey] === "PAID") {
+                    opt.text = `Installment ${opt.value} - PAID ✅`;
+                    opt.disabled = true; // Bacha dubara select na kar sake
+                }
+            }
+        }
+    } catch (err) { console.error(err); }
 };
 </script>
 </body>
