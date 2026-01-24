@@ -270,47 +270,64 @@ window.updateAmount = function() {
     return total;
 };
 
-// Update pay button to handle both PAID and BLOCKED status
+// --- 1. Alignment Update: Collection & Keys ---
+const COLLECTION_NAME = "student_data";
+const instKeyMap = { "1": "i", "2": "ii", "3": "iii", "4": "iv" };
+
+// --- 2. Corrected updatePayButton ---
 window.updatePayButton = async function() {
     const sn = document.getElementById('sNo').value;
     const inst = document.getElementById('instSelect').value;
     const payBtn = document.querySelector('.pay-now-btn');
     if(!sn || !inst) return;
 
-    // Check if it's already blocked by time logic in updateAmount
     const displayAmt = document.getElementById('displayAmount').innerText;
     if(displayAmt === "BLOCKED") return;
 
-    const studentRef = doc(db, "fee_records", sn);
-    const snap = await getDoc(studentRef);
-    
-    if (snap.exists() && snap.data()[`installment_${inst}_status`] === "PAID") {
-        payBtn.innerText = "ALREADY PAID ✅";
-        payBtn.disabled = true;
-    } else {
-        payBtn.innerText = "PROCEED TO PAYMENT";
-        payBtn.disabled = false;
-    }
+    try {
+        const studentRef = doc(db, COLLECTION_NAME, sn);
+        const snap = await getDoc(studentRef);
+        
+        if (snap.exists()) {
+            const fees = snap.data().fees || {};
+            const dbKey = instKeyMap[inst];
+            
+            if (fees[dbKey] === "PAID") {
+                payBtn.innerText = "ALREADY PAID ✅";
+                payBtn.disabled = true;
+                payBtn.style.backgroundColor = "#22c55e";
+            } else {
+                payBtn.innerText = "PROCEED TO PAYMENT";
+                payBtn.disabled = false;
+                payBtn.style.backgroundColor = "#003366";
+            }
+        }
+    } catch (err) { console.error("PayButton Error:", err); }
 };
 
-window.updateInstallmentChange = function() {
-    updateAmount();
-    updatePayButton();
-};
-
+// --- 3. Corrected checkFeeStatus ---
 window.checkFeeStatus = async function() {
     const sn = document.getElementById('sNo').value;
     const instDropdown = document.getElementById('instSelect');
     if (!sn) return;
 
     try {
-        const studentRef = doc(db, "fee_records", sn);
+        const studentRef = doc(db, COLLECTION_NAME, sn);
         const snap = await getDoc(studentRef);
+        
         if (snap.exists()) {
             const data = snap.data();
+            const fees = data.fees || {};
+            // Auto-fill student name if available in Firebase
+            if(data.info && data.info.name) {
+                document.getElementById('studentName').value = data.info.name;
+            }
+
             for (let i = 0; i < instDropdown.options.length; i++) {
                 let opt = instDropdown.options[i];
-                if (data[`installment_${opt.value}_status`] === "PAID") {
+                let dbKey = instKeyMap[opt.value];
+                
+                if (fees[dbKey] === "PAID") {
                     opt.text = `Installment ${opt.value} - PAID ✅`;
                     opt.style.color = "green";
                 } else {
@@ -320,39 +337,14 @@ window.checkFeeStatus = async function() {
             }
         }
         updatePayButton();
-    } catch (err) { console.error(err); }
+    } catch (err) { console.error("Status Check Error:", err); }
 };
 
-window.updatePayButton = async function() {
-    const sn = document.getElementById('sNo').value;
-    const inst = document.getElementById('instSelect').value;
-    const payBtn = document.querySelector('.pay-now-btn');
-    if(!sn) return;
-    
-    const studentRef = doc(db, "fee_records", sn);
-    const snap = await getDoc(studentRef);
-    if (snap.exists() && snap.data()[`installment_${inst}_status`] === "PAID") {
-        payBtn.innerText = "ALREADY PAID ✅";
-        payBtn.disabled = true;
-    } else {
-        payBtn.innerText = "PROCEED TO PAYMENT";
-        payBtn.disabled = false;
-    }
-};
-
-window.handleClassChange = function() {
-    const classVal = document.getElementById('classSelect').value;
-    document.getElementById('streamSection').style.display = (classVal === "11" || classVal === "12") ? "block" : "none";
-    updateAmount();
-};
-
-document.getElementById('sNo').addEventListener('blur', checkFeeStatus);
-document.getElementById('classSelect').addEventListener('change', updateAmount);
-
+// --- 4. startPayment (Keys Fixed) ---
 window.startPayment = async function() {
     const name = document.getElementById('studentName').value;
     const sn = document.getElementById('sNo').value;
-    const inst = document.getElementById('instSelect').value; // Value: 1, 2, 3, 4
+    const inst = document.getElementById('instSelect').value;
     const className = document.getElementById('classSelect').value;
     const finalAmt = updateAmount();
 
@@ -361,8 +353,6 @@ window.startPayment = async function() {
         return;
     }
 
-    // Convert Numeric Installment to Firebase Keys (1 -> i, 2 -> ii...)
-    const instKeyMap = { "1": "i", "2": "ii", "3": "iii", "4": "iv" };
     const dbKey = instKeyMap[inst];
 
     var options = {
@@ -370,67 +360,28 @@ window.startPayment = async function() {
         "amount": finalAmt * 100,
         "currency": "INR",
         "name": "Kanpur Public School",
-        "description": `Fees - Inst ${inst} (${name})`,
+        "description": `Installment ${inst} - ${name}`,
         "handler": async function (response) {
             try {
-                // UPDATE: Ab ye "student_data" collection ke fees folder mein update karega
-                const studentRef = doc(db, "student_data", sn);
+                const studentRef = doc(db, COLLECTION_NAME, sn);
                 
+                // Nested 'fees' object update
                 await setDoc(studentRef, {
                     fees: {
-                        [dbKey]: "PAID", // i: "PAID"
-                        [`${dbKey}_date`]: new Date().toLocaleDateString(),
+                        [dbKey]: "PAID",
+                        [`${dbKey}_date`]: new Date().toLocaleDateString('en-GB'),
                         [`${dbKey}_ref`]: response.razorpay_payment_id
                     }
                 }, { merge: true });
 
-                generateReceipt({
-                    name: name,
-                    sn: sn,
-                    className: className,
-                    inst: inst,
-                    amount: finalAmt,
-                    txId: response.razorpay_payment_id
-                });
-
-                alert("✅ Payment Successful! Sheet updated.");
+                alert("✅ Payment Successful!");
                 location.reload();
-            } catch (error) { 
-                console.error(error);
-                alert("Database Error!"); 
-            }
+            } catch (error) { alert("Database Error!"); }
         },
         "prefill": { "name": name },
         "theme": { "color": "#003366" }
     };
     new Razorpay(options).open();
-};
-
-// --- FIXING STATUS CHECK LOGIC ---
-window.checkFeeStatus = async function() {
-    const sn = document.getElementById('sNo').value;
-    const instDropdown = document.getElementById('instSelect');
-    if (!sn) return;
-
-    try {
-        const studentRef = doc(db, "student_data", sn); // Using main collection
-        const snap = await getDoc(studentRef);
-        
-        if (snap.exists()) {
-            const fees = snap.data().fees || {};
-            const instKeyMap = { "1": "i", "2": "ii", "3": "iii", "4": "iv" };
-
-            for (let i = 0; i < instDropdown.options.length; i++) {
-                let opt = instDropdown.options[i];
-                let dbKey = instKeyMap[opt.value];
-                
-                if (fees[dbKey] === "PAID") {
-                    opt.text = `Installment ${opt.value} - PAID ✅`;
-                    opt.disabled = true; // Bacha dubara select na kar sake
-                }
-            }
-        }
-    } catch (err) { console.error(err); }
 };
 </script>
 </body>
