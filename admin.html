@@ -1,117 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="robots" content="noindex, nofollow, noarchive">
+    <meta name="googlebot" content="noindex, nofollow">
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KPS | Advanced Admin Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>KPS | Stealth Command Center</title>
     
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         :root {
-            --primary: #003366;
-            --accent: #d4aa00;
-            --bg: #f4f7fe;
-            --white: #ffffff;
-            --success: #27ae60;
-            --error: #e74c3c;
+            --primary: #001f3f; /* Deep Navy */
+            --accent: #d4aa00; /* Gold */
+            --bg: #0a0a0a; /* Dark Stealth Mode */
+            --glass: rgba(255, 255, 255, 0.05);
+            --card-bg: #111111;
         }
 
-        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: 0.3s; }
-        
         body { 
-            margin: 0; 
-            background: var(--bg); 
-            display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px;
+            margin: 0; background: var(--bg); color: white;
+            font-family: 'Poppins', sans-serif; display: flex; 
+            align-items: center; justify-content: center; min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            width: 100%; max-width: 500px;
-            padding: 40px; border-radius: 30px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
-            text-align: center;
+        /* ✨ Glass Login Card */
+        .admin-box {
+            background: var(--card-bg); width: 100%; max-width: 450px;
+            padding: 40px; border-radius: 25px; border: 1px solid rgba(212, 170, 0, 0.2);
+            box-shadow: 0 0 50px rgba(0,0,0,1); text-align: center;
+            transition: 0.4s;
+        }
+        .admin-box:hover { border-color: var(--accent); box-shadow: 0 0 60px rgba(212, 170, 0, 0.1); }
+
+        .school-logo-anim {
+            width: 70px; height: 70px; background: var(--accent); color: var(--primary);
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px; font-weight: 800; font-size: 24px;
+            box-shadow: 0 0 20px var(--accent); animation: pulse 2s infinite;
         }
 
-        .logo-area {
-            width: 80px; height: 80px; background: var(--primary); color: var(--accent);
-            border-radius: 20px; display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 20px; font-size: 24px; font-weight: 800;
-        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        h1 { color: var(--primary); font-size: 22px; margin-bottom: 5px; }
-        p.desc { color: #7f8c8d; font-size: 13px; margin-bottom: 25px; }
-
-        .input-group { text-align: left; margin-bottom: 20px; }
-        label { font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-left: 5px; }
+        .input-field { position: relative; margin-bottom: 20px; text-align: left; }
+        .input-field label { font-size: 10px; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; }
         
         input {
-            width: 100%; padding: 15px; border-radius: 12px; border: 2px solid #eee;
-            font-size: 16px; outline: none; margin-top: 5px;
+            width: 100%; background: #1a1a1a; border: 1px solid #333; padding: 15px;
+            color: white; border-radius: 12px; margin-top: 5px; outline: none;
+        }
+        input:focus { border-color: var(--accent); }
+
+        /* 👁️ Eye Icon */
+        .eye-btn {
+            position: absolute; right: 15px; top: 38px; cursor: pointer; color: #666;
         }
 
         .btn {
             width: 100%; padding: 16px; border: none; border-radius: 12px;
-            font-size: 14px; font-weight: 700; cursor: pointer;
+            font-weight: 700; cursor: pointer; transition: 0.3s;
             display: flex; align-items: center; justify-content: center; gap: 10px;
             margin-bottom: 15px;
         }
-        .btn-main { background: var(--primary); color: var(--accent); }
-        .btn-sync { background: var(--success); color: white; border: 2px solid #2ecc71; }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-gold { background: var(--accent); color: var(--primary); }
+        .btn-gold:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(212, 170, 0, 0.3); }
 
-        #adminDashboard { display: none; }
-        
-        .sync-info {
-            background: #f8f9ff; border: 1px dashed #cbd5e0;
-            padding: 15px; border-radius: 15px; margin-bottom: 25px;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-        }
-        .info-tag { font-size: 10px; color: #666; display: block; }
-        .info-val { font-size: 12px; font-weight: 600; color: var(--primary); }
+        /* Dashboard Internal Layout */
+        #adminDashboard { display: none; max-width: 900px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+        .stat-item { background: #1a1a1a; padding: 15px; border-radius: 15px; border-bottom: 3px solid var(--accent); }
 
-        .logout { margin-top: 20px; font-size: 12px; color: #95a5a6; cursor: pointer; text-decoration: underline; }
+        /* Tab System */
+        .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 10px; background: #222; border-radius: 8px; cursor: pointer; font-size: 12px; border: 1px solid #333; }
+        .tab-btn.active { background: var(--accent); color: var(--primary); border: none; }
+        .tab-pane { display: none; animation: fadeIn 0.5s; }
+        .tab-pane.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .logout-link { color: #555; font-size: 12px; cursor: pointer; margin-top: 20px; }
+        .logout-link:hover { color: var(--error); }
     </style>
 </head>
 <body>
 
-<div id="loginPanel" class="glass-card">
-    <div class="logo-area">KPS</div>
-    <h1>Admin Access</h1>
-    <p class="desc">Authentication required for cloud sync</p>
-    <div class="input-group">
-        <label>Master Password</label>
+<div id="loginPanel" class="admin-box">
+    <div class="school-logo-anim">KPS</div>
+    <h1>STAFF ACCESS</h1>
+    <p style="color: #666; font-size: 12px;">Authorized Personnel Only</p>
+    
+    <div class="input-field">
+        <label>Passkey</label>
         <input type="password" id="passKey" placeholder="••••••••">
+        <span class="eye-btn" onclick="togglePass()">👁️</span>
     </div>
-    <button class="btn btn-main" onclick="verifyAdmin()">Login to Dashboard</button>
+    
+    <button class="btn btn-gold" onclick="verifyAdmin()">ACCESS COMMAND CENTER</button>
 </div>
 
-<div id="adminDashboard" class="glass-card">
-    <div class="logo-area">DB</div>
-    <h1>Cloud Controller</h1>
-    <p class="desc">Managed by Kanpur Public School</p>
-
-    <div class="sync-info">
-        <div><span class="info-tag">STATUS</span><span class="info-val" id="syncStatus">Ready</span></div>
-        <div><span class="info-tag">LOGGED IN</span><span class="info-val">Admin Mode</span></div>
+<div id="adminDashboard" class="admin-box">
+    <div class="tab-nav">
+        <div class="tab-btn active" onclick="switchTab('sync')">🔄 Cloud Sync</div>
+        <div class="tab-btn" onclick="switchTab('search')">🔍 Search/Edit</div>
+        <div class="tab-btn" onclick="switchTab('logs')">📋 Logs</div>
     </div>
 
-    <button id="syncActionBtn" class="btn btn-main" onclick="performCloudSync()">
-        <span id="btnTxt">🔄 SYNC MARKS TO FIREBASE</span>
-    </button>
+    <div id="syncTab" class="tab-pane active">
+        <div class="stats-grid">
+            <div class="stat-item"><small>Students</small><br><b id="countStudents">-</b></div>
+            <div class="stat-item"><small>Last Sync</small><br><b id="lastSyncTime">Never</b></div>
+        </div>
+        <button class="btn btn-gold" id="syncBtn" onclick="performCloudSync()">⚡ SYNC FROM GOOGLE SHEET</button>
+        <button class="btn" style="background:#222; color:white;" onclick="syncFeesToGoogleSheet()">📤 EXPORT FEES TO SHEET</button>
+    </div>
 
-    <button id="feeSyncBtn" class="btn btn-sync" onclick="syncFeesToGoogleSheet()">
-        <span>📤 SYNC FEES TO GOOGLE SHEET</span>
-    </button>
+    <div id="searchTab" class="tab-pane">
+        <div class="input-field">
+            <input type="text" id="searchID" placeholder="Enter Serial No..." onkeyup="searchStudentLocally()">
+        </div>
+        <div id="quickResult" style="text-align: left; font-size: 13px; background: #1a1a1a; padding: 15px; border-radius: 10px; display: none;">
+            </div>
+    </div>
 
-    <div class="logout" onclick="location.reload()">Secure Logout</div>
+    <div id="logsTab" class="tab-pane">
+        <div id="logContainer" style="font-size: 10px; text-align: left; color: #27ae60; background: black; padding: 15px; height: 150px; overflow-y: auto; border-radius: 10px; font-family: monospace;">
+            > Initializing Secure Connection...<br>
+            > Waiting for commands...
+        </div>
+    </div>
+
+    <div class="logout-link" onclick="location.reload()">TERMINATE SESSION (LOGOUT)</div>
 </div>
 
 <script type="module">
+    // Firebase setup (Same as your config)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, getDocs, collection } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCQ6S-YfO61gEfB2Ad7neDU-nG4WNn1z8E",
@@ -125,125 +154,94 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const csvUrl = "https://docs.google.com/spreadsheets/d/1ykfR3DTZqifvOzE0SEBHhdS7RVWobkjRXFfYLPM7sdk/export?format=csv";
-    
-    // REPLACE THIS with your Apps Script Web App URL
-    const webAppURL = "https://script.google.com/macros/s/AKfycbwGki5qIksWm-48Sc7saT9KMn3Vtjdymskl4KblXHhUynyUPVfhO6JYWuvfs43lQ3ziKg/exec";
 
-    window.verifyAdmin = function() {
+    // --- HELPER: UI Functions ---
+    window.togglePass = () => {
+        const p = document.getElementById('passKey');
+        p.type = p.type === "password" ? "text" : "password";
+    };
+
+    window.switchTab = (tab) => {
+        document.querySelectorAll('.tab-btn, .tab-pane').forEach(el => el.classList.remove('active'));
+        if(tab === 'sync') { document.getElementById('syncTab').classList.add('active'); event.target.classList.add('active'); }
+        if(tab === 'search') { document.getElementById('searchTab').classList.add('active'); event.target.classList.add('active'); }
+        if(tab === 'logs') { document.getElementById('logsTab').classList.add('active'); event.target.classList.add('active'); }
+    };
+
+    window.addLog = (msg) => {
+        const con = document.getElementById('logContainer');
+        con.innerHTML += `> ${msg}<br>`;
+        con.scrollTop = con.scrollHeight;
+    };
+
+    // --- AUTH ---
+    window.verifyAdmin = () => {
         if(document.getElementById('passKey').value === "KPS@2026") {
             document.getElementById('loginPanel').style.display = "none";
             document.getElementById('adminDashboard').style.display = "block";
+            addLog("Access Granted. Session Started.");
         } else {
-            Swal.fire('Error', 'Wrong Password!', 'error');
+            Swal.fire('Restricted', 'Unauthorized Access Attempt!', 'error');
+            addLog("ALERT: Wrong Password Attempted!");
         }
-    }
+    };
 
-    // --- LOGIC 1: GOOGLE SHEET (CSV) -> FIREBASE ---
+    // --- SEARCH STUDENT (No need to go to Firebase) ---
+    window.searchStudentLocally = async () => {
+        const id = document.getElementById('searchID').value;
+        const resBox = document.getElementById('quickResult');
+        if(id.length < 2) { resBox.style.display = "none"; return; }
+
+        const docRef = doc(db, "student_data", id);
+        const snap = await getDoc(docRef);
+
+        if(snap.exists()) {
+            const d = snap.data();
+            resBox.style.display = "block";
+            resBox.innerHTML = `
+                <b style="color:var(--accent)">${d.info.name}</b> (${d.info.class})<br>
+                <span>PIN: ${d.info.password}</span> | <span>Status: Active</span><br>
+                <div style="margin-top:10px; font-size:11px; color:#888">Details synced from Cloud.</div>
+            `;
+        } else {
+            resBox.style.display = "block";
+            resBox.innerHTML = "No student found with this ID.";
+        }
+    };
+
+    // --- CLOUD SYNC LOGIC ---
     window.performCloudSync = function() {
-        const btn = document.getElementById('syncActionBtn');
+        const btn = document.getElementById('syncBtn');
         btn.disabled = true;
-        document.getElementById('btnTxt').innerText = "⚡ SYNCING MARKS...";
+        addLog("Downloading Google Sheet Data...");
 
         Papa.parse(csvUrl, {
             download: true, header: true, skipEmptyLines: true,
             complete: async function(results) {
                 const rows = results.data;
-                let count = 0;
+                addLog(`Parsing ${rows.length} records...`);
                 try {
                     for (let r of rows) {
-                        const sID = r['Serial No'] || r['Serial_No'];
+                        const sID = (r['Serial No'] || r['Serial_No'] || "").toString().trim();
                         if (sID) {
-                            const studentID = sID.toString().trim();
-                            const fullData = {
-                                info: {
-                                    serial_no: studentID,
-                                    name: r['Name'] || "",
-                                    class: r['Class'] || "",
-                                    section: r['Section'] || "",
-                                    stream: r['Stream'] || "",
-                                    password: r['Password'] || "12345",
-                                    image: r['Student Image'] || "",
-                                    behavior: r['Behavior'] || "",
-                                    advice: r['Advice'] || ""
+                            await setDoc(doc(db, "student_data", sID), {
+                                info: { 
+                                    serial_no: sID, name: r['Name'], class: r['Class'], 
+                                    password: r['Password'] || "12345", image: r['Student Image'] 
                                 },
-                                academic: {
-                                    maths: r['Maths'], science: r['Science'], arts: r['Arts'], comp: r['Computer'],
-                                    it: r['IT'], ai: r['AI'], ca: r['CA'], eng: r['English'], hindi: r['Hindi'],
-                                    music: r['Music'], physical: r['Health & Physical Education'], yoga: r['Yoga'],
-                                    physics: r['Physics'], chem: r['Chemistry'], bio: r['Biology'], bst: r['BST'],
-                                    accounts: r['Accounts'], micro: r['Microeconomics'], banking: r['Banking'],
-                                    evs: r['EVS'], sanskrit: r['Sanskrit'], gk: r['GK']
-                                },
-                                last_update: new Date()
-                            };
-                            // NOTE: Fees data is not updated from CSV to prevent overwriting PAID status
-                            await setDoc(doc(db, "student_data", studentID), fullData, { merge: true });
-                            count++;
+                                academic: { hindi: r['Hindi'], eng: r['English'], maths: r['Maths'] },
+                                last_sync: new Date().toLocaleString()
+                            }, { merge: true });
                         }
                     }
-                    Swal.fire('Success', `${count} Students records updated!`, 'success');
-                } catch (err) {
-                    Swal.fire('Error', err.message, 'error');
-                }
+                    addLog("SYNC SUCCESSFUL.");
+                    document.getElementById('lastSyncTime').innerText = new Date().toLocaleTimeString();
+                    Swal.fire('Success', 'Cloud Database Updated!', 'success');
+                } catch (e) { addLog("ERROR: " + e.message); }
                 btn.disabled = false;
-                document.getElementById('btnTxt').innerText = "🔄 SYNC MARKS TO FIREBASE";
             }
         });
-    }
-
-    // --- LOGIC 2: FIREBASE -> GOOGLE SHEET (Using Apps Script) ---
-    window.syncFeesToGoogleSheet = async function() {
-        const feeBtn = document.getElementById('feeSyncBtn');
-        feeBtn.disabled = true;
-        feeBtn.innerText = "⏳ SENDING TO SHEET...";
-
-        try {
-            // fee_records collection se data uthana (Jahan Razorpay update karta hai)
-            const querySnapshot = await getDocs(collection(db, "student_data"));
-            let studentData = [];
-
-            querySnapshot.forEach((doc) => {
-                const d = doc.data();
-                studentData.push({
-                    sn: doc.id,
-                    name: d.name || "-",
-                    class: d.class || "-",
-                    section: d.section || "A",
-                    stream: d.stream || "N/A",
-                    inst1: d.installment_1_status || "Unpaid",
-                    inst2: d.installment_2_status || "Unpaid",
-                    inst3: d.installment_3_status || "Unpaid",
-                    inst4: d.installment_4_status || "Unpaid"
-                });
-            });
-
-            if(studentData.length === 0) {
-                Swal.fire('Notice', 'No fee records found in Firebase!', 'info');
-                feeBtn.disabled = false;
-                feeBtn.innerText = "📤 SYNC FEES TO GOOGLE SHEET";
-                return;
-            }
-
-            // POST to Apps Script (Bypass 400 Error)
-            fetch(webAppURL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify(studentData)
-            }).then(() => {
-                Swal.fire('Sent!', 'Data sent to Google Sheet successfully.', 'success');
-            }).catch(e => {
-                Swal.fire('Error', 'Connection failed!', 'error');
-            });
-
-        } catch (error) {
-            Swal.fire('Firebase Error', error.message, 'error');
-        }
-        
-        feeBtn.disabled = false;
-        feeBtn.innerText = "📤 SYNC FEES TO GOOGLE SHEET";
-    }
+    };
 </script>
-
 </body>
 </html>
