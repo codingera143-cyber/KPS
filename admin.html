@@ -182,6 +182,20 @@
                         const id = rawId.toString().trim(); 
 
                         const sClass = (r['Class'] || "").toString().trim();
+                        // --- 🖼️ IMAGE PROTECTION LOGIC ---
+                    const docRef = doc(db, "student_data", id);
+                    const docSnap = await getDoc(docRef);
+                    let existingImage = "";
+
+                    if (docSnap.exists()) {
+                        // Agar Firebase mein pehle se data hai, toh wahan se image uthao
+                        existingImage = docSnap.data().info?.image || "";
+                    }
+
+                    // Agar Sheet mein image hai toh wo lo, warna Firebase wali purani rehne do
+                    let finalImage = (r['Student Image'] && r['Student Image'].trim() !== "") 
+                                     ? r['Student Image'].trim() 
+                                     : existingImage;
 
                         // 1. INFO FOLDER
                         const info = {
@@ -190,7 +204,7 @@
                             class: sClass,
                             section: r['Section'] || "",
                             password: r['Password'] || "12345",
-                            image: (r['Student Image'] && r['Student Image'].trim() !== "") ? r['Student Image'] : existingImage,
+                            image: finalImage,
                             behavior: r['Behavior'] || "",
                             advice: r['Advice'] || "",
                             father_name: r["Father's Name"] || "---",
