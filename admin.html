@@ -128,6 +128,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
     import { getFirestore, doc, setDoc, getDocs, collection, getDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
 
+    // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
         apiKey: "AIzaSyCQ6S-YfO61gEfB2Ad7neDU-nG4WNn1z8E",
         authDomain: "kanpur-public-school-d8f4a.firebaseapp.com",
@@ -141,7 +142,7 @@
     const db = getFirestore(app);
     const csvUrl = "https://docs.google.com/spreadsheets/d/1ykfR3DTZqifvOzE0SEBHhdS7RVWobkjRXFfYLPM7sdk/export?format=csv";
 
-    // --- UI LOGIC ---
+    // --- UI & AUTH LOGIC ---
     window.togglePass = () => {
         const p = document.getElementById('passKey');
         const s = document.getElementById('eyeSvg');
@@ -153,7 +154,10 @@
         if(document.getElementById('passKey').value === "KPS@2026") {
             document.getElementById('loginPanel').style.display = 'none';
             document.getElementById('adminDashboard').style.display = 'flex';
-        } else { Swal.fire('Error', 'Wrong PIN', 'error'); }
+            Swal.fire({ title: 'Welcome Admin', icon: 'success', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+        } else { 
+            Swal.fire('Access Denied', 'Invalid Master PIN', 'error'); 
+        }
     };
 
     window.switchNav = (tab, el) => {
@@ -164,10 +168,10 @@
         if(tab === 'search') fetchStudents();
     };
 
-    // --- 🚀 UPDATED CLOUD SYNC LOGIC ---
+    // --- 🚀 MASTER SYNC LOGIC (The Core) ---
     window.performSync = () => {
         const btn = document.getElementById('syncBtn');
-        btn.innerText = "⚡ SYNCING...";
+        btn.innerText = "⚡ PROCESSING CLOUD...";
         btn.disabled = true;
 
         Papa.parse(csvUrl, {
@@ -177,40 +181,68 @@
                     let count = 0;
                     for(let r of res.data) {
                         const id = (r['Serial No'] || r['Serial_No'] || "").toString().trim();
-                        if(id) {
-                            // 📂 Data Structure Organization
-                            const structuredData = {
-                                info: {
-                                    serial_no: id,
-                                    name: r['Name'] || "",
-                                    class: r['Class'] || "",
-                                    password: r['Password'] || "12345",
-                                    image: r['Student Image'] || "",
-                                    behavior: r['Behavior'] || "Good",
-                                    advice: r['Advice'] || "Keep it up"
-                                },
-                                academic: {
-                                    hindi: r['Hindi'] || "0", eng: r['English'] || "0", maths: r['Maths'] || "0",
-                                    science: r['Science'] || "0", social: r['Social'] || "0", sanskrit: r['Sanskrit'] || "0",
-                                    computer: r['Computer'] || "0", gk: r['GK'] || "0", drawing: r['Drawing'] || "0"
-                                },
-                                fees: {
-                                    inst1: r['Installment_1'] || "Unpaid",
-                                    inst2: r['Installment_2'] || "Unpaid",
-                                    inst3: r['Installment_3'] || "Unpaid",
-                                    inst4: r['Installment_4'] || "Unpaid"
-                                },
-                                lastSync: new Date().toLocaleString()
-                            };
-                            
-                            await setDoc(doc(db, "student_data", id), structuredData, {merge:true});
-                            count++;
+                        if(!id) continue;
+
+                        const sClass = (r['Class'] || "").toString();
+
+                        // 1. INFO FOLDER
+                        const infoData = {
+                            serial_no: id,
+                            name: r['Name'] || "",
+                            class: sClass,
+                            section: r['Section'] || "A",
+                            password: r['Password'] || "12345",
+                            image: r['Student Image'] || "",
+                            behavior: r['Behavior'] || "Good",
+                            advice: r['Advice'] || "Work Hard"
+                        };
+                        // Stream only for 11 & 12
+                        if(sClass === "11" || sClass === "12") {
+                            infoData.stream = r['Stream'] || "N/A";
                         }
+
+                        // 2. ACADEMIC FOLDER (Dynamic Subject Logic)
+                        // List of possible subjects in your Google Sheet
+                        const subjects = ["Hindi", "English", "Maths", "Science", "Social", "Sanskrit", "Computer", "GK", "Drawing", "Physics", "Chemistry", "Biology", "Accounts", "BST", "Economics", "History", "Geography"];
+                        let academicData = {};
+                        subjects.forEach(sub => {
+                            // Agar subject column mein data hai aur wo 0 ya empty nahi hai
+                            if(r[sub] && r[sub].toString().trim() !== "" && r[sub].toString() !== "0") {
+                                academicData[sub] = r[sub];
+                            }
+                        });
+
+                        // 3. ATTENDANCE FOLDER
+                        const attendanceData = {
+                            apr: r['Apr'] || "0", jul: r['Jul'] || "0", aug: r['Aug'] || "0",
+                            sep: r['Sep'] || "0", oct: r['Oct'] || "0", nov: r['Nov'] || "0",
+                            dec: r['Dec'] || "0", jan: r['Jan'] || "0", feb: r['Feb'] || "0", mar: r['Mar'] || "0"
+                        };
+
+                        // 4. FEES FOLDER (Roman Indexing)
+                        const feesData = {
+                            i: r['Installment_1'] || "Unpaid",
+                            ii: r['Installment_2'] || "Unpaid",
+                            iii: r['Installment_3'] || "Unpaid",
+                            iv: r['Installment_4'] || "Unpaid"
+                        };
+
+                        // FINAL BUNDLE
+                        const finalObject = {
+                            info: infoData,
+                            academic: academicData,
+                            attendance: attendanceData,
+                            fees: feesData,
+                            lastSync: new Date().toLocaleString()
+                        };
+
+                        await setDoc(doc(db, "student_data", id), finalObject, { merge: true });
+                        count++;
                     }
-                    Swal.fire('Success', `${count} Records Synced with Folders!`, 'success');
+                    Swal.fire('Success', `${count} Students Synced with proper folders!`, 'success');
                 } catch(e) { 
                     console.error(e);
-                    Swal.fire('Error', 'Sync Failed: ' + e.message, 'error'); 
+                    Swal.fire('Sync Failed', e.message, 'error'); 
                 }
                 btn.innerText = "🔄 SYNC MARKS";
                 btn.disabled = false;
@@ -218,90 +250,76 @@
         });
     };
 
-    // --- SEARCH & DRAWER ---
+    // --- SEARCH & DRAWER LOGIC ---
     async function fetchStudents() {
         const cont = document.getElementById('listContainer');
-        cont.innerHTML = "<p>Loading...</p>";
-        const snap = await getDocs(collection(db, "student_data"));
-        cont.innerHTML = "";
-        snap.forEach(d => {
-            const data = d.data();
-            const div = document.createElement('div');
-            div.className = 'student-item';
-            // Accessing data from info folder
-            const studentName = data.info ? data.info.name : (data.Name || 'Unknown');
-            div.innerHTML = `<span>${studentName}</span> <b>${d.id}</b>`;
-            div.onclick = () => openDrawer(d.id);
-            cont.appendChild(div);
-        });
+        cont.innerHTML = "<p style='text-align:center;'>Accessing Database...</p>";
+        try {
+            const snap = await getDocs(collection(db, "student_data"));
+            cont.innerHTML = "";
+            snap.forEach(d => {
+                const data = d.data();
+                const studentName = data.info?.name || "Unknown";
+                const div = document.createElement('div');
+                div.className = 'student-item';
+                div.innerHTML = `<span>${studentName}</span> <b>${d.id}</b>`;
+                div.onclick = () => openDrawer(d.id);
+                cont.appendChild(div);
+            });
+        } catch(e) { cont.innerHTML = "Error loading list."; }
     }
 
     window.openDrawer = async (id) => {
         const snap = await getDoc(doc(db, "student_data", id));
         if(snap.exists()) {
             const d = snap.data();
-            const draw = document.getElementById('drawer');
             const cont = document.getElementById('drawerContent');
             
-            let lines = "";
-            // Logic to show nested folders line by line
-            const folders = ['info', 'academic', 'fees'];
+            let html = "";
+            const folders = ['info', 'academic', 'attendance', 'fees'];
+            
             folders.forEach(f => {
-                if(d[f]) {
-                    lines += `<div style="background:#222; padding:5px 10px; margin:10px 0; border-radius:5px; color:var(--accent); font-size:12px; font-weight:bold;">${f.toUpperCase()}</div>`;
+                if(d[f] && Object.keys(d[f]).length > 0) {
+                    html += `<div style="background:#222; padding:8px 12px; margin:15px 0 5px; border-radius:8px; color:var(--accent); font-size:11px; font-weight:800; letter-spacing:1px;">${f.toUpperCase()}</div>`;
                     for(let key in d[f]) {
-                        lines += `<div class="data-line"><b>${key}</b><span>${d[f][key] || 'N/A'}</span></div>`;
+                        html += `<div class="data-line"><b>${key.replace('_',' ')}</b><span>${d[f][key]}</span></div>`;
                     }
                 }
             });
-            cont.innerHTML = lines;
-            draw.classList.add('active');
+            
+            cont.innerHTML = html;
+            document.getElementById('drawer').classList.add('active');
         }
     };
 
     window.closeDrawer = () => document.getElementById('drawer').classList.remove('active');
 
+    // --- FEES EXPORT LOGIC ---
     window.syncFeesToSheet = async () => {
-        const result = await Swal.fire({
-            title: 'Export to Sheet?',
-            text: "This will send all Firebase records to Google Sheets.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Export!'
-        });
-
-        if (!result.isConfirmed) return;
-
-        Swal.fire({ title: 'Processing...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-
+        Swal.fire({ title: 'Exporting...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
         try {
-            const querySnapshot = await getDocs(collection(db, "student_data"));
-            let allStudents = [];
-
-            querySnapshot.forEach((doc) => {
+            const snap = await getDocs(collection(db, "student_data"));
+            let exportData = [];
+            snap.forEach(doc => {
                 const d = doc.data();
-                allStudents.push({
-                    serial_no: doc.id,
+                exportData.push({
+                    id: doc.id,
                     name: d.info?.name || "",
-                    class: d.info?.class || "",
-                    fees_status: d.fees?.inst1 || "Unpaid", 
-                    last_sync: new Date().toLocaleString()
+                    inst_1: d.fees?.i || "Unpaid",
+                    inst_2: d.fees?.ii || "Unpaid",
+                    inst_3: d.fees?.iii || "Unpaid",
+                    inst_4: d.fees?.iv || "Unpaid"
                 });
             });
 
-            const webAppURL = "https://script.google.com/macros/s/AKfycbwGki5qIksWm-48Sc7saT9KMn3Vtjdymskl4KblXHhUynyUPVfhO6JYWuvfs43lQ3ziKg/exec";
-
-            await fetch(webAppURL, {
+            const scriptURL = "https://script.google.com/macros/s/AKfycbwGki5qIksWm-48Sc7saT9KMn3Vtjdymskl4KblXHhUynyUPVfhO6JYWuvfs43lQ3ziKg/exec";
+            await fetch(scriptURL, {
                 method: "POST",
                 mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(allStudents)
+                body: JSON.stringify(exportData)
             });
-
-            Swal.fire('Success', 'Data sent to Google Sheet!', 'success');
-        } catch (error) {
-            Swal.fire('Error', 'Failed: ' + error.message, 'error');
-        }
+            Swal.fire('Exported!', 'Fees data sent to Google Sheet.', 'success');
+        } catch(e) { Swal.fire('Error', e.message, 'error'); }
     };
 </script>
 </body>
