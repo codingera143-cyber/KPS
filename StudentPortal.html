@@ -244,11 +244,11 @@
         function buildMarksheet(data) {
     const { info, academic, attendance } = data;
     
-    // 1. Basic Info Display
+    // 1. Basic Info Display (Keeping your logic)
     document.getElementById('disp-id').innerText = "KPS-2026-" + info.serial_no;
     document.getElementById('disp-name').innerText = info.name;
-    const currentClass = info.class.replace(/\D/g, ''); // Extract numeric class (e.g. "10")
-    const section = info.section || 'A';
+    const currentClass = info.class.replace(/\D/g, ''); 
+    const section = (info.section || 'A').toUpperCase();
     document.getElementById('disp-class').innerText = `Class: ${info.class} | Section: ${section}`;
     document.getElementById('disp-date').innerText = "DATE: " + new Date().toLocaleDateString('en-GB');
 
@@ -258,77 +258,103 @@
         document.getElementById('disp-photo').innerText = info.name.charAt(0);
     }
 
-    // 2. Additional Subjects Mapping (Board Rules)
+    // 2. 🔥 REVISED Subject Mapping (As per your new requirements)
+    const coreMap = {
+        "1": ["EVS", "MATHS", "ENGLISH", "HINDI", "COMPUTER", "GK"],
+        "2": ["EVS", "MATHS", "ENGLISH", "HINDI", "COMPUTER", "GK"],
+        "3": ["EVS", "MATHS", "ENGLISH", "HINDI", "COMPUTER", "GK"],
+        "4": ["EVS", "MATHS", "ENGLISH", "HINDI", "COMPUTER", "GK"],
+        "5": ["EVS", "MATHS", "ENGLISH", "HINDI", "COMPUTER", "GK"],
+        "6": ["SCIENCE", "MATHS", "SST", "ENGLISH", "HINDI", "COMPUTER", "GK"],
+        "7": ["SCIENCE", "MATHS", "SST", "ENGLISH", "HINDI", "COMPUTER", "GK"],
+        "8": ["SCIENCE", "MATHS", "SST", "ENGLISH", "HINDI", "COMPUTER", "GK"],
+        "9": ["PHYSICS", "CHEMISTRY", "MATHS", "BIOLOGY", "ENGLISH", "HINDI"],
+        "10": ["PHYSICS", "CHEMISTRY", "BIOLOGY", "MATHS", "ENGLISH", "HINDI"],
+        "11-PCM": ["MATHS", "PHYSICS", "CHEMISTRY", "ENGLISH", "YOGA"],
+        "12-PCM": ["MATHS", "PHYSICS", "CHEMISTRY", "ENGLISH", "YOGA"],
+        "11-PCB": ["BIOLOGY", "PHYSICS", "CHEMISTRY", "ENGLISH", "YOGA"],
+        "12-PCB": ["BIOLOGY", "PHYSICS", "CHEMISTRY", "ENGLISH", "YOGA"],
+        "11-COMMERCE": ["ACCOUNTS", "BST", "MICROECONOMICS", "ENGLISH", "BANKING"],
+        "12-COMMERCE": ["ACCOUNTS", "BST", "MICROECONOMICS", "ENGLISH", "BANKING"]
+    };
+
     const addonMap = {
-        "1": ["GK", "MSC", "ARTS"], "2": ["GK", "MSC", "ARTS"], "3": ["GK", "MSC", "ARTS"], "4": ["GK", "MSC", "ARTS"],
-        "5": ["ARTS", "GK", "COMPUTER"], "6": ["ARTS", "SANSKRIT", "GK"], "7": ["ARTS", "SANSKRIT", "GK"], "8": ["ARTS", "SANSKRIT", "GK"],
+        "1": ["ARTS"], "2": ["ARTS"], "3": ["ARTS"], "4": ["ARTS"], "5": ["ARTS"],
+        "6": ["SANSKRIT", "ARTS"], "7": ["SANSKRIT", "ARTS"], "8": ["SANSKRIT", "ARTS"],
         "9": ["IT", "BANKING"], "10": ["IT", "BANKING"],
         "11": ["MUSIC", "HINDI", "HEALTH & PHYSICAL EDUCATION"],
         "12": ["MUSIC", "HINDI", "HEALTH & PHYSICAL EDUCATION"]
     };
 
-    let classAddons = addonMap[currentClass] || [];
-    // Banking only for Class 9-10 Section D
-    if ((currentClass == "9" || currentClass == "10") && section !== "D") {
-        classAddons = classAddons.filter(s => s !== "BANKING");
+    // Determine Stream for 11-12
+    let classKey = currentClass;
+    if (currentClass == "11" || currentClass == "12") {
+        const stream = (info.stream || 'PCM').toUpperCase();
+        classKey = `${currentClass}-${stream}`;
     }
 
- // 3. Subject Categorization (Sirf unhe uthayega jisme value hai)
-    let engMarks = 0;
-    let engLabel = "ENGLISH";
+    let classCore = coreMap[classKey] || [];
+    let classAddons = addonMap[currentClass] || [];
+
+    // Special Rule: Section D (Banking only for D, IT for others)
+    if ((currentClass == "9" || currentClass == "10")) {
+        if (section !== "D") {
+            classAddons = ["IT"];
+        } else {
+            classAddons = ["BANKING", "IT"];
+        }
+    }
+
+    // 3. Subject Categorization
+    let engData = { name: "ENGLISH", score: 0 };
     let coreSubjects = [];
     let additionalSubjects = [];
 
     Object.entries(academic || {}).forEach(([key, val]) => {
-        if(key.toLowerCase() === 'password') return;
+        if(key.toLowerCase() === 'password' || !val || val.toString().trim() === "") return;
         
-        // CHECK: Agar value empty hai ya zero (aur student ne exam nahi diya), toh skip karo
-        if (!val || val.toString().trim() === "") return; 
-
         let score = parseInt(val) || 0;
         let name = key.toUpperCase().trim();
 
-        if(name.startsWith('ENG')) {
-            engMarks = score;
-            engLabel = name;
-        } else if(classAddons.includes(name)) {
+        if (name === "ENGLISH") {
+            engData.score = score;
+        } else if (classAddons.includes(name)) {
             additionalSubjects.push({ name: name, score: score });
-        } else {
+        } else if (classCore.includes(name)) {
             coreSubjects.push({ name: name, score: score });
         }
     });
 
-    // 4. 🔥 REPLACEMENT LOGIC (The Core Logic)
-    // Sort additional by highest marks, Core by lowest
-    additionalSubjects.sort((a, b) => b.score - a.score);
-    coreSubjects.sort((a, b) => a.score - b.score);
+    // 4. 🔥 REPLACEMENT LOGIC
+    // English is fixed. We only replace ONE weakest core (except English).
+    additionalSubjects.sort((a, b) => b.score - a.score); // Best addon first
+    coreSubjects.sort((a, b) => a.score - b.score);      // Weakest core first
 
     let replacedSubName = "";
     let mainSubjects = [...coreSubjects];
 
     if (additionalSubjects.length > 0 && coreSubjects.length > 0) {
-        let bestAddon = additionalSubjects[0]; // Sirf ek best additional
-        let weakestCore = coreSubjects[0];
+        let bestAddon = additionalSubjects[0];
+        let weakestCore = coreSubjects[0]; // English is not in this array
 
         if (bestAddon.score > weakestCore.score) {
             replacedSubName = weakestCore.name;
-            // Replace weakest core with best additional in the calculation list
-            mainSubjects = mainSubjects.filter(s => s.name !== weakestCore.name);
-            mainSubjects.push(bestAddon);
+            // Filter out the weakest and add the best addon
+            mainSubjects = mainSubjects.filter(s => s.name !== replacedSubName);
+            mainSubjects.push({ name: bestAddon.name, score: bestAddon.score, isReplacement: true });
         }
     }
 
-    // 5. Final Calculation (English + Main Subjects)
-    let totalScore = engMarks + mainSubjects.reduce((sum, s) => sum + s.score, 0);
-    let totalSubjects = 1 + mainSubjects.length; // English + Core/Replaced
+    // 5. Final Calculation
+    let totalScore = engData.score + mainSubjects.reduce((sum, s) => sum + s.score, 0);
+    let totalSubjects = 1 + mainSubjects.length; 
     let percentage = (totalScore / totalSubjects).toFixed(1);
 
-    // 6. UI Rendering
+    // 6. UI Rendering (Using your row logic)
     const list = document.getElementById('sub-display-list');
     list.innerHTML = '';
     
     const createRow = (n, s, type) => {
-        // types: 'main' (counted), 'replaced' (not counted), 'extra' (other addons)
         let color = s >= 75 ? '#22c55e' : (s >= 33 ? '#3182ce' : '#ef4444');
         let tag = "";
         let opacity = "1";
@@ -349,25 +375,21 @@
             </div>`;
     };
 
-    // Render Order: English -> Main Subjects -> Replaced Subject -> Other Additionals
-    createRow(engLabel, engMarks, 'main');
-    
-    // Unchanged Core Subjects
+    // Render: English -> Main -> Replaced -> Extra Addons
+    createRow(engData.name, engData.score, 'main');
     mainSubjects.forEach(s => createRow(s.name, s.score, 'main'));
-
-    // Replaced Weak Subject (if any)
+    
     if(replacedSubName) {
         let rSub = coreSubjects.find(s => s.name === replacedSubName);
         createRow(rSub.name, rSub.score, 'replaced');
     }
 
-    // Other extra additional subjects that were not used for replacement
+    // Show remaining additional subjects that didn't replace anything
     additionalSubjects.forEach(s => {
         if (!mainSubjects.find(ms => ms.name === s.name)) {
             createRow(s.name, s.score, 'extra');
         }
     });
-
     // 7. Update Stats & Chart (Same as before)
     document.getElementById('v-perc').innerText = percentage + "%";
     document.getElementById('v-res').innerText = percentage >= 33 ? "PASS" : "FAIL";
