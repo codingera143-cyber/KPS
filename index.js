@@ -261,6 +261,13 @@ async function updateSchoolStatus() {
     const dot = document.getElementById('status-dot');
     const text = document.getElementById('status-text');
 
+    const today = new Date();
+    const dateStr = today.getDate() + "-" + (today.getMonth() + 1);
+    
+    // Special Days (Jo Open hone par bhi celebration dikhayenge)
+    const isRepublicDay = (dateStr === "26-1");
+    const isIndependenceDay = (dateStr === "15-8");
+
     try {
         const response = await fetch(STATUS_URL);
         const csvData = await response.text();
@@ -269,86 +276,82 @@ async function updateSchoolStatus() {
         const statusValue = rows[1][0].replace(/"/g, '').trim().toLowerCase(); // A2
         const holidayName = rows[1][1] ? rows[1][1].replace(/"/g, '').trim() : ""; // B2
 
-        if (statusValue.includes('open')) {
+        // 1. SABSE PEHLE: 26 Jan / 15 Aug ka Check (Status chahe Open ho ya Closed)
+        if (isRepublicDay || isIndependenceDay) {
+            const fName = isRepublicDay ? "Republic Day" : "Independence Day";
+            dot.className = 'dot status-open'; 
+            dot.innerHTML = `<span>🇮🇳</span>`;
+            text.style.color = '#e67e22'; // Saffron
+            text.innerText = `Happy ${fName}! 🇮🇳`;
+            confetti({ particleCount: 150, spread: 70, colors: ['#FF9933', '#FFFFFF', '#138808'] });
+        } 
+        // 2. AGAR SCHOOL OPEN HAI (Normal Days)
+        else if (statusValue.includes('open')) {
             dot.className = 'dot status-open';
             dot.innerHTML = ''; 
             text.style.color = '#1b5e20';
             text.innerText = 'School is Open Today';
-        } else {
+        } 
+        // 3. AGAR SCHOOL CLOSED HAI (Sari Holidays yahan check hongi)
+        else {
             dot.className = 'dot status-closed';
             text.style.color = '#b71c1c';
-            
-            const festivalData = getFestivalAssets(holidayName.toLowerCase());
-            
-            text.innerText = holidayName ? `Closed: ${holidayName} ${festivalData.msg}` : 'School Closed (Holiday)';
-            dot.innerHTML = `<span style="font-size:16px;">${festivalData.icon}</span>`;
-            
-            if(festivalData.effect) festivalData.effect();
+            const fest = getFestivalAssets(holidayName.toLowerCase());
+            text.innerText = holidayName ? `Closed: ${holidayName} ${fest.msg}` : 'School Closed';
+            dot.innerHTML = `<span>${fest.icon}</span>`;
+            if(fest.effect) fest.effect();
         }
     } catch (e) {
         text.innerText = 'Live: Academic Session 2026';
     }
 }
 
+// YAHAN HAIN AAPKE SAARE FESTIVALS (Wapas Add Kar Diye)
 function getFestivalAssets(name) {
     let data = { icon: "🚩", msg: "", effect: null };
 
-    // 1. HOLI
     if (name.includes('holi')) {
-        data.icon = "🌈";
-        data.msg = "🎨 Bura Na Mano Holi Hai!";
-        data.effect = () => confetti({ particleCount: 150, spread: 70, colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'] });
+        data.icon = "🎨"; data.msg = "🎨 Bura Na Mano Holi Hai!";
+        data.effect = () => confetti({ particleCount: 150, colors: ['#ff0000', '#00ff00', '#ffff00', '#ff00ff'] });
     } 
-    // 2. DIWALI
     else if (name.includes('diwali')) {
-        data.icon = "🪔";
-        data.msg = "🕯️ Shubh Deepawali!";
-        data.effect = () => confetti({ particleCount: 150, scalar: 1.2, shapes: ['circle'], colors: ['#FF9933', '#FFD700'] });
+        data.icon = "🪔"; data.msg = "🕯️ Shubh Deepawali!";
+        data.effect = () => confetti({ particleCount: 150, colors: ['#FF9933', '#FFD700'] });
     }
-    // 3. RAKSHABANDHAN
-    else if (name.includes('raksha')) {
-        data.icon = "🪔";
-        data.msg = "👫 Happy Rakshabandhan!";
-    }
-    // 4. NEW YEAR
-    else if (name.includes('new year')) {
-        data.icon = "🥳";
-        data.msg = "✨ Happy New Year 2026!";
-        data.effect = () => confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
-    }
-    // 5. GANDHI JAYANTI
     else if (name.includes('gandhi')) {
-        data.icon = "⚙️";
-        data.msg = "📖 Satya Mev Jayate";
-    }
-    // 6. AMBEDKAR JAYANTI
+        data.icon = "⚙️"; data.msg = "📖 Satya Mev Jayate";
+    } 
     else if (name.includes('ambedkar')) {
-        data.icon = "⚖️";
-        data.msg = "📜 Jai Bhim";
+        data.icon = "⚖️"; data.msg = "📜 Jai Bhim";
     }
-    // 7. EID / BAKRID
-    else if (name.includes('eid') || name.includes('bakrid')) {
-        data.icon = name.includes('bakrid') ? "🐐" : "🌙";
-        data.msg = "🤲 Mubarak Ho!";
+    else if (name.includes('raksha')) {
+        data.icon = "🪔"; data.msg = "👫 Happy Rakshabandhan!";
     }
-    // 8. SIKH FESTIVALS
+    else if (name.includes('new year')) {
+        data.icon = "🥳"; data.msg = "✨ Happy 2027!";
+        data.effect = () => confetti({ particleCount: 150 });
+    }
+    else if (name.includes('bakrid') || name.includes('eid-ul-adha')) {
+        data.icon = "🐐"; data.msg = "🤲 Eid-ul-Adha Mubarak";
+    }
+    else if (name.includes('eid')) {
+        data.icon = "🌙"; data.msg = "🤲 Eid Mubarak";
+    }
     else if (name.includes('nanak') || name.includes('tegh bahadur')) {
-        data.icon = "☬";
-        data.msg = "🙏 Waheguru Ji Ka Khalsa";
+        data.icon = "☬"; data.msg = "🙏 Waheguru Ji Ka Khalsa";
     }
-    // 9. RAM NAVAMI
     else if (name.includes('ram navami')) {
-        data.icon = "🏹";
-        data.msg = "✨ Jai Shree Ram";
+        data.icon = "🏹"; data.msg = "✨ Jai Shree Ram";
     }
-    // 10. CHRISTMAS
+    else if (name.includes('janmashtami')) {
+        data.icon = "🪈"; data.msg = "🍯 Radhe Radhe";
+    }
     else if (name.includes('christmas')) {
-        data.icon = "❄️";
-        data.msg = "🎄 Merry Christmas";
+        data.icon = "❄️"; data.msg = "🎄 Merry Christmas";
         data.effect = () => {
             setInterval(() => {
-                confetti({ particleCount: 2, startVelocity: 0, ticks: 200, origin: { x: Math.random(), y: 0 }, colors: ['#ffffff'], shapes: ['circle'], gravity: 0.5 });
-            }, 300);
+                confetti({ particleCount: 1, startVelocity: 0, origin: { x: Math.random(), y: 0 }, colors: ['#ffffff'], gravity: 0.3 });
+            }, 400);
         };
     }
     
