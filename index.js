@@ -263,31 +263,100 @@ async function updateSchoolStatus() {
 
     try {
         const response = await fetch(STATUS_URL);
-        const data = await response.text();
+        const csvData = await response.text();
+        const rows = csvData.split('\n').map(row => row.split(','));
         
-        
-        const rows = data.split('\n').map(row => row.replace(/"/g, '').trim());
-        
-        
-        let val = rows[0].toLowerCase();
-        let status = (val === 'status' || val === '') ? rows[1] : rows[0];
+        const statusValue = rows[1][0].replace(/"/g, '').trim().toLowerCase(); // A2
+        const holidayName = rows[1][1] ? rows[1][1].replace(/"/g, '').trim() : ""; // B2
 
-        if (status.toLowerCase().includes('open')) {
+        if (statusValue.includes('open')) {
             dot.className = 'dot status-open';
-            text.style.color = '#1b5e20'; // Dark Green text
+            dot.innerHTML = ''; 
+            text.style.color = '#1b5e20';
             text.innerText = 'School is Open Today';
         } else {
             dot.className = 'dot status-closed';
-            text.style.color = '#b71c1c'; // Dark Red text
-            text.innerText = 'School Closed (Holiday)';
+            text.style.color = '#b71c1c';
+            
+            const festivalData = getFestivalAssets(holidayName.toLowerCase());
+            
+            text.innerText = holidayName ? `Closed: ${holidayName} ${festivalData.msg}` : 'School Closed (Holiday)';
+            dot.innerHTML = `<span style="font-size:16px;">${festivalData.icon}</span>`;
+            
+            if(festivalData.effect) festivalData.effect();
         }
     } catch (e) {
-        dot.className = 'dot';
-        dot.style.backgroundColor = '#f39c12';
         text.innerText = 'Live: Academic Session 2026';
     }
 }
+
+function getFestivalAssets(name) {
+    let data = { icon: "🚩", msg: "", effect: null };
+
+    // 1. HOLI
+    if (name.includes('holi')) {
+        data.icon = "🌈";
+        data.msg = "🎨 Bura Na Mano Holi Hai!";
+        data.effect = () => confetti({ particleCount: 150, spread: 70, colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'] });
+    } 
+    // 2. DIWALI
+    else if (name.includes('diwali')) {
+        data.icon = "🪔";
+        data.msg = "🕯️ Shubh Deepawali!";
+        data.effect = () => confetti({ particleCount: 150, scalar: 1.2, shapes: ['circle'], colors: ['#FF9933', '#FFD700'] });
+    }
+    // 3. RAKSHABANDHAN
+    else if (name.includes('raksha')) {
+        data.icon = "🪔";
+        data.msg = "👫 Happy Rakshabandhan!";
+    }
+    // 4. NEW YEAR
+    else if (name.includes('new year')) {
+        data.icon = "🥳";
+        data.msg = "✨ Happy New Year 2026!";
+        data.effect = () => confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+    }
+    // 5. GANDHI JAYANTI
+    else if (name.includes('gandhi')) {
+        data.icon = "⚙️";
+        data.msg = "📖 Satya Mev Jayate";
+    }
+    // 6. AMBEDKAR JAYANTI
+    else if (name.includes('ambedkar')) {
+        data.icon = "⚖️";
+        data.msg = "📜 Jai Bhim";
+    }
+    // 7. EID / BAKRID
+    else if (name.includes('eid') || name.includes('bakrid')) {
+        data.icon = name.includes('bakrid') ? "🐐" : "🌙";
+        data.msg = "🤲 Mubarak Ho!";
+    }
+    // 8. SIKH FESTIVALS
+    else if (name.includes('nanak') || name.includes('tegh bahadur')) {
+        data.icon = "☬";
+        data.msg = "🙏 Waheguru Ji Ka Khalsa";
+    }
+    // 9. RAM NAVAMI
+    else if (name.includes('ram navami')) {
+        data.icon = "🏹";
+        data.msg = "✨ Jai Shree Ram";
+    }
+    // 10. CHRISTMAS
+    else if (name.includes('christmas')) {
+        data.icon = "❄️";
+        data.msg = "🎄 Merry Christmas";
+        data.effect = () => {
+            setInterval(() => {
+                confetti({ particleCount: 2, startVelocity: 0, ticks: 200, origin: { x: Math.random(), y: 0 }, colors: ['#ffffff'], shapes: ['circle'], gravity: 0.5 });
+            }, 300);
+        };
+    }
+    
+    return data;
+}
+
 updateSchoolStatus();
+setInterval(updateSchoolStatus, 60000);
 const NEWS_TICKER_URL = 'https://docs.google.com/spreadsheets/d/1iI6ocpm_dHj7fLHZdUXBPzICBFGQ7JGxO6ETyMK3U_0/export?format=csv';
 
 async function fetchNewsTicker() {
