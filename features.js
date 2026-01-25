@@ -59,3 +59,71 @@ if (scrollTopBtn) {
         }
     };
 }
+const STATUS_URL = 'https://docs.google.com/spreadsheets/d/1nxEQWnLKJW39vOwS3bM-4jDVvZAR6uwSfg_bjcnKg_g/export?format=csv&gid=0';
+
+async function runToofaniFeatures() {
+    const now = new Date();
+    const day = now.getDay(); // 0 = Sunday
+    const hour = now.getHours();
+
+    // 1. DYNAMIC ATMOSPHERE (Background Colors)
+    applyAtmosphere(hour);
+
+    try {
+        const response = await fetch(STATUS_URL);
+        const csvData = await response.text();
+        const rows = csvData.split('\n').map(row => row.split(','));
+        
+        const statusValue = rows[1][0] ? rows[1][0].replace(/"/g, '').trim().toLowerCase() : "";
+        const holidayName = rows[1][1] ? rows[1][1].replace(/"/g, '').trim() : "";
+
+        let finalSpeech = "";
+
+        // 2. LOGIC FOR VOICE MESSAGE
+        if (statusValue.includes('open')) {
+            finalSpeech = "School is Open Today. Have You Sent Your Ward To The School?";
+        } 
+        else {
+            // Check if it's Sunday or a Special Holiday
+            let reason = (day === 0) ? "Sunday" : holidayName;
+            finalSpeech = `School is Closed Today Because Today is ${reason || 'a Holiday'}. Enjoy Your Day!`;
+        }
+
+        // 3. TRIGGER AI VOICE (On first click)
+        triggerVoice(finalSpeech);
+
+    } catch (e) {
+        console.log("Speech Engine Error");
+    }
+}
+
+// Background Theme Logic
+function applyAtmosphere(hour) {
+    let gradient = "";
+    if (hour >= 5 && hour < 11)      gradient = "linear-gradient(135deg, #FF9A9E, #FAD0C4)"; // Morning
+    else if (hour >= 11 && hour < 16) gradient = "linear-gradient(135deg, #89f7fe, #66a6ff)"; // Day
+    else if (hour >= 16 && hour < 20) gradient = "linear-gradient(135deg, #f093fb, #f5576c)"; // Evening
+    else                             gradient = "linear-gradient(135deg, #2c3e50, #000000)"; // Night
+
+    document.body.style.transition = "background 2s ease-in-out";
+    document.body.style.background = gradient;
+    document.body.style.minHeight = "100vh";
+}
+
+// Voice Trigger Logic
+function triggerVoice(text) {
+    const handleInteraction = () => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9; // Professional speed
+        utterance.pitch = 1;
+        window.speechSynthesis.speak(utterance);
+        
+        // Remove listener after first interaction to avoid repeated speaking
+        window.removeEventListener('click', handleInteraction);
+    };
+
+    window.addEventListener('click', handleInteraction);
+}
+
+// Start the engine
+runToofaniFeatures();
