@@ -1,3 +1,7 @@
+/**
+ * KPS SMART AI ASSISTANT - ENGLISH PROFESSIONAL VERSION
+ */
+
 const scrollTopBtn = document.getElementById('scrollTopBtn');
 const whatsappFab = document.getElementById('whatsappFab');
 const aiChatWindow = document.getElementById('aiChatWindow');
@@ -6,25 +10,35 @@ const aiInput = document.getElementById('aiInput');
 
 let KPS_Brain = { webData: {}, isAIClose: false };
 
-// 1. Precise Scraper: Har page ka data alag store karna
+// 1. DATA SCRAPER: Load pages into categories
 async function trainAIBrain() {
-    const pages = ['about', 'facilities', 'MandatoryDisclosure', 'contact', 'fees', 'admission'];
+    const pages = [
+        { name: 'about', file: 'about.html' },
+        { name: 'facilities', file: 'facilities.html' },
+        { name: 'fees', file: 'fees.html' },
+        { name: 'admission', file: 'admission.html' },
+        { name: 'contact', file: 'contact.html' },
+        { name: 'notice', file: 'index.html#notice-board' },
+        { name: 'status', file: 'index.html#school-status' }
+    ];
+
     for (let p of pages) {
         try {
-            const res = await fetch(`${p}.html`);
+            const res = await fetch(p.file);
+            if (!res.ok) continue;
             const html = await res.text();
             const doc = new DOMParser().parseFromString(html, 'text/html');
-            KPS_Brain[p] = doc.body.innerText.replace(/\s+/g, ' ').trim().toLowerCase();
-        } catch (e) { console.log("Missing page: " + p); }
+            KPS_Brain.webData[p.name] = doc.body.innerText.replace(/\s+/g, ' ').trim().toLowerCase();
+        } catch (e) { console.warn(`Missing: ${p.file}`); }
     }
 }
 
-// 2. The Smart AI Engine
+// 2. THE MASTER ENGINE (Strict English Responses)
 async function askAdvancedAI() {
     const query = aiInput.value.trim().toLowerCase();
     if (!query) return;
 
-    // User Message Display
+    // Show User Message
     aiChatBody.innerHTML += `<div class="user-msg">${query}</div>`;
     aiInput.value = "";
     aiChatBody.scrollTop = aiChatBody.scrollHeight;
@@ -32,76 +46,72 @@ async function askAdvancedAI() {
     // Typing Animation
     const typingId = "typing-" + Date.now();
     aiChatBody.innerHTML += `<div id="${typingId}" class="typing-dots"><span></span><span></span><span></span></div>`;
+    aiChatBody.scrollTop = aiChatBody.scrollHeight;
 
     let response = "";
 
-    // --- STEP 1: DIRECT NUMBER DETECTION (For Serial No 101, 205, etc.) ---
-    const numberMatch = query.match(/\b\d{1,4}\b/); // Query mein se 1 se 4 digit ka number nikalna
-    
-    if (numberMatch) {
-        const sID = numberMatch[0]; // Sirf number (e.g. "101")
-        response = `Searching records for ID: ${sID}...`;
-        
+    // --- LOGIC A: SERIAL NUMBER DETECTION (Direct Number Search) ---
+    const numberMatch = query.match(/\b\d{1,4}\b/);
+    if (numberMatch && !query.includes("fee") && !query.includes("admission")) {
+        const sID = numberMatch[0];
         try {
-            // Firebase Fetch (Direct ID search)
-            const snapshot = await db.ref('students/' + sID).once('value');
-            const data = snapshot.val();
-            if (data) {
-                response = `<b>Student Found:</b> ${data.name.toUpperCase()}<br>
-                            <b>Fees Status:</b><br>
-                            - 1st Installment: ${data.fees.i}<br>
-                            - 2nd Installment: ${data.fees.ii}<br>
-                            <b>Attendance:</b> ${data.attendance.apr}% (April Month).`;
+            if (typeof db !== 'undefined') {
+                const snapshot = await db.ref('students/' + sID).once('value');
+                const data = snapshot.val();
+                if (data) {
+                    response = `<b>Student Profile Found:</b><br>
+                                Name: ${data.name.toUpperCase()}<br>
+                                Fees Status: ${data.fees.i} (1st Installment)<br>
+                                Attendance: ${data.attendance.apr}% for the current month.`;
+                } else {
+                    response = `I am sorry, I could not find any student record with Serial Number: <b>${sID}</b>. Please verify the ID.`;
+                }
             } else {
-                response = `ID <b>${sID}</b> ka koi record nahi mila. Kripya sahi Serial Number daalein.`;
+                response = "<b>Database Error:</b> Connection is currently offline. Please try again later.";
             }
-        } catch (e) { response = "Database se connect nahi ho paa raha hai."; }
+        } catch (e) { response = "Error: Failed to connect to the school database."; }
     }
 
-    // --- STEP 2: CONTEXTUAL WEB SEARCH (Agar number nahi hai) ---
+    // --- LOGIC B: CONTEXTUAL WEB SEARCH (Strict English Output) ---
     if (!response) {
         const categories = {
-            admission: ["admission", "join", "form", "entry", "process", "procedure", "class", "apply"],
-            fees: ["fee", "money", "paisa", "installment", "fine", "due", "pay", "structure", "dues"],
-            contact: ["contact", "call", "phone", "number", "map", "address", "location", "office"],
-            about: ["principal", "owner", "founder", "about", "developer", "school", "kps"]
+            admission: ["admission", "join", "form", "entry", "class", "apply", "procedure"],
+            fees: ["fee", "structure", "installment", "fine", "due", "pay", "money", "paisa"],
+            facilities: ["facility", "lab", "library", "bus", "transport", "sports", "playground"],
+            about: ["principal", "owner", "founder", "about", "school", "history", "developer"],
+            contact: ["contact", "call", "phone", "number", "address", "location"],
+            notice: ["notice", "board", "news", "latest", "circular", "update"],
+            status: ["open", "closed", "holiday"]
         };
 
-        let foundCat = Object.keys(categories).find(cat => 
+        let matchedCat = Object.keys(categories).find(cat => 
             categories[cat].some(keyword => query.includes(keyword))
         );
 
-        if (foundCat && KPS_Brain[foundCat]) {
-            response = KPS_Brain[foundCat].substring(0, 350) + "...";
+        if (matchedCat && KPS_Brain.webData[matchedCat]) {
+            response = `<b>Regarding ${matchedCat.charAt(0).toUpperCase() + matchedCat.slice(1)}:</b><br>` + 
+                       KPS_Brain.webData[matchedCat].substring(0, 450) + "...";
         } else {
-            response = "Maaf kijiye, mujhe is baare mein jaankari nahi mili. Aap Fees, Admission ya Serial No. ke baare mein puch sakte hain.";
+            response = "I am sorry, I do not have specific information on that topic. You may ask about Admissions, Fees, School Facilities, or provide a Student Serial Number.";
         }
     }
 
-    // Bot Reply Display
+    // Final Bot Reply with Delay
     setTimeout(() => {
         const t = document.getElementById(typingId);
-        if(t) t.remove();
-        aiChatBody.innerHTML += `<div class="bot-msg"><b>KPS AI:</b><br>${response}</div>`;
+        if (t) t.remove();
+        aiChatBody.innerHTML += `<div class="bot-msg"><b>KPS Assistant:</b><br>${response}</div>`;
         aiChatBody.scrollTop = aiChatBody.scrollHeight;
     }, 1200);
 }
 
-// 3. UI Toggles
-window.toggleAIChat = () => {
-    aiChatWindow.style.display = (aiChatWindow.style.display === 'flex') ? 'none' : 'flex';
-};
+// 3. UI CONTROLS (Scroll Logic Untouched)
+window.toggleAIChat = () => { aiChatWindow.style.display = (aiChatWindow.style.display === 'flex') ? 'none' : 'flex'; };
+window.closeFab = () => { whatsappFab.style.display = 'none'; KPS_Brain.isAIClose = true; handleScrollLogic(); };
 
-window.closeFab = () => {
-    whatsappFab.style.display = 'none';
-    KPS_Brain.isAIClose = true;
-    handleScrollLogic(); 
-};
-
-// 4. Scroll Logic (Unchanged)
 function handleScrollLogic() {
-    const pos = window.pageYOffset || document.documentElement.scrollTop;
-    if (KPS_Brain.isAIClose && pos > 200) {
+    const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+    if (KPS_Brain.isAIClose && scrollPos > 200) {
         scrollTopBtn.style.display = "block";
     } else {
         scrollTopBtn.style.display = "none";
