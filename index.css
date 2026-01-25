@@ -455,6 +455,39 @@
     border-radius: 8px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 }
+.stats-section {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    padding: 50px 20px;
+    background-color: #003366; /* Navy Blue */
+    color: #d4aa00; /* Gold */
+    text-align: center;
+}
+
+.stat-card {
+    margin: 20px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.counter {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.stat-card p {
+    font-size: 1.1rem;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+@media (max-width: 768px) {
+    .counter { font-size: 2.2rem; }
+}
 /* --- VISION & MISSION SECTION --- */
 .vision-mission {
     padding: 100px 5%;
