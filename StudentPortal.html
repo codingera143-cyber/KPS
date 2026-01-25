@@ -554,6 +554,16 @@ document.getElementById('disp-alt').innerText = info.alt_mobile || "---";
 
 // Page load par start karein
 window.addEventListener('DOMContentLoaded', managePortalLock);*/
+// Disable Right-Click
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// Disable Key Shortcuts
+document.onkeydown = function(e) {
+    if (e.keyCode == 123) return false; // F12
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Inspect
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Console
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // View Source
+};
     </script>
 </body>
 </html>
