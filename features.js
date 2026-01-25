@@ -4,64 +4,90 @@ const aiChatWindow = document.getElementById('aiChatWindow');
 const aiChatBody = document.getElementById('aiChatBody');
 const aiInput = document.getElementById('aiInput');
 
-let KPS_Brain = { webData: "", isAIClose: false };
+let KPS_Brain = { webData: {}, isAIClose: false };
 
-// 1. Scraper: Auto-read website content
+// 1. Precise Scraper: Har page ka data alag store karna
 async function trainAIBrain() {
-    const pages = ['about.html', 'facilities.html', 'MandatoryDisclosure.html', 'contact.html', 'fees.html'];
-    for (let page of pages) {
+    const pages = ['about', 'facilities', 'MandatoryDisclosure', 'contact', 'fees', 'admission'];
+    for (let p of pages) {
         try {
-            const res = await fetch(page);
+            const res = await fetch(`${p}.html`);
             const html = await res.text();
             const doc = new DOMParser().parseFromString(html, 'text/html');
-            KPS_Brain.webData += " " + doc.body.innerText.replace(/\s+/g, ' ').trim();
-        } catch (e) { console.log("Indexing Error: " + page); }
+            KPS_Brain[p] = doc.body.innerText.replace(/\s+/g, ' ').trim().toLowerCase();
+        } catch (e) { console.log("Missing page: " + p); }
     }
 }
 
-// 2. Main AI Response Logic
+// 2. The Smart AI Engine
 async function askAdvancedAI() {
     const query = aiInput.value.trim().toLowerCase();
     if (!query) return;
 
+    // User Message Display
     aiChatBody.innerHTML += `<div class="user-msg">${query}</div>`;
     aiInput.value = "";
     aiChatBody.scrollTop = aiChatBody.scrollHeight;
 
-    // Show Typing Animation
+    // Typing Animation
     const typingId = "typing-" + Date.now();
-    const typingDiv = document.createElement('div');
-    typingDiv.id = typingId;
-    typingDiv.className = "typing-dots";
-    typingDiv.innerHTML = `<span></span><span></span><span></span>`;
-    aiChatBody.appendChild(typingDiv);
+    aiChatBody.innerHTML += `<div id="${typingId}" class="typing-dots"><span></span><span></span><span></span></div>`;
 
     let response = "";
-    const serialMatch = query.match(/kps\d+/);
 
-    // AI Logic Processing
-    if (serialMatch) {
-        response = `Searching records for ${serialMatch[0].toUpperCase()}... (Please connect Firebase to fetch live fees)`;
-    } else if (query.includes("attendance") && new Date().getMonth() === 3) {
-        response = "Session has just started in April. Attendance will be updated from May.";
-    } else {
-        const sentences = KPS_Brain.webData.split(/[.!?]/);
-        const match = sentences.find(s => s.toLowerCase().includes(query.split(' ')[0]) && s.length > 15);
-        response = match ? match.trim() + "." : "Sorry, I can't find this info. Contact: +91-8299390677 (8 AM - 2 PM).";
+    // --- STEP 1: DIRECT NUMBER DETECTION (For Serial No 101, 205, etc.) ---
+    const numberMatch = query.match(/\b\d{1,4}\b/); // Query mein se 1 se 4 digit ka number nikalna
+    
+    if (numberMatch) {
+        const sID = numberMatch[0]; // Sirf number (e.g. "101")
+        response = `Searching records for ID: ${sID}...`;
+        
+        try {
+            // Firebase Fetch (Direct ID search)
+            const snapshot = await db.ref('students/' + sID).once('value');
+            const data = snapshot.val();
+            if (data) {
+                response = `<b>Student Found:</b> ${data.name.toUpperCase()}<br>
+                            <b>Fees Status:</b><br>
+                            - 1st Installment: ${data.fees.i}<br>
+                            - 2nd Installment: ${data.fees.ii}<br>
+                            <b>Attendance:</b> ${data.attendance.apr}% (April Month).`;
+            } else {
+                response = `ID <b>${sID}</b> ka koi record nahi mila. Kripya sahi Serial Number daalein.`;
+            }
+        } catch (e) { response = "Database se connect nahi ho paa raha hai."; }
     }
 
-    // Delay for realism
-    setTimeout(() => {
-        document.getElementById(typingId).remove();
-        aiChatBody.innerHTML += `<div class="bot-msg"><b>AI:</b> ${response}</div>`;
-        if (response.includes("Contact")) {
-            aiChatBody.innerHTML += `<a href="https://wa.me/8299390677" target="_blank" style="color:#25d366; font-size:12px; margin-left:10px;">Chat on WhatsApp</a>`;
+    // --- STEP 2: CONTEXTUAL WEB SEARCH (Agar number nahi hai) ---
+    if (!response) {
+        const categories = {
+            admission: ["admission", "join", "form", "entry", "process", "procedure", "class", "apply"],
+            fees: ["fee", "money", "paisa", "installment", "fine", "due", "pay", "structure", "dues"],
+            contact: ["contact", "call", "phone", "number", "map", "address", "location", "office"],
+            about: ["principal", "owner", "founder", "about", "developer", "school", "kps"]
+        };
+
+        let foundCat = Object.keys(categories).find(cat => 
+            categories[cat].some(keyword => query.includes(keyword))
+        );
+
+        if (foundCat && KPS_Brain[foundCat]) {
+            response = KPS_Brain[foundCat].substring(0, 350) + "...";
+        } else {
+            response = "Maaf kijiye, mujhe is baare mein jaankari nahi mili. Aap Fees, Admission ya Serial No. ke baare mein puch sakte hain.";
         }
+    }
+
+    // Bot Reply Display
+    setTimeout(() => {
+        const t = document.getElementById(typingId);
+        if(t) t.remove();
+        aiChatBody.innerHTML += `<div class="bot-msg"><b>KPS AI:</b><br>${response}</div>`;
         aiChatBody.scrollTop = aiChatBody.scrollHeight;
-    }, 1500);
+    }, 1200);
 }
 
-// 3. UI Control Functions
+// 3. UI Toggles
 window.toggleAIChat = () => {
     aiChatWindow.style.display = (aiChatWindow.style.display === 'flex') ? 'none' : 'flex';
 };
@@ -69,20 +95,19 @@ window.toggleAIChat = () => {
 window.closeFab = () => {
     whatsappFab.style.display = 'none';
     KPS_Brain.isAIClose = true;
-    handleScrollLogic(); // Re-trigger scroll check
+    handleScrollLogic(); 
 };
 
-// 4. SCROLL LOGIC (Your perfect logic)
+// 4. Scroll Logic (Unchanged)
 function handleScrollLogic() {
-    const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
-    if (KPS_Brain.isAIClose && scrollPos > 200) {
+    const pos = window.pageYOffset || document.documentElement.scrollTop;
+    if (KPS_Brain.isAIClose && pos > 200) {
         scrollTopBtn.style.display = "block";
     } else {
         scrollTopBtn.style.display = "none";
     }
 }
 
-// Event Listeners
 window.addEventListener('scroll', handleScrollLogic);
 window.onload = trainAIBrain;
 aiInput.addEventListener("keypress", (e) => { if (e.key === "Enter") askAdvancedAI(); });
