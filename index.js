@@ -396,79 +396,72 @@ async function fetchNewsTicker() {
 }
 
 fetchNewsTicker();
+
 async function updateSmartContext() {
+    const msgElement = document.getElementById("smart-footer-msg");
+    const iconElement = document.getElementById("smart-icon");
+    const smartBar = document.getElementById("smart-context-box");
+
     const now = new Date();
     const day = now.getDay(); // 0 = Sunday
     const hour = now.getHours();
     const minutes = now.getMinutes();
     const currentTime = hour + (minutes / 60);
 
-    const msgElement = document.getElementById("smart-footer-msg");
-    const iconElement = document.getElementById("smart-icon");
-    const container = document.getElementById("smart-context-box");
-
     if (!msgElement) return;
-
-    let message = "";
-    let icon = "";
 
     // 1. Priority: SUNDAY Check
     if (day === 0) {
-        message = "School is closed today. Enjoy your Sunday! 🏠";
-        icon = "🕶️";
-        if(container) container.style.background = "rgba(255, 215, 0, 0.1)"; // Gold hint for Sunday
-    } 
-    else {
-        try {
-            // 2. Fetch from Google Sheet
-            const sheetURL = "https://docs.google.com/spreadsheets/d/1nxEQWnLKJW39vOwS3bM-4jDVvZAR6uwSfg_bjcnKg_g/export?format=csv&gid=0"; 
-            const response = await fetch(sheetURL);
-            const csvData = await response.text();
-            
-            // CSV parsing (Simple logic: maan lo Sheet mein "Status" aur "HolidayName" columns hain)
-            const rows = csvData.split('\n');
-            const statusRow = rows.find(row => row.toLowerCase().includes("status")); // Aapki sheet ki line dhoondega
-            
-            if (csvData.toLowerCase().includes("closed")) {
-                // Yahan hum try karenge holiday ka naam nikalne ka (e.g., "Closed, Diwali Holiday")
-                const holidayInfo = rows.find(row => row.toLowerCase().includes("holiday")) || "";
-                const holidayName = holidayInfo.split(',')[1] || "Special Occasion"; // Dusra column holiday name
-                
-                message = `School is closed today for ${holidayName}. 🚩`;
-                icon = "🚪";
-                if(container) container.style.background = "rgba(255, 0, 0, 0.15)"; // Red hint for Closed
-            } 
-            else {
-                // 3. Normal School Time Logic
-                if(container) container.style.background = "rgba(255, 255, 255, 0.05)"; // Reset to normal
-                
-                if (currentTime >= 8 && currentTime < 9.75) {
-                    message = "School buses are on their way! 🚌";
-                    icon = "🌅";
-                } else if (currentTime >= 9.75 && currentTime < 10) {
-                    message = "Assembly Time: Prayers in progress. 🙏";
-                    icon = "🔔";
-                } else if (currentTime >= 10 && currentTime < 15) {
-                    message = "Learning in Progress: Students in class. 📖";
-                    icon = "✍️";
-                } else if (currentTime >= 15 && currentTime < 16) {
-                    message = "Dispersal Time: Please drive safely. 🚗";
-                    icon = "🏫";
-                } else {
-                    message = "K.P.S. Portal is in Sleep Mode. See you tomorrow! 🌙";
-                    icon = "😴";
-                }
-            }
-        } catch (error) {
-            message = "K.P.S. Digital Portal is active. ✨";
-            icon = "🏫";
-        }
+        msgElement.innerText = "Today is Sunday. Enjoy Your Day! 🏠";
+        if(iconElement) iconElement.innerText = "🕶️";
+        return; // Sunday mil gaya toh aage sheet check karne ki zarurat nahi
     }
 
-    msgElement.innerText = message;
-    if (iconElement) iconElement.innerText = icon;
+    try {
+        // 2. Fetch from your existing Sheet URL
+        const response = await fetch(STATUS_URL); 
+        const csvData = await response.text();
+        const rows = csvData.split('\n').map(row => row.split(','));
+        
+        const statusValue = rows[1][0].replace(/"/g, '').trim().toLowerCase(); // A2
+        const holidayName = rows[1][1] ? rows[1][1].replace(/"/g, '').trim() : ""; // B2
+
+        // 3. SPECIAL HOLIDAY Check (A2 and B2)
+        if (statusValue.includes('closed')) {
+            msgElement.innerText = `Today is Holiday On Account of ${holidayName || 'Special Occasion'}.`;
+            if(iconElement) iconElement.innerText = "🚩";
+        } 
+        else {
+            // 4. NORMAL SCHOOL TIME LOGIC (Agar Sunday/Holiday nahi hai)
+            let message = "";
+            let icon = "";
+
+            if (currentTime >= 8 && currentTime < 9.75) {
+                message = "School buses are on their way! 🚌";
+                icon = "🌅";
+            } else if (currentTime >= 9.75 && currentTime < 10) {
+                message = "Assembly Time: Students are gathering for prayers. 🙏";
+                icon = "🔔";
+            } else if (currentTime >= 10 && currentTime < 15) {
+                message = "Learning in Progress: Students are in their classrooms. 📖";
+                icon = "✍️";
+            } else if (currentTime >= 15 && currentTime < 16) {
+                message = "Dispersal Time: Please drive safely near school gates. 🚗";
+                icon = "🏫";
+            } else {
+                message = "K.P.S. Portal is in Sleep Mode. See you tomorrow! 🌙";
+                icon = "😴";
+            }
+            
+            msgElement.innerText = message;
+            if(iconElement) iconElement.innerText = icon;
+        }
+    } catch (error) {
+        msgElement.innerText = "Welcome to K.P.S. Digital Portal.";
+    }
 }
 
+// Initial Call & Refresh
 updateSmartContext();
 setInterval(updateSmartContext, 60000);
 
