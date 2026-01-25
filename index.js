@@ -324,54 +324,80 @@ async function fetchNewsTicker() {
 }
 
 fetchNewsTicker();
-function updateSmartContext() {
+async function updateSmartContext() {
     const now = new Date();
+    const day = now.getDay(); // 0 = Sunday
     const hour = now.getHours();
     const minutes = now.getMinutes();
     const currentTime = hour + (minutes / 60);
 
     const msgElement = document.getElementById("smart-footer-msg");
     const iconElement = document.getElementById("smart-icon");
-    
+
     if (!msgElement) return;
 
     let message = "";
     let icon = "";
 
-    if (currentTime >= 8 && currentTime < 9.75) {
-        message = "School buses are on their way! 🚌";
-        icon = "🌅";
-    } 
-    else if (currentTime >= 9.75 && currentTime < 10) {
-        message = "Assembly Time: Students are gathering for prayers. 🙏";
-        icon = "🔔";
-    } 
-    else if (currentTime >= 10 && currentTime < 15) {
-        message = "Learning in Progress: Students are in their classrooms. 📖";
-        icon = "✍️";
-    } 
-    else if (currentTime >= 15 && currentTime < 16) {
-        message = "Dispersal Time: Please drive safely near school gates. 🚗";
-        icon = "🏫";
-    } 
-    else if (currentTime >= 16 && currentTime < 17) {
-        message = "Evening: Teachers are reviewing today's progress. ✨";
-        icon = "🌤️";
-    } 
-    else {
-        message = "K.P.S. Portal is in Sleep Mode. See you tomorrow! 🌙";
-        icon = "😴";
+    // 1. Check if it's Sunday
+    if (day === 0) {
+        message = "School is closed today. Enjoy your Sunday! 🏠";
+        icon = "🕶️";
+    } else {
+        try {
+            // 2. Fetch Status from Google Sheets (Aapki existing CSV link)
+            const sheetURL = "YOUR_GOOGLE_SHEET_CSV_URL_HERE";
+            const response = await fetch(sheetURL);
+            const data = await response.text();
+            
+            // Maan lete hain ki "Closed" word sheet mein kahin likha hai
+            if (data.toLowerCase().includes("closed")) {
+                message = "School is closed today (Special Holiday). 🚩";
+                icon = "🚪";
+            } 
+            else {
+                // 3. Agar Sunday nahi hai aur Sheet "Open" hai, toh Time Logic chalega
+                if (currentTime >= 8 && currentTime < 9.75) {
+                    message = "School buses are on their way! 🚌";
+                    icon = "🌅";
+                } 
+                else if (currentTime >= 9.75 && currentTime < 10) {
+                    message = "Assembly Time: Prayers in progress. 🙏";
+                    icon = "🔔";
+                } 
+                else if (currentTime >= 10 && currentTime < 15) {
+                    message = "Learning in Progress: Students in class. 📖";
+                    icon = "✍️";
+                } 
+                else if (currentTime >= 15 && currentTime < 16) {
+                    message = "Dispersal Time: Drive safely. 🚗";
+                    icon = "🏫";
+                } 
+                else if (currentTime >= 16 && currentTime < 17) {
+                    message = "Evening: Teachers reviewing progress. ✨";
+                    icon = "🌤️";
+                } 
+                else {
+                    message = "K.P.S. Portal is in Sleep Mode. See you tomorrow! 🌙";
+                    icon = "😴";
+                }
+            }
+        } catch (error) {
+            console.log("Sheet fetch failed, using time logic only.");
+            // Error hone par fallback (Sirf time logic dikhayega)
+            message = "Welcome to K.P.S. Digital Portal. ✨";
+            icon = "🏫";
+        }
     }
 
     msgElement.innerText = message;
-    if(iconElement) iconElement.innerText = icon;
+    if (iconElement) iconElement.innerText = icon;
 }
 
-// 1. TURANT CALL (Bina kisi event ka wait kiye)
+// Initial Call
 updateSmartContext();
-
-// 2. Refresh every 30 seconds (For accuracy)
-setInterval(updateSmartContext, 30000);
+// Refresh every 1 minute (Fetch optimization ke liye 1 min kaafi hai)
+setInterval(updateSmartContext, 60000);
 
 const counters = document.querySelectorAll('.counter');
 const speed = 200; // Speed jitni kam, animation utni fast
