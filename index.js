@@ -372,3 +372,40 @@ updateSmartContext();
 
 // 2. Refresh every 30 seconds (For accuracy)
 setInterval(updateSmartContext, 30000);
+
+const counters = document.querySelectorAll('.counter');
+const speed = 200; // Speed jitni kam, animation utni fast
+
+const startCounters = () => {
+    counters.forEach(counter => {
+        const updateCount = () => {
+            const target = +counter.getAttribute('data-target');
+            const count = +counter.innerText;
+
+            // Increment nikalne ke liye
+            const inc = target / speed;
+
+            if (count < target) {
+                // Number badhao aur thodi der baad firse call karo
+                counter.innerText = Math.ceil(count + inc);
+                setTimeout(updateCount, 15);
+            } else {
+                counter.innerText = target + (target === 100 ? "%" : "+"); 
+            }
+        };
+        updateCount();
+    });
+};
+
+// Intersection Observer taaki animation sirf scroll karne pe chale
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            startCounters();
+            observer.unobserve(entry.target); // Ek hi baar animation chale
+        }
+    });
+}, { threshold: 0.5 }); // Jab 50% section dikhe tab start ho
+
+const statsSection = document.querySelector('.stats-section');
+if (statsSection) observer.observe(statsSection);
