@@ -346,7 +346,7 @@ async function updateSmartContext() {
     } else {
         try {
             // 2. Fetch Status from Google Sheets (Aapki existing CSV link)
-            const sheetURL = "YOUR_GOOGLE_SHEET_CSV_URL_HERE";
+            const sheetURL = "https://docs.google.com/spreadsheets/d/1nxEQWnLKJW39vOwS3bM-4jDVvZAR6uwSfg_bjcnKg_g/export?format=csv&gid=0";
             const response = await fetch(sheetURL);
             const data = await response.text();
             
