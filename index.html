@@ -411,15 +411,29 @@
     </div>
 <div id="footer-placeholder"></div>
 <div class="whatsapp-fab-container" id="whatsappFab">
-    <button class="fab-close" onclick="closeFab()" title="Close">×</button>
-    
-    <a href="https://wa.me/8299390677?text=Hello%20Kanpur%20Public%20School,%20I%20have%20an%20enquiry." target="_blank" class="whatsapp-btn">
+    <button class="fab-close" onclick="closeFab()">×</button>
+
+    <div id="aiChatWindow" class="ai-chat-window">
+        <div class="ai-chat-header">
+            <span>KPS Smart Assistant</span>
+            <button onclick="toggleAIChat()" style="background:none; border:none; color:#d4aa00; cursor:pointer;">—</button>
+        </div>
+        <div id="aiChatBody" class="ai-chat-body">
+            <p class="bot-msg">Hello! I am your KPS AI Assistant. How can I help you today?</p>
+        </div>
+        <div class="ai-chat-footer">
+            <input type="text" id="aiInput" placeholder="Ask about fees, admissions, notices...">
+            <button onclick="askAdvancedAI()" style="background:none; border:none; cursor:pointer;">🚀</button>
+        </div>
+    </div>
+
+    <a href="javascript:void(0)" onclick="toggleAIChat()" class="whatsapp-btn" id="mainFabBtn" style="background-color: #222; border: 2px solid #d4aa00;">
         <div class="fab-icon">
-            <svg viewBox="0 0 24 24">
-                <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zM6.07 17.51l-.19-.3a8.133 8.133 0 0 1-1.25-4.3c0-4.49 3.65-8.14 8.14-8.14 2.18 0 4.23.85 5.76 2.38 1.53 1.53 2.37 3.57 2.37 5.76 0 4.49-3.66 8.14-8.14 8.14-1.57 0-3.11-.45-4.44-1.3l-.32-.21-3.3.86.88-3.21z" />
+            <svg viewBox="0 0 24 24" style="fill: #d4aa00; width: 28px; height: 28px;">
+                <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.38-1 1.72V7h1a3 3 0 0 1 3 3V11h1a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-1v1a3 3 0 0 1-3 3H9a3 3 0 0 1-3-3v-1H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1v-1a3 3 0 0 1 3-3h1V5.72c-.6-.34-1-.98-1-1.72a2 2 0 0 1 2-2M9 9a1 1 0 0 0-1 1v1h1V9m5 0v1h1v-1a1 1 0 0 0-1-1M7.5 13A1.5 1.5 0 0 0 6 14.5A1.5 1.5 0 0 0 7.5 16A1.5 1.5 0 0 0 9 14.5A1.5 1.5 0 0 0 7.5 13m9 0a1.5 1.5 0 0 0-1.5 1.5a1.5 1.5 0 0 0 1.5 1.5a1.5 1.5 0 0 0 1.5-1.5a1.5 1.5 0 0 0-1.5-1.5M9 18a3 3 0 0 0 3 3a3 3 0 0 0 3-3H9z"/>
             </svg>
         </div>
-        <span class="fab-text">How can we help you?</span>
+        <span class="fab-text" style="color: #d4aa00;">KPS Assistant</span>
     </a>
 </div>
 
