@@ -1,7 +1,3 @@
-/**
- * KPS SMART AI ASSISTANT - ENGLISH PROFESSIONAL VERSION
- */
-
 const scrollTopBtn = document.getElementById('scrollTopBtn');
 const whatsappFab = document.getElementById('whatsappFab');
 const aiChatWindow = document.getElementById('aiChatWindow');
@@ -10,16 +6,14 @@ const aiInput = document.getElementById('aiInput');
 
 let KPS_Brain = { webData: {}, isAIClose: false };
 
-// 1. DATA SCRAPER: Load pages into categories
+// 1. IMPROVED SCRAPER: Har page ko sentences mein tod kar save karega
 async function trainAIBrain() {
     const pages = [
         { name: 'about', file: 'about.html' },
         { name: 'facilities', file: 'facilities.html' },
         { name: 'fees', file: 'fees.html' },
         { name: 'admission', file: 'admission.html' },
-        { name: 'contact', file: 'contact.html' },
-        { name: 'notice', file: 'index.html#notice-board' },
-        { name: 'status', file: 'index.html#school-status' }
+        { name: 'contact', file: 'contact.html' }
     ];
 
     for (let p of pages) {
@@ -28,94 +22,105 @@ async function trainAIBrain() {
             if (!res.ok) continue;
             const html = await res.text();
             const doc = new DOMParser().parseFromString(html, 'text/html');
-            KPS_Brain.webData[p.name] = doc.body.innerText.replace(/\s+/g, ' ').trim().toLowerCase();
-        } catch (e) { console.warn(`Missing: ${p.file}`); }
+            // Data ko sentences mein store kar rahe hain taaki filtering easy ho
+            KPS_Brain.webData[p.name] = doc.body.innerText.replace(/\s+/g, ' ').trim();
+        } catch (e) { console.warn("File missing: " + p.file); }
     }
 }
 
-// 2. THE MASTER ENGINE (Strict English Responses)
+// 2. SMART FILTERING ENGINE
+function findSmartAnswer(category, userQuery) {
+    const pageContent = KPS_Brain.webData[category];
+    if (!pageContent) return null;
+
+    // Content ko sentences mein divide karo
+    const sentences = pageContent.split(/[.!?\n]/);
+    
+    // Query mein se important keywords nikaalo (e.g., "10", "class")
+    const keywords = userQuery.toLowerCase().split(' ').filter(word => word.length > 2);
+    
+    // Wo sentences dhoondo jisme max keywords match ho rahe hon
+    let matches = sentences.filter(s => 
+        keywords.every(k => s.toLowerCase().includes(k))
+    );
+
+    if (matches.length > 0) {
+        return matches.join('. ').trim(); // Sirf matching part return karo
+    }
+    return pageContent.substring(0, 300); // Fallback to start of page
+}
+
+// 3. MAIN AI LOGIC
 async function askAdvancedAI() {
     const query = aiInput.value.trim().toLowerCase();
     if (!query) return;
 
-    // Show User Message
     aiChatBody.innerHTML += `<div class="user-msg">${query}</div>`;
     aiInput.value = "";
-    aiChatBody.scrollTop = aiChatBody.scrollHeight;
-
-    // Typing Animation
+    
     const typingId = "typing-" + Date.now();
     aiChatBody.innerHTML += `<div id="${typingId}" class="typing-dots"><span></span><span></span><span></span></div>`;
     aiChatBody.scrollTop = aiChatBody.scrollHeight;
 
     let response = "";
 
-    // --- LOGIC A: SERIAL NUMBER DETECTION (Direct Number Search) ---
-    const numberMatch = query.match(/\b\d{1,4}\b/);
-    if (numberMatch && !query.includes("fee") && !query.includes("admission")) {
-        const sID = numberMatch[0];
+    // A. DATABASE SEARCH (Only for Standalone Numbers like 101, 102)
+    const isOnlyID = /^\d{1,4}$/.test(query); 
+    if (isOnlyID) {
         try {
-            if (typeof db !== 'undefined') {
-                const snapshot = await db.ref('students/' + sID).once('value');
+            // FIREBASE CHECK: Make sure 'firebase' and 'db' are ready
+            if (window.db) {
+                const snapshot = await db.ref('students/' + query).once('value');
                 const data = snapshot.val();
                 if (data) {
-                    response = `<b>Student Profile Found:</b><br>
-                                Name: ${data.name.toUpperCase()}<br>
-                                Fees Status: ${data.fees.i} (1st Installment)<br>
-                                Attendance: ${data.attendance.apr}% for the current month.`;
+                    response = `<b>Student Found:</b> ${data.name.toUpperCase()}<br>Fee Status: ${data.fees.i}`;
                 } else {
-                    response = `I am sorry, I could not find any student record with Serial Number: <b>${sID}</b>. Please verify the ID.`;
+                    response = `No record found for ID: ${query}.`;
                 }
             } else {
-                response = "<b>Database Error:</b> Connection is currently offline. Please try again later.";
+                response = "Database is not connected. Please check Firebase initialization.";
             }
-        } catch (e) { response = "Error: Failed to connect to the school database."; }
+        } catch (e) { response = "Database Connection Error."; }
     }
 
-    // --- LOGIC B: CONTEXTUAL WEB SEARCH (Strict English Output) ---
+    // B. SMART WEB SEARCH (Admission, Fees, etc.)
     if (!response) {
         const categories = {
-            admission: ["admission", "join", "form", "entry", "class", "apply", "procedure"],
-            fees: ["fee", "structure", "installment", "fine", "due", "pay", "money", "paisa"],
-            facilities: ["facility", "lab", "library", "bus", "transport", "sports", "playground"],
-            about: ["principal", "owner", "founder", "about", "school", "history", "developer"],
-            contact: ["contact", "call", "phone", "number", "address", "location"],
-            notice: ["notice", "board", "news", "latest", "circular", "update"],
-            status: ["open", "closed", "holiday"]
+            admission: ["admission", "join", "form", "apply", "procedure"],
+            fees: ["fee", "structure", "installment", "pay", "paisa", "class"],
+            facilities: ["facility", "bus", "lab", "sports"],
+            about: ["principal", "owner", "about", "school"],
+            contact: ["contact", "phone", "call", "address"]
         };
 
         let matchedCat = Object.keys(categories).find(cat => 
             categories[cat].some(keyword => query.includes(keyword))
         );
 
-        if (matchedCat && KPS_Brain.webData[matchedCat]) {
-            response = `<b>Regarding ${matchedCat.charAt(0).toUpperCase() + matchedCat.slice(1)}:</b><br>` + 
-                       KPS_Brain.webData[matchedCat].substring(0, 450) + "...";
+        if (matchedCat) {
+            const result = findSmartAnswer(matchedCat, query);
+            response = result ? `<b>${matchedCat.toUpperCase()}:</b> ${result}` : `Information about ${matchedCat} is available on our website.`;
         } else {
-            response = "I am sorry, I do not have specific information on that topic. You may ask about Admissions, Fees, School Facilities, or provide a Student Serial Number.";
+            response = "I couldn't find specific details. Please ask about Fees, Admission, or enter a Student ID.";
         }
     }
 
-    // Final Bot Reply with Delay
     setTimeout(() => {
         const t = document.getElementById(typingId);
         if (t) t.remove();
-        aiChatBody.innerHTML += `<div class="bot-msg"><b>KPS Assistant:</b><br>${response}</div>`;
+        aiChatBody.innerHTML += `<div class="bot-msg"><b>KPS AI:</b><br>${response}</div>`;
         aiChatBody.scrollTop = aiChatBody.scrollHeight;
-    }, 1200);
+    }, 1000);
 }
 
-// 3. UI CONTROLS (Scroll Logic Untouched)
+// UI Toggles & Scroll
 window.toggleAIChat = () => { aiChatWindow.style.display = (aiChatWindow.style.display === 'flex') ? 'none' : 'flex'; };
 window.closeFab = () => { whatsappFab.style.display = 'none'; KPS_Brain.isAIClose = true; handleScrollLogic(); };
 
 function handleScrollLogic() {
-    const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
-    if (KPS_Brain.isAIClose && scrollPos > 200) {
-        scrollTopBtn.style.display = "block";
-    } else {
-        scrollTopBtn.style.display = "none";
-    }
+    const pos = window.pageYOffset || document.documentElement.scrollTop;
+    if (KPS_Brain.isAIClose && pos > 200) scrollTopBtn.style.display = "block";
+    else scrollTopBtn.style.display = "none";
 }
 
 window.addEventListener('scroll', handleScrollLogic);
