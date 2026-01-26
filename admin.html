@@ -177,7 +177,7 @@
         </div>
 
         <div id="tab-search" style="display:none;">
-            <input type="text" id="searchBar" class="input-box" placeholder="Type name or S.No..." onkeyup="searchFilter()" style="text-align:left; margin-bottom:15px;">
+            <input type="text" id="searchBar" class="input-box" placeholder="Type name or S.No..." oninput="handleSearch(event) style="text-align:left; margin-bottom:15px;">
             <div id="listContainer"></div>
         </div>
     </div>
@@ -370,39 +370,57 @@ window.verifyAdmin = async () => {
     };
 
     // --- SEARCH & DRAWER ---
-    async function fetchStudents() {
-        const cont = document.getElementById('listContainer');
-        cont.innerHTML = "<p style='text-align:center;'>Accessing Database...</p>";
+    // 1. Is variable ko functions ke bahar top par rakho taaki data save rahe
+let allStudents = []; 
+
+async function fetchStudents() {
+    const cont = document.getElementById('listContainer');
+    cont.innerHTML = "<p style='text-align:center;'>Accessing Database...</p>";
+    
+    try {
         const snap = await getDocs(collection(db, "student_data"));
-        cont.innerHTML = "";
+        allStudents = []; // Clear old data
+        
         snap.forEach(d => {
-            const data = d.data();
-            const div = document.createElement('div');
-            div.className = 'student-item';
-            div.innerHTML = `<span>${data.info?.name || 'Unknown'}</span> <b>${d.id}</b>`;
-            div.onclick = () => openDrawer(d.id);
-            cont.appendChild(div);
+            allStudents.push({ id: d.id, ...d.data() });
         });
+        
+        renderList(allStudents); // Display all initially
+    } catch (err) {
+        cont.innerHTML = "<p style='color:red;'>Error loading data</p>";
+    }
+}
+
+// 2. Naya function jo list ko screen par dikhayega (Search ke waqt bhi yahi use hoga)
+function renderList(students) {
+    const cont = document.getElementById('listContainer');
+    cont.innerHTML = "";
+    
+    if(students.length === 0) {
+        cont.innerHTML = "<p style='text-align:center; color:#666;'>No student found</p>";
+        return;
     }
 
-    window.openDrawer = async (id) => {
-        const snap = await getDoc(doc(db, "student_data", id));
-        if(snap.exists()) {
-            const d = snap.data();
-            const cont = document.getElementById('drawerContent');
-            let html = "";
-            ['info', 'academic', 'attendance', 'fees'].forEach(f => {
-                if(d[f] && Object.keys(d[f]).length > 0) {
-                    html += `<div style="background:#222; padding:5px 10px; margin:15px 0 5px; border-radius:5px; color:var(--accent); font-size:11px; font-weight:bold;">${f.toUpperCase()}</div>`;
-                    for(let k in d[f]) html += `<div class="data-line"><b>${k}</b><span>${d[f][k]}</span></div>`;
-                }
-            });
-            cont.innerHTML = html;
-            document.getElementById('drawer').classList.add('active');
-        }
-    };
+    students.forEach(data => {
+        const div = document.createElement('div');
+        div.className = 'student-item';
+        div.innerHTML = `<span>${data.info?.name || 'Unknown'}</span> <b>${data.id}</b>`;
+        div.onclick = () => openDrawer(data.id);
+        cont.appendChild(div);
+    });
+}
 
-    window.closeDrawer = () => document.getElementById('drawer').classList.remove('active');
+// 3. Search Function: Isse apne HTML input ke 'oninput' par call karo
+window.handleSearch = (e) => {
+    const term = e.target.value.toLowerCase();
+    const filtered = allStudents.filter(s => 
+        (s.info?.name || '').toLowerCase().includes(term) || 
+        s.id.toLowerCase().includes(term)
+    );
+    renderList(filtered);
+};
+
+    
     window.syncFeesToSheet = async () => {
     Swal.fire({ title: 'Exporting...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
