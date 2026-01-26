@@ -236,20 +236,7 @@ const auth = getAuth(app); // Added auth initialization
 
 const csvUrl = "https://docs.google.com/spreadsheets/d/1ykfR3DTZqifvOzE0SEBHhdS7RVWobkjRXFfYLPM7sdk/export?format=csv";
 
-// 2. Admin Auto-Login (For Security Rules)
-const loginAdmin = () => {
-    // Note: Use your actual Firebase Auth Password here, not the Dashboard PIN
-    signInWithEmailAndPassword(auth, "codingera143@gmail.com", "313AR94")
-        .then((userCredential) => {
-            console.log("✅ Admin Authenticated for Database Access");
-        })
-        .catch((error) => {
-            console.error("❌ Auth Failed: ", error.message);
-        });
-};
 
-// Start login immediately
-loginAdmin();
 
 // 3. UI FUNCTIONS (Must be attached to window for HTML access)
 window.togglePass = () => {
@@ -259,13 +246,36 @@ window.togglePass = () => {
     s.style.color = p.type === "text" ? "var(--accent)" : "#666";
 };
 
-window.verifyAdmin = () => {
-    const pin = document.getElementById('passKey').value;
-    if(pin === "KPS@2026") {
+window.verifyAdmin = async () => {
+    const userEmail = "codingera143@gmail.com";
+    const userPass = document.getElementById('passKey').value; // Input box se password uthayega
+
+    if (!userPass) {
+        Swal.fire('Error', 'Please enter your Admin Password', 'warning');
+        return;
+    }
+
+    // Loader dikhao taaki user ko lage system kaam kar raha hai
+    Swal.fire({
+        title: 'Verifying Admin...',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    try {
+        // Real-time Firebase Authentication
+        await signInWithEmailAndPassword(auth, userEmail, userPass);
+        
+        // Agar password sahi hai:
+        Swal.close();
         document.getElementById('loginPanel').style.display = 'none';
         document.getElementById('adminDashboard').style.display = 'flex';
-    } else { 
-        Swal.fire('Error', 'Invalid PIN', 'error'); 
+        
+        console.log("✅ Admin Authenticated & Logged In");
+    } catch (error) {
+        // Agar password galat hai:
+        Swal.fire('Access Denied', 'Invalid Admin Password!', 'error');
+        console.error("❌ Login failed:", error.message);
     }
 };
 
