@@ -425,16 +425,35 @@ window.startPayment = async function() {
     };
     new Razorpay(options).open();
 };
-// Disable Right-Click
-document.addEventListener('contextmenu', event => event.preventDefault());
+// --- COMPLETE UI LOCKDOWN ---
 
-// Disable Key Shortcuts
+// 1. Disable Right-Click
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// 2. Disable Key Shortcuts (Windows & Mac)
 document.onkeydown = function(e) {
-    if (e.keyCode == 123) return false; // F12
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Inspect
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Console
-    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // View Source
+    // Disable F12
+    if (e.keyCode == 123) return false;
+
+    // Disable Ctrl+U or Cmd+U (View Source)
+    if ((e.ctrlKey || e.metaKey) && e.keyCode == 85) return false;
+
+    // Disable Ctrl+Shift+I / Cmd+Opt+I (Inspect)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode == 73) return false;
+
+    // Disable Ctrl+Shift+J / Cmd+Opt+J (Console)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode == 74) return false;
+
+    // Disable Ctrl+Shift+C / Cmd+Opt+C (Element Selector)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode == 67) return false;
+
+    // Disable Ctrl+S / Cmd+S (Save Page)
+    if ((e.ctrlKey || e.metaKey) && e.keyCode == 83) return false;
 };
+
+// 3. Prevent Text/Image Selection (Optional but Professional)
+// Isse koi aapka data copy-paste nahi kar payega
+document.onselectstart = () => false;
 </script>
 </body>
     </html>
