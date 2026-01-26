@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root { --blue: #003366; --gold: #d4aa00; --light-bg: #f0f4f8; --white: #ffffff; }
         * { box-sizing: border-box; font-family: 'Poppins', sans-serif; transition: all 0.3s ease; }
@@ -203,11 +204,34 @@ window.generateReceipt = function(details) {
     doc.text(`Transaction ID: ${details.txId || "N/A"}`, 20, 155);
     doc.text(`*This is a computer-generated receipt and does not require a physical signature.`, 20, 162);
 
+        // --- QR CODE GENERATION LOGIC ---
+// 1. Create a hidden element to generate QR
+const qrDiv = document.createElement('div');
+const verifyURL = `https://kpskannauj.com/verify.html?tx=${details.txId}&sn=${details.sn}`;
+
+new QRCode(qrDiv, { 
+    text: verifyURL, 
+    width: 100, 
+    height: 100,
+    correctLevel: QRCode.CorrectLevel.H // High level for better scanning
+});
+
+// 2. Wait for QR to render then add to PDF
+const qrCanvas = qrDiv.querySelector('canvas');
+if (qrCanvas) {
+    const qrImage = qrCanvas.toDataURL("image/png");
+    // Position: x=160, y=150 (bottom right), Size: 30x30
+    doc.addImage(qrImage, 'PNG', 160, 150, 30, 30);
+}
+doc.text(`*Scan this QR to verify authenticity online.`, 20, 167);
+
     // Final Status Stamp
     doc.setTextColor(39, 174, 96);
     doc.setFontSize(18);
     doc.setFont("helvetica", "bold");
     doc.text("PAID SUCCESSFUL", 105, 185, { align: "center" });
+
+// --------------------------------
     
     doc.save(`Receipt_KPS_${details.sn}.pdf`);
 };
