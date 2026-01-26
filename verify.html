@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt Verification | KPS</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.x.x/firebase-firestore-compat.js"></script>
+    <style>
+        body { background: #111; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .loader { border: 4px solid #333; border-top: 4px solid #d4aa00; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="status">
+        <div class="loader"></div>
+        <p>Verifying Receipt...</p>
+    </div>
+
+    <script>
+        // 1. Firebase Config (Copy from your main project)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_BUCKET",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // 2. Get Data from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const txId = urlParams.get('tx');
+        const sn = urlParams.get('sn');
+
+        async function verify() {
+            if (!txId || !sn) {
+                showResult('Invalid URL', 'This QR code is missing transaction data.', 'error');
+                return;
+            }
+
+            try {
+                // 3. Check Firebase 'payments' collection
+                const docRef = db.collection("payments").doc(txId);
+                const doc = await docRef.get();
+
+                if (doc.exists && doc.data().studentID === sn) {
+                    const data = doc.data();
+                    showResult('✅ Verified Receipt', 
+                        `Student: ${data.name}<br>Amount: ₹${data.amount}<br>Status: Success`, 
+                        'success');
+                } else {
+                    showResult('❌ Fake Receipt', 'No matching transaction found in school records.', 'error');
+                }
+            } catch (error) {
+                showResult('Error', 'Could not connect to server.', 'error');
+            }
+        }
+
+        function showResult(title, text, icon) {
+            document.getElementById('status').style.display = 'none';
+            Swal.fire({
+                title: title,
+                html: text,
+                icon: icon,
+                background: '#111',
+                color: '#fff',
+                confirmButtonColor: '#d4aa00'
+            });
+        }
+
+        verify();
+    </script>
+</body>
+</html>
