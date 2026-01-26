@@ -239,6 +239,24 @@
         s.style.color = p.type === "text" ? "var(--accent)" : "#666";
     };
 
+    import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+
+const auth = getAuth();
+
+// Is function ko apne Admin Dashboard load hote hi call karein
+const loginAdmin = () => {
+    signInWithEmailAndPassword(auth, "codingera143@gmail.com", "313AR94")
+        .then((userCredential) => {
+            console.log("Admin logged in successfully!");
+            // Ab aapka Sync aur Export bina kisi rukawat ke chalega
+        })
+        .catch((error) => {
+            console.error("Login failed: ", error.message);
+        });
+};
+
+loginAdmin();
+
     window.verifyAdmin = () => {
         if(document.getElementById('passKey').value === "KPS@2026") {
             document.getElementById('loginPanel').style.display = 'none';
