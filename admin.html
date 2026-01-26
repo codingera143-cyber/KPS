@@ -215,54 +215,59 @@
     <div id="drawerContent"></div>
 </div>
    <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDocs, collection, getDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+   // 1. Correct Modular Imports from CDN
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-app.js";
+import { getFirestore, doc, setDoc, getDocs, collection, getDoc } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.17.1/firebase-auth.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyCQ6S-YfO61gEfB2Ad7neDU-nG4WNn1z8E",
-        authDomain: "kanpur-public-school-d8f4a.firebaseapp.com",
-        projectId: "kanpur-public-school-d8f4a",
-        storageBucket: "kanpur-public-school-d8f4a.firebasestorage.app",
-        messagingSenderId: "421329321742",
-        appId: "1:421329321742:web:0cf01ae45063566bc9215f"
-    };
+const firebaseConfig = {
+    apiKey: "AIzaSyCQ6S-YfO61gEfB2Ad7neDU-nG4WNn1z8E",
+    authDomain: "kanpur-public-school-d8f4a.firebaseapp.com",
+    projectId: "kanpur-public-school-d8f4a",
+    storageBucket: "kanpur-public-school-d8f4a.firebasestorage.app",
+    messagingSenderId: "421329321742",
+    appId: "1:421329321742:web:0cf01ae45063566bc9215f"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const csvUrl = "https://docs.google.com/spreadsheets/d/1ykfR3DTZqifvOzE0SEBHhdS7RVWobkjRXFfYLPM7sdk/export?format=csv";
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app); // Added auth initialization
 
-    // --- UI HELPERS ---
-    window.togglePass = () => {
-        const p = document.getElementById('passKey');
-        const s = document.getElementById('eyeSvg');
-        p.type = p.type === "password" ? "text" : "password";
-        s.style.color = p.type === "text" ? "var(--accent)" : "#666";
-    };
+const csvUrl = "https://docs.google.com/spreadsheets/d/1ykfR3DTZqifvOzE0SEBHhdS7RVWobkjRXFfYLPM7sdk/export?format=csv";
 
-    import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-
-const auth = getAuth();
-
-// Is function ko apne Admin Dashboard load hote hi call karein
+// 2. Admin Auto-Login (For Security Rules)
 const loginAdmin = () => {
+    // Note: Use your actual Firebase Auth Password here, not the Dashboard PIN
     signInWithEmailAndPassword(auth, "codingera143@gmail.com", "313AR94")
         .then((userCredential) => {
-            console.log("Admin logged in successfully!");
-            // Ab aapka Sync aur Export bina kisi rukawat ke chalega
+            console.log("✅ Admin Authenticated for Database Access");
         })
         .catch((error) => {
-            console.error("Login failed: ", error.message);
+            console.error("❌ Auth Failed: ", error.message);
         });
 };
 
+// Start login immediately
 loginAdmin();
 
-    window.verifyAdmin = () => {
-        if(document.getElementById('passKey').value === "KPS@2026") {
-            document.getElementById('loginPanel').style.display = 'none';
-            document.getElementById('adminDashboard').style.display = 'flex';
-        } else { Swal.fire('Error', 'Invalid PIN', 'error'); }
-    };
+// 3. UI FUNCTIONS (Must be attached to window for HTML access)
+window.togglePass = () => {
+    const p = document.getElementById('passKey');
+    const s = document.getElementById('eyeSvg');
+    p.type = p.type === "password" ? "text" : "password";
+    s.style.color = p.type === "text" ? "var(--accent)" : "#666";
+};
+
+window.verifyAdmin = () => {
+    const pin = document.getElementById('passKey').value;
+    if(pin === "KPS@2026") {
+        document.getElementById('loginPanel').style.display = 'none';
+        document.getElementById('adminDashboard').style.display = 'flex';
+    } else { 
+        Swal.fire('Error', 'Invalid PIN', 'error'); 
+    }
+};
 
     // --- 🛠️ THE DUPLICATE KILLER SYNC ---
     window.performSync = () => {
