@@ -160,6 +160,35 @@
         }
 
         verifyReceipt();
+// --- COMPLETE UI LOCKDOWN ---
+
+// 1. Disable Right-Click
+document.addEventListener('contextmenu', e => e.preventDefault());
+
+// 2. Disable Key Shortcuts (Windows & Mac)
+document.onkeydown = function(e) {
+    // Disable F12
+    if (e.keyCode == 123) return false;
+
+    // Disable Ctrl+U or Cmd+U (View Source)
+    if ((e.ctrlKey || e.metaKey) && e.keyCode == 85) return false;
+
+    // Disable Ctrl+Shift+I / Cmd+Opt+I (Inspect)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode == 73) return false;
+
+    // Disable Ctrl+Shift+J / Cmd+Opt+J (Console)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode == 74) return false;
+
+    // Disable Ctrl+Shift+C / Cmd+Opt+C (Element Selector)
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.keyCode == 67) return false;
+
+    // Disable Ctrl+S / Cmd+S (Save Page)
+    if ((e.ctrlKey || e.metaKey) && e.keyCode == 83) return false;
+};
+
+// 3. Prevent Text/Image Selection (Optional but Professional)
+// Isse koi aapka data copy-paste nahi kar payega
+document.onselectstart = () => false;
     </script>
 </body>
 </html>
